@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+    name: nome-do-projeto-utilizando-hifens-numeros-e-letras
+    title: Título do Projeto
+    description: Descrição breve do projeto
+    annotations:
+        backstage.io/techdocs-ref: dir:.
+        github.com/project-slug: Agents4Good/nome-do-repositorio-utilizando-hifens
+
+spec:
+    type: service
+    lifecycle: development
+    owner: Time responsável pelo projeto, igual no GitHub
