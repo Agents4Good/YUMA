@@ -1,4 +1,4 @@
-site_name: 'Título da Aplicação'
+site_name: 'Gerador de Aplicações'
 
 nav:
   - Home: README.md
