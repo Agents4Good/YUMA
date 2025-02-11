@@ -1,6 +1,6 @@
-<h1 align="center">Título da Aplicação</h1>
+<h1 align="center">Gerador de Aplicações</h1>
 
-> Uma breve descrição do propósito do projeto.
+> Gerador de aplicações multiagentes.
 
 ---
 ## 🏛️ Arquitetura
