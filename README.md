@@ -14,12 +14,32 @@ O sistema é baseado em uma arquitetura multi-agente, onde diferentes agentes de
 | Agente Z         | Monitora o desempenho geral do sistema.    |
 
 ---
-## 🚀 Instalação
+## 🚀 Instalação  
 
-Passo a passo de como instalar e executar seu sistema
+Passo a passo de como instalar e executar o sistema.  
 
+### **1️⃣ Clonar o repositório**  
+```sh
+git clone https://github.com/seu-usuario/seu-repositorio.git
+cd seu-repositorio
 ```
-Adicione blocos de comando se necessário.
+
+### **2️⃣ Criar e ativar o ambiente virtual**  
+```sh
+python -m venv venv
+source venv/bin/activate  # Linux/macOS
+venv\Scripts\activate     # Windows
+```
+
+### **3️⃣ Instalar dependências**  
+```sh
+pip install -r requirements.txt
+```
+
+### **4️⃣ Configurar variáveis de ambiente**  
+Crie um arquivo `.env` na raiz do projeto e adicione:  
+```
+OPENAI_API_KEY=sua-chave-aqui
 ```
 
 ---
