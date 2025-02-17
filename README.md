@@ -26,9 +26,9 @@ cd seu-repositorio
 
 ### **2️⃣ Criar e ativar o ambiente virtual**  
 ```sh
-python -m venv venv
-source venv/bin/activate  # Linux/macOS
-venv\Scripts\activate     # Windows
+python -m venv .venv
+source .venv/bin/activate  # Linux/macOS
+.venv\Scripts\activate     # Windows
 ```
 
 ### **3️⃣ Instalar dependências**  
