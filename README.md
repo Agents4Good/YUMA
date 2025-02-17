@@ -56,4 +56,4 @@ Guia para colaboradores, pull requests...
 
 ---
 ## 📜 Licença
-Informar a licença do projeto.
+Software sob licença MIT.
