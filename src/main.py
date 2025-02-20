@@ -1,7 +1,7 @@
 from state import AgentState
 from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import HumanMessage
-from agents import requirements_analyser_agent, assistent_agent, human_node
+from agents import requirements_analyzer_agent, assistent_agent, human_node
 import uuid
 from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver
@@ -10,7 +10,7 @@ def build_graph():
     builder = StateGraph(AgentState)
 
     #Nodes
-    builder.add_node("requirements_analyser_agent", requirements_analyser_agent)
+    builder.add_node("requirements_analyzer_agent", requirements_analyzer_agent)
     builder.add_node("assistent_agent", assistent_agent)
     builder.add_node("human_node", human_node)
     
