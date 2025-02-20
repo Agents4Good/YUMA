@@ -1,7 +1,7 @@
 from state import AgentState
 from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import HumanMessage
-from agents import assistent_agent, human_node
+from agents import requirements_analyser_agent, assistent_agent, human_node
 import uuid
 from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver
@@ -9,10 +9,17 @@ from langgraph.checkpoint.memory import MemorySaver
 def build_graph():
     builder = StateGraph(AgentState)
 
+    #Nodes
+    builder.add_node("requirements_analyser_agent", requirements_analyser_agent)
     builder.add_node("assistent_agent", assistent_agent)
     builder.add_node("human_node", human_node)
     
-    builder.add_edge(START, "assistent_agent")
+    #Edges
+    builder.add_edge(START, "requirements_analyzer_agent")
+    builder.add_edge("requirements_analyzer_agent", "human_node")
+    builder.add_edge("human_node", "requirements_analyzer_agent")  # Loop até que os requisitos mínimos sejam atendidos
+    builder.add_edge("requirements_analyzer_agent", "assistent_agent")  # Continua para o assistente quando pronto
+    builder.add_edge("assistent_agent", "human_node")
     
     checkpointer = MemorySaver()
     return builder.compile(checkpointer=checkpointer)
@@ -43,7 +50,7 @@ def main():
                     if isinstance(last_message, dict) or last_message.type != "ai":
                         continue
                     print(f"{node_id}: {last_message.content}")
-        num_conversation = num_conversation + 1
+        num_conversation =+ 1
 
 
 if __name__ == "__main__":
