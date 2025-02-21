@@ -1,7 +1,7 @@
 from state import AgentState
 from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import HumanMessage
-from agents import requirements_analyzer_agent, assistent_agent, human_node
+from agents import assistent_agent, human_node
 import uuid
 from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver

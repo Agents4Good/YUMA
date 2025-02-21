@@ -55,7 +55,7 @@ def assistent_agent(state: AgentState) -> Command[Literal["human_node", "__end__
                 "active_agent" : "assistent_agent"
             }, goto="human_node")
 
-def human_node(state: AgentState) -> Command[Literal['requirements_analyzer_agent','__end__']]:
+def human_node(state: AgentState) -> Command[Literal['assistent_agent','__end__']]:
     """A node for collecting user input."""
     user_input = interrupt("Avalie a resposta do agente: ")
     active_agent = state["active_agent"]
