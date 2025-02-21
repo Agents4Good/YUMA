@@ -36,7 +36,10 @@ def main():
         print(f"--- Conversation Turn {num_conversation} ---")
         print()
         if not num_conversation == 0:
+            print('Digite "q" para sair')
             human_message = input(f"User: ")
+            if(human_message.lower() == 'q'):
+                break
             user_input = Command(resume=human_message)
         print()
         for update in graph.stream(
