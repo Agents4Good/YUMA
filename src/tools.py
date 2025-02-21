@@ -21,7 +21,6 @@ def make_handoff_tool(*, agent_name: str):
             "name": tool_name,
             "tool_call_id": tool_call_id,
         }
-        print("entrei")
         return Command(
             # navigate to another agent node in the PARENT graph
             goto=agent_name,
