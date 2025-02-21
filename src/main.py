@@ -10,16 +10,11 @@ def build_graph():
     builder = StateGraph(AgentState)
 
     #Nodes
-    # builder.add_node("requirements_analyzer_agent", requirements_analyzer_agent)
     builder.add_node("assistent_agent", assistent_agent)
     builder.add_node("human_node", human_node)
     
     #Edges
     builder.add_edge(START, "assistent_agent")
-    # builder.add_edge("requirements_analyzer_agent", "human_node")
-    # builder.add_edge("human_node", "requirements_analyzer_agent")  # Loop até que os requisitos mínimos sejam atendidos
-    # builder.add_edge("requirements_analyzer_agent", "assistent_agent")  # Continua para o assistente quando pronto
-    # builder.add_edge("assistent_agent", "human_node")
     
     checkpointer = MemorySaver()
     return builder.compile(checkpointer=checkpointer)
