@@ -12,6 +12,6 @@ class ArchitectureOutput(BaseModel):
     """
     This output should be used to store the architecture of the multiagent system that will be generated.
     """
-    agents: List[str] = Field(description="The agents of the multiagent system")
-    interactions: Dict[str, List[str]] = Field(description="The interactions between the agents, "
+    agents: List[Agent] = Field(description="The agents of the multiagent system")
+    interactions: Dict[Agent, List[Agent]] = Field(description="The interactions between the agents, "
                                                             "where the key is an agent and the value is a list of agents it interacts with.")
