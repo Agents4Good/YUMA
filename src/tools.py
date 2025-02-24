@@ -24,6 +24,7 @@ def make_handoff_tool(*, agent_name: str):
         return Command(
             # navigate to another agent node in the PARENT graph
             goto=agent_name,
+            graph=Command.PARENT,
             # This is the state update that the agent `agent_name` will see when it is invoked.
             # We're passing agent's FULL internal message history AND adding a tool message to make sure
             # the resulting chat history is valid.
