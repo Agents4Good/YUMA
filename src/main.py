@@ -1,7 +1,7 @@
 from state import AgentState
 from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import HumanMessage
-from agents import assistent_agent, human_node
+from agents import assistent_agent, architecture_agent, human_node
 import uuid
 from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver
@@ -14,10 +14,11 @@ def build_graph():
     #Nodes
     builder.add_node("assistent_agent", assistent_agent)
     builder.add_node("human_node", human_node)
+    builder.add_node("architecture_agent", architecture_agent)
     
     #Edges
     builder.add_edge(START, "assistent_agent")
-    
+
     checkpointer = MemorySaver()
     return builder.compile(checkpointer=checkpointer)
 
@@ -46,6 +47,7 @@ def main():
             stream_mode="updates",
         ):
             for node_id, value in update.items():
+                print(value)
                 if isinstance(value, dict) and value.get("messages", []):
                     last_message = value["messages"][-1]
                     if isinstance(last_message, dict) or last_message.type != "ai":
