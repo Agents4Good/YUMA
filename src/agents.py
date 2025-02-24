@@ -1,6 +1,8 @@
 from state import AgentState
 from tools import make_handoff_tool
+from outputs import ArchitectureOutput
 
+from langgraph.prebuilt import create_react_agent
 from langgraph.types import Command, interrupt
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
@@ -12,9 +14,13 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv(override=True)
+
+architecture_tool = [make_handoff_tool(agent_name="architecture_agent")]
+end_tool = [make_handoff_tool(agent_name="__end__")]
+
 model = ChatOpenAI(model="gpt-4-turbo")
 
-def assistent_agent(state: AgentState) -> Command[Literal["human_node", "__end__"]]:
+def assistent_agent(state: AgentState) -> Command[Literal["human_node", "architecture_agent"]]:
     system_prompt = """
     You are an expert in multi-agent system architectures. When the user provides a system description, generate a structured architecture outlining agents, interactions, and execution flow. 
     Transfer to end when the human says that they have finished the conversation.
@@ -44,16 +50,36 @@ def assistent_agent(state: AgentState) -> Command[Literal["human_node", "__end__
     - Models of LLM (e.g., ChatGPT, Gemini, Llama)
 
     If any information is unclear, ask the user for clarification before finalizing the architecture.
+    If the human is satisfied with the system description, then ask for help to the "architecture_agent".
     """
-    messages = state["messages"] + [SystemMessage(content=system_prompt)]
-    response = model.invoke(messages)
-    
-    messages.append(response)
+    assistent_model = create_react_agent(
+        model,
+        tools=architecture_tool,
+        prompt=system_prompt
+    )
+    response = assistent_model.invoke(state)
+    response['active_agent'] = 'assistent_agent'
     return Command(
-        update={
-                "messages" : messages,
-                "active_agent" : "assistent_agent"
-            }, goto="human_node")
+        update=response, goto="human_node")
+
+# Errado, não está gerando o structured output
+def architecture_agent(state: AgentState) -> Command[Literal["human_node", "__end__"]]:
+    system_prompt = """
+    You are an expert in multi-agent system architectures. Your goal is to receive a system description and create the architecture of the system asked, using the structured output.
+    If the human is satisfied with the architecture, then handoff to "__end__"
+    """
+    architecture_model = create_react_agent(
+        model,
+        prompt=system_prompt,
+        tools=end_tool,
+        response_format=ArchitectureOutput
+    )
+    
+    response = architecture_model.invoke(state)
+    response['active_agent'] = 'assistent_agent'
+    return Command(
+        update=response, goto="human_node")
+
 
 def human_node(state: AgentState) -> Command[Literal['assistent_agent','__end__']]:
     """A node for collecting user input."""
