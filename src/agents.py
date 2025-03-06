@@ -43,9 +43,7 @@ def assistent_agent(state: AgentState) -> Command[Literal["human_node", "archite
     - Preferred technologies: If applicable, mention frameworks, languages ​​or patterns.
 
     Expected output:
-    Return a detailed architecture containing:
-
-    1. The final description approved by the user.
+    Return the final description approved by the user, organized into topics.
 
     Submit feedback or jump to the end when the human approves the description.
     At the end of the interaction with the human, pass the collected information to "architect_agent" writing an "#architect_agent" code in the end.
