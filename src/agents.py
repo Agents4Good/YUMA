@@ -26,11 +26,10 @@ def assistent_agent(state: AgentState) -> Command[Literal["human_node", "archite
     - What problem does the system solve?
     - Who are the end users?
     - What should the system do?
-    - What technologies can be used (languages, frameworks, architecture)?
+    - What technologies do you prefer? (e.g. langgraph, CrewAi)
     Explain to the user what is needed to answer these points.
     3. If the user is unable to talk about some information, suggest the detailed information that details the system flows and ask for the user's opinion at every step.
     4. Respond ONLY if the message is related to building multi-agent systems. Other topics will not be considered.
-
     5. When the user indicates that he/she has finished or accepted the suggested description, generate the final version of the document with:
 
     Expected user input:
