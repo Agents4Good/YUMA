@@ -1,17 +1,26 @@
 from pydantic import BaseModel, Field
-from typing import Dict, List
+from typing import List, Dict
 
 class Agent(BaseModel):
     """
-    This class should be used to describe the agent that will be generated.
+    Represents an agent in the multi-agent system.
     """
     agent: str = Field(description="The name of the agent")
-    prompt: str = Field(description="The description of the agent")
+    description: str = Field(description="The description of the agent")
+
+class Interaction(BaseModel):
+    """
+    Represents an interaction between agents.
+    """
+    source: str = Field(description="The name of the source agent")
+    targets: str = Field(description="The target agent that the source agent interacts with")
+    description: str = Field(description="A short description of what a agent will comunicate the other")
 
 class ArchitectureOutput(BaseModel):
     """
-    This output should be used to store the architecture of the multiagent system that will be generated.
+    Represents the architecture of the multi-agent system.
     """
-    agents: List[Agent] = Field(description="The agents of the multiagent system")
-    interactions: Dict[Agent, List[Agent]] = Field(description="The interactions between the agents, "
-                                                            "where the key is an agent and the value is a list of agents it interacts with.")
+    agents: List[Agent] = Field(description="List of agents in the multi-agent system")
+    interactions: List[Interaction] = Field(description="List of interactions between agents, "
+                                                        "where each interaction has a source agent and a target agent")
+    route_next: bool = Field(description="Determines if the graph should proceed to the next node (True) or remain in the current node (False).")

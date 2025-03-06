@@ -1,9 +1,8 @@
-from typing_extensions import Annotated
 from langgraph.graph import MessagesState
+from pydantic import BaseModel, Field
+from typing import List, Dict, Optional
 
 
 class AgentState(MessagesState):
-    """
-    This field should be used to store the active agent in the graph.
-    """
-    active_agent: Annotated[str, "UML codes with theirs diagram type"]
+    active_agent: str = Field(description="This field should be used to store the active agent in the graph.")
+    architecture_output: Optional[Dict] = Field(default=None, description="Stores the architecture output JSON.")

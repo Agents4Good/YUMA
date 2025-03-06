@@ -5,7 +5,7 @@ from outputs import ArchitectureOutput
 from langgraph.prebuilt import create_react_agent
 from langgraph.types import Command, interrupt
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 from typing import Literal
 
@@ -18,7 +18,8 @@ load_dotenv(override=True)
 architecture_tool = [make_handoff_tool(agent_name="architecture_agent")]
 end_tool = [make_handoff_tool(agent_name="__end__")]
 
-model = ChatOpenAI(model="gpt-4-turbo")
+model = ChatOpenAI(model="gpt-4o-mini")
+architecture_model = model.with_structured_output(ArchitectureOutput)
 
 def assistent_agent(state: AgentState) -> Command[Literal["human_node", "architecture_agent"]]:
     system_prompt = """
@@ -66,22 +67,26 @@ def assistent_agent(state: AgentState) -> Command[Literal["human_node", "archite
 def architecture_agent(state: AgentState) -> Command[Literal["human_node", "__end__"]]:
     system_prompt = """
     You are an expert in multi-agent system architectures. Your goal is to receive a system description and create the architecture of the system asked, using the structured output.
-    If the human is satisfied with the architecture, then handoff to "__end__"
+    When the human is satisfied with your answer, 'route_next' must be true. Otherwise, 'route_next' must be false
     """
-    architecture_model = create_react_agent(
-        model,
-        prompt=system_prompt,
-        tools=end_tool,
-        response_format=ArchitectureOutput
-    )
+    messages = state["messages"] + [SystemMessage(content=system_prompt)]
     
-    response = architecture_model.invoke(state)
-    response['active_agent'] = 'assistent_agent'
+    response = architecture_model.invoke(messages)
+    
+    goto = 'human_node'
+    if response.route_next:
+        goto = '__end__'
+    
     return Command(
-        update=response, goto="human_node")
+        update={
+            "messages": messages,
+            "active_agent": "architect_agent",
+            "architecture_output": response
+        }, 
+        goto=goto)
 
 
-def human_node(state: AgentState) -> Command[Literal['assistent_agent','__end__']]:
+def human_node(state: AgentState) -> Command[Literal['assistent_agent','architecture_agent']]:
     """A node for collecting user input."""
     user_input = interrupt("Avalie a resposta do agente: ")
     active_agent = state["active_agent"]
