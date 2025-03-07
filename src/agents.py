@@ -23,35 +23,39 @@ architecture_model = model.with_structured_output(ArchitectureOutput)
 
 def assistent_agent(state: AgentState) -> Command[Literal["human_node", "architecture_agent"]]:
     system_prompt = """
-    You are an expert in multi-agent system architectures. When the user provides a system description, generate a structured architecture outlining agents, interactions, and execution flow. 
-    Transfer to end when the human says that they have finished the conversation.
-    
-    Instruction:
-    You are a specialist in multi-agent system architectures. Based on the user's input, generate a detailed architecture.
-    RESPONSE ONLY IN LANGUAGE OF USER. 
-    ONLY!!!! reply if the message is related to the generation of multi-agent systems. Other topics will not be considered.
+     You are an expert in multi-agent system architectures. 
+    Your role is to help the user build a detailed description of the system from an initial idea. 
+    Always refine the requirements with additional questions, ensuring that the system is well specified.
 
-    Input:
-    The user will provide a description including:
-    - System Goal: What the system should solve or optimize.
-    - Types of Agents: If known, describe their roles.
-    - Agent Interactions: How they communicate and collaborate.
-    - Environment: Where the system operates and any constraints.
-    - Preferred Technologies: If applicable, mention frameworks, languages, or standards.
+    Instructions:
+    1. Always answer only in the user's language.
+    2. If the user's initial description is incomplete, ask for more information, such as:
+    - What problem does the system solve?
+    - Who are the end users?
+    - What should the system do?
+    - What technologies can be used (languages, frameworks, architecture)?
+    Explain to the user what is needed to answer these points.
+    3. If the user is unable to talk about some information, suggest the detailed information that details the system flows and ask for the user's opinion at every step.
+    4. Respond ONLY if the message is related to building multi-agent systems. Other topics will not be considered.
 
-    
-    Expected Output:
-    You must return an architecture that includes:
-    1. List of Agents and their responsibilities.
-    2. Communication Model (e.g., direct messaging, event-driven, blackboard system).
-    3. Execution Flow explaining how agents collaborate to achieve the goal.
-    4. Suggested Structural Diagram (e.g., UML, Entity-Relationship, Event Flow).
-    5. Recommended Technologies, including:
-    - Multi-agent frameworks (e.g., LangGraph, JADE, SPADE, OpenAI Autonode).
-    - Models of LLM (e.g., ChatGPT, Gemini, Llama)
+    5. When the user indicates that he/she has finished or accepted the suggested description, generate the final version of the document with:
 
-    If any information is unclear, ask the user for clarification before finalizing the architecture.
-    If the human is satisfied with the system description, then ask for help to the "architecture_agent".
+    Expected user input:
+    The user will provide an initial description containing:
+
+    - Purpose of the system and main requirements:
+    - What problem does the system solve?
+    - Who are the end users?
+    - What should the system do?
+    - Preferred technologies: If applicable, mention frameworks, languages ​​or patterns.
+
+    Expected output:
+    Return a detailed architecture containing:
+
+    1. The final description approved by the user.
+
+    Submit feedback or jump to the end when the human approves the description.
+    At the end of the interaction with the human, pass the collected information to "architect_agent".
     """
     assistent_model = create_react_agent(
         model,
@@ -63,11 +67,15 @@ def assistent_agent(state: AgentState) -> Command[Literal["human_node", "archite
     return Command(
         update=response, goto="human_node")
 
-# Errado, não está gerando o structured output
 def architecture_agent(state: AgentState) -> Command[Literal["human_node", "__end__"]]:
-    system_prompt = """
+    system_prompt =  """
     You are an expert in multi-agent system architectures. Your goal is to receive a system description and create the architecture of the system asked, using the structured output.
-    When the human is satisfied with your answer, 'route_next' must be true. Otherwise, 'route_next' must be false
+    
+    IMPORTANT:
+    - Ignore any previous messages that indicate satisfaction with responses from other agents.
+    - Evaluate human satisfaction solely based on feedback explicitly addressing your output.
+    
+    When you determine that the human is satisfied with your architectural proposal, set 'route_next' to true; otherwise, set 'route_next' to false.
     """
     messages = state["messages"] + [SystemMessage(content=system_prompt)]
     
@@ -80,7 +88,7 @@ def architecture_agent(state: AgentState) -> Command[Literal["human_node", "__en
     return Command(
         update={
             "messages": messages,
-            "active_agent": "architect_agent",
+            "active_agent": "architecture_agent",
             "architecture_output": response
         }, 
         goto=goto)

@@ -47,13 +47,23 @@ def main():
             stream_mode="updates",
         ):
             for node_id, value in update.items():
-                print(value)
                 if isinstance(value, dict) and value.get("messages", []):
                     last_message = value["messages"][-1]
+                    if value.get("active_agent") == "architect_agent":
+                        last_message = value.get('architecture_output');
+                        print("=== Arquitetura do Sistema Multiagente ===\n")
+                        print("Agentes:")
+                        for idx, agent in enumerate(last_message.agents, start=1):
+                            print(f"  {idx}. {agent.agent}: {agent.description}")
+                        print("\nInterações:")
+                        for idx, interaction in enumerate(last_message.interactions, start=1):
+                            print(f"  {idx}. {interaction.source} -> {interaction.targets}: {interaction.description}")
+                        continue
                     if isinstance(last_message, dict) or last_message.type != "ai":
                         continue
                     print(f"{node_id}: {last_message.content}")
-        num_conversation =+ 1
+
+        num_conversation += 1
 
 
 if __name__ == "__main__":
