@@ -49,8 +49,8 @@ def main():
             for node_id, value in update.items():
                 if isinstance(value, dict) and value.get("messages", []):
                     last_message = value["messages"][-1]
-                    if value.get("active_agent") == "architect_agent":
-                        last_message = value.get('architecture_output');
+                    if value.get("active_agent") == "architecture_agent":
+                        last_message = value.get('architecture_output')
                         print("=== Arquitetura do Sistema Multiagente ===\n")
                         print("Agentes:")
                         for idx, agent in enumerate(last_message.agents, start=1):
