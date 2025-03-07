@@ -23,4 +23,4 @@ class ArchitectureOutput(BaseModel):
     agents: List[Agent] = Field(description="List of agents in the multi-agent system")
     interactions: List[Interaction] = Field(description="List of interactions between agents, "
                                                         "where each interaction has a source agent and a target agent")
-    route_next: bool = Field(description="Determines if the graph should proceed to the next node (True) or remain in the current node (False).")
+    route_next: bool = Field(default_factory=lambda: False, description="Determines if the graph should proceed to the next node (True) or remain in the current node (False).")
