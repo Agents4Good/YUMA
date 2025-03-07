@@ -23,7 +23,7 @@ architecture_model = model.with_structured_output(ArchitectureOutput)
 
 def assistent_agent(state: AgentState) -> Command[Literal["human_node", "architecture_agent"]]:
     system_prompt = """
-     You are an expert in multi-agent system architectures. 
+    You are an expert in multi-agent system architectures. 
     Your role is to help the user build a detailed description of the system from an initial idea. 
     Always refine the requirements with additional questions, ensuring that the system is well specified.
 
@@ -77,31 +77,49 @@ def architecture_agent(state: AgentState) -> Command[Literal["human_node", "__en
     
     When you determine that the human is satisfied with your architectural proposal, set 'route_next' to true; otherwise, set 'route_next' to false.
     """
-    messages = state["messages"] + [SystemMessage(content=system_prompt)]
+    buffer = state.get("buffer", [])
+    if not buffer:
+        filtered_messages = [
+            msg for msg in state["messages"]
+            if isinstance(msg, AIMessage) and msg.content.strip() != ""
+        ]
+
+        last_ai_message = next((msg for msg in reversed(filtered_messages) if isinstance(msg, AIMessage)), None)
+        
+        buffer = [last_ai_message] + [SystemMessage(content=system_prompt)]
     
-    response = architecture_model.invoke(messages)
-    
+    response = architecture_model.invoke(buffer)
     goto = 'human_node'
     if response.route_next:
         goto = '__end__'
     
+    buffer.append(AIMessage(content=response.model_dump_json()))
     return Command(
         update={
-            "messages": messages,
+            "messages" : state["messages"],
             "active_agent": "architecture_agent",
-            "architecture_output": response
+            "architecture_output": response,
+            "buffer" : buffer
         }, 
         goto=goto)
-
 
 def human_node(state: AgentState) -> Command[Literal['assistent_agent','architecture_agent']]:
     """A node for collecting user input."""
     user_input = interrupt("Avalie a resposta do agente: ")
     active_agent = state["active_agent"]
     
+    message = HumanMessage(content=user_input)
+    
+    buffer = state.get("buffer", [])
+    if buffer:
+        buffer.append(message)
+        
     return Command(
         update={
-            "messages" : [HumanMessage(content=user_input)]
+            "messages" : state["messages"] + [message],
+            "buffer" : buffer,
+            "active_agent" : active_agent,
+            "architecture_output" : state.get("architecture_output", None)
         },
         goto=active_agent
     )
