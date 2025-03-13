@@ -1,9 +1,11 @@
 from state import AgentState
 from tools import make_handoff_tool
+from outputs import ArchitectureOutput
 
+from langgraph.prebuilt import create_react_agent
 from langgraph.types import Command, interrupt
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 from typing import Literal
 
@@ -12,9 +14,14 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv(override=True)
-model = ChatOpenAI(model="gpt-4-turbo")
 
-def assistent_agent(state: AgentState) -> Command[Literal["human_node", "architect_agent"]]:
+architecture_tool = [make_handoff_tool(agent_name="architecture_agent")]
+end_tool = [make_handoff_tool(agent_name="__end__")]
+
+model = ChatOpenAI(model="gpt-4o-mini")
+architecture_model = model.with_structured_output(ArchitectureOutput)
+
+def assistent_agent(state: AgentState) -> Command[Literal["human_node", "architecture_agent"]]:
     system_prompt = """
     You are an expert in multi-agent system architectures. 
     Your role is to help the user build a detailed description of the system from an initial idea. 
@@ -26,10 +33,11 @@ def assistent_agent(state: AgentState) -> Command[Literal["human_node", "archite
     - What problem does the system solve?
     - Who are the end users?
     - What should the system do?
-    - What technologies do you prefer? (e.g. langgraph, CrewAi)
+    - What technologies can be used (languages, frameworks, architecture)?
     Explain to the user what is needed to answer these points.
     3. If the user is unable to talk about some information, suggest the detailed information that details the system flows and ask for the user's opinion at every step.
     4. Respond ONLY if the message is related to building multi-agent systems. Other topics will not be considered.
+
     5. When the user indicates that he/she has finished or accepted the suggested description, generate the final version of the document with:
 
     Expected user input:
@@ -42,54 +50,76 @@ def assistent_agent(state: AgentState) -> Command[Literal["human_node", "archite
     - Preferred technologies: If applicable, mention frameworks, languages ​​or patterns.
 
     Expected output:
-    Return the final description approved by the user, organized into topics.
+    Return a detailed architecture containing:
+
+    1. The final description approved by the user.
 
     Submit feedback or jump to the end when the human approves the description.
-    At the end of the interaction with the human, pass the collected information to "architect_agent" writing an "#architect_agent" code in the end.
+    At the end of the interaction with the human, pass the collected information to "architect_agent".
     """
-    messages = state["messages"] + [SystemMessage(content=system_prompt)]
-    response = model.invoke(messages)
+    assistent_model = create_react_agent(
+        model,
+        tools=architecture_tool,
+        prompt=system_prompt
+    )
+    response = assistent_model.invoke(state)
+    response['active_agent'] = 'assistent_agent'
+    return Command(
+        update=response, goto="human_node")
+
+def architecture_agent(state: AgentState) -> Command[Literal["human_node", "__end__"]]:
+    system_prompt =  """
+    You are an expert in multi-agent system architectures. Your goal is to receive a system description and create the architecture of the system asked, using the structured output.
     
-    messages.append(response)
-    if "#architect_agent" in response.content:
-        return Command(
-            update={
-                "messages" : messages,
-                "active_agent" : "architect_agent"
-            }, goto="human_node")
+    IMPORTANT:
+    - Ignore any previous messages that indicate satisfaction with responses from other agents.
+    - Evaluate human satisfaction solely based on feedback explicitly addressing your output.
+    
+    When you determine that the human is satisfied with your architectural proposal, set 'route_next' to true; otherwise, set 'route_next' to false.
+    """
+    buffer = state.get("buffer", [])
+    if not buffer:
+        filtered_messages = [
+            msg for msg in state["messages"]
+            if isinstance(msg, AIMessage) and msg.content.strip() != ""
+        ]
+
+        last_ai_message = next((msg for msg in reversed(filtered_messages) if isinstance(msg, AIMessage)), None)
+        
+        buffer = [last_ai_message] + [SystemMessage(content=system_prompt)]
+    
+    response = architecture_model.invoke(buffer)
+    goto = 'human_node'
+    if response.route_next:
+        goto = '__end__'
+    
+    buffer.append(AIMessage(content=response.model_dump_json()))
     return Command(
         update={
-                "messages" : messages,
-                "active_agent" : "assistent_agent"
-            }, goto="human_node")
+            "messages" : state["messages"],
+            "active_agent": "architecture_agent",
+            "architecture_output": response,
+            "buffer" : buffer
+        }, 
+        goto=goto)
 
-def architect_agent(state: AgentState) -> Command[Literal["human_node", "__end__"]]:
-    system_prompt = """
-    Instruction:
-    You are a multi-agent system architect. Based on the user's input, design a multi-agent system that meets the user's needs. 
-    You must return a description of the multi-agent system, including:
-    - Agents: The roles of each agent in the system.
-    - Communication: The communication protocol between agents.
-    """
-    
-    messages = state["messages"] + [SystemMessage(content=system_prompt)]
-    response = model.invoke(messages)
-    
-    messages.append(response)
-    return Command(
-        update={
-                "messages" : messages,
-                "active_agent" : "architect_agent"
-            }, goto="human_node")
-
-def human_node(state: AgentState) -> Command[Literal['assistent_agent', 'architect_agent']]:
+def human_node(state: AgentState) -> Command[Literal['assistent_agent','architecture_agent']]:
     """A node for collecting user input."""
     user_input = interrupt("Avalie a resposta do agente: ")
     active_agent = state["active_agent"]
     
+    message = HumanMessage(content=user_input)
+    
+    buffer = state.get("buffer", [])
+    if buffer:
+        buffer.append(message)
+        
     return Command(
         update={
-            "messages" : [HumanMessage(content=user_input)]
+            "messages" : state["messages"] + [message],
+            "buffer" : buffer,
+            "active_agent" : active_agent,
+            "architecture_output" : state.get("architecture_output", None)
         },
         goto=active_agent
     )
