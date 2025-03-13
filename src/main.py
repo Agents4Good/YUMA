@@ -28,7 +28,7 @@ def main():
     print_graph(graph)
     thread_config = {"configurable": {"thread_id": uuid.uuid4()}}
     human_message = input("Digite sua entrada: ")
-    user_input = AgentState(messages=HumanMessage(content=human_message))
+    user_input = AgentState(messages=[HumanMessage(content=human_message)])
     num_conversation = 0
     while True:
         print()
@@ -62,7 +62,6 @@ def main():
                     if isinstance(last_message, dict) or last_message.type != "ai":
                         continue
                     print(f"{node_id}: {last_message.content}")
-
         num_conversation += 1
 
 
