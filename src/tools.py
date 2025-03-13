@@ -4,6 +4,7 @@ from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
+from utils.plantuml_parser import generate_diagram, json_to_plantuml
 
 def make_handoff_tool(*, agent_name: str):
     """Create a tool that can return handoff via a Command"""
@@ -32,3 +33,12 @@ def make_handoff_tool(*, agent_name: str):
         )
 
     return handoff_to_agent
+
+@tool("sequence_diagram_generator")
+def sequence_diagram_generator(architecture_output: str):
+    """
+    Converte a saída do agente de arquitetura em um diagrama de sequência PlantUML e gera uma imagem do diagrama.
+    Retorna o caminho do arquivo gerado.
+    """
+    plantuml_output = json_to_plantuml(architecture_output)
+    diagram_path = generate_diagram(plantuml_output)
