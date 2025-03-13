@@ -1,5 +1,5 @@
 from state import AgentState
-from tools import make_handoff_tool
+from tools import make_handoff_tool, sequence_diagram_generator
 from outputs import ArchitectureOutput
 
 from langgraph.prebuilt import create_react_agent
@@ -10,8 +10,6 @@ from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from typing import Literal
 
 from dotenv import load_dotenv
-
-import os
 
 load_dotenv(override=True)
 
@@ -55,7 +53,7 @@ def assistent_agent(state: AgentState) -> Command[Literal["human_node", "archite
     1. The final description approved by the user.
 
     Submit feedback or jump to the end when the human approves the description.
-    At the end of the interaction with the human, pass the collected information to "architect_agent".
+    At the end of the interaction with the human, pass the collected information to "architecture_agent".
     """
     assistent_model = create_react_agent(
         model,
@@ -93,7 +91,10 @@ def architecture_agent(state: AgentState) -> Command[Literal["human_node", "__en
     if response.route_next:
         goto = '__end__'
     
+    sequence_diagram_generator.invoke(response.model_dump_json())
+    
     buffer.append(AIMessage(content=response.model_dump_json()))
+
     return Command(
         update={
             "messages" : state["messages"],
