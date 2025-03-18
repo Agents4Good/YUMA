@@ -1,7 +1,7 @@
-from state import AgentState
+from state import AgentState, DifyState
 from langgraph.graph import StateGraph, START, END
 from langchain_core.messages import HumanMessage
-from agents import assistent_agent, architecture_agent, human_node
+from agents import assistent_agent, architecture_agent, human_node, supervisor_agent, node_creator, edge_creator
 import uuid
 from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver
@@ -9,13 +9,24 @@ from langgraph.checkpoint.memory import MemorySaver
 from utils.io_functions import print_graph
 
 def build_graph():
-    builder = StateGraph(AgentState)
 
+    subgraph_builder = StateGraph(DifyState)
+
+    subgraph_builder.add_node("supervisor_agent", supervisor_agent)
+    subgraph_builder.add_node("node_creator", node_creator)
+    subgraph_builder.add_node("edge_creator", edge_creator)
+
+    subgraph_builder.add_edge(START, "supervisor_agent")
+    subgraph = subgraph_builder.compile()
+
+    builder = StateGraph(AgentState)
+    
     #Nodes
     builder.add_node("assistent_agent", assistent_agent)
     builder.add_node("human_node", human_node)
     builder.add_node("architecture_agent", architecture_agent)
-    
+    builder.add_node("dify", subgraph)
+
     #Edges
     builder.add_edge(START, "assistent_agent")
 

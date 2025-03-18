@@ -1,5 +1,5 @@
-from state import AgentState
-from tools import make_handoff_tool, sequence_diagram_generator
+from state import AgentState, DifyState
+from tools import make_handoff_tool, sequence_diagram_generator, metadata_creator
 from outputs import ArchitectureOutput
 
 from langgraph.prebuilt import create_react_agent
@@ -7,7 +7,7 @@ from langgraph.types import Command, interrupt
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
-from typing import Literal
+from typing import Literal, List
 
 from dotenv import load_dotenv
 
@@ -64,7 +64,7 @@ def assistent_agent(state: AgentState) -> Command[Literal["human_node", "archite
     return Command(
         update=response, goto="human_node")
 
-def architecture_agent(state: AgentState) -> Command[Literal["human_node", "__end__"]]:
+def architecture_agent(state: AgentState) -> Command[Literal["human_node", "dify"]]:
     system_prompt =  """
     You are an expert in multi-agent system architectures. Your goal is to receive a system description and create the architecture of the system asked, using the structured output.
     
@@ -88,7 +88,7 @@ def architecture_agent(state: AgentState) -> Command[Literal["human_node", "__en
     response = architecture_model.invoke(buffer)
     goto = 'human_node'
     if response.route_next:
-        goto = '__end__'
+        goto = 'dify'
     
     sequence_diagram_generator.invoke(response.model_dump_json())
     
@@ -122,4 +122,38 @@ def human_node(state: AgentState) -> Command[Literal['assistent_agent','architec
             "architecture_output" : state.get("architecture_output", None)
         },
         goto=active_agent
+    )
+
+def supervisor_agent(state: AgentState) -> Command[list['node_creator','edge_creator']]:
+    system_prompt = ""
+
+    response = ""  # llm_call
+    metadata_creator()
+    
+    return Command(
+    goto=["node_creator", "edge_creator"]
+    )
+
+def node_creator(state: DifyState) -> Command[Literal['__end__']]:
+    system_prompt = ""
+
+    response = "" # llm_call
+
+    # tool call para adicionar os nós no YAML
+    print("node_creator executado")
+    
+    return Command(
+        update={
+            # colocando o response no state
+        },
+    )
+
+def edge_creator(state: DifyState) -> Command[Literal['__end__']]:
+    system_prompt = ""
+
+    response = "" # llm_call
+
+    # tool call para adicionar os arcos no YAML
+    print("edge_creator executado")
+    return Command(
     )

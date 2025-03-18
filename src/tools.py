@@ -42,3 +42,6 @@ def sequence_diagram_generator(architecture_output: str):
     """
     plantuml_output = json_to_plantuml(architecture_output)
     diagram_path = generate_diagram(plantuml_output)
+
+def metadata_creator():
+    pass
