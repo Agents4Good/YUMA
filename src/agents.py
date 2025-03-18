@@ -49,8 +49,7 @@ def assistent_agent(state: AgentState) -> Command[Literal["human_node", "archite
 
     Expected output:
     Return a detailed architecture containing:
-
-    1. The final description approved by the user.
+    ONLY the final description approved by the user.
 
     Submit feedback or jump to the end when the human approves the description.
     At the end of the interaction with the human, pass the collected information to "architecture_agent".
