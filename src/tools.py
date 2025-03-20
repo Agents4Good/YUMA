@@ -2,6 +2,8 @@ import yaml
 
 from typing import Annotated
 
+from pathlib import Path
+
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.prebuilt import InjectedState
@@ -49,7 +51,7 @@ def metadata_creator():
     pass
 
 
-@tool
+# @tool
 def create_yaml_and_metadata(name: str, descritption: str):
     """
     Cria um arquivo YAML e insere os metadados a partir de um nome e uma descrição.
@@ -63,87 +65,171 @@ def create_yaml_and_metadata(name: str, descritption: str):
         "version": "0.1.5",
         "workflow": {
             "conversation_variables": [],
-            "environment_variables": []
+            "environment_variables": [],
+            "graph": {
+                "edges": [],
+                "nodes": []
+            }
         }
     }
 
     with open(f"dify.yaml", "w") as outfile:
         yaml.dump(metadata, outfile, default_flow_style=False, allow_unicode=True)
 
-@tool
-def create_start_node(tittle: str, id: str):
+# @tool
+def create_start_node(file: Path, tittle: str, id: str):
     """
     Cria o nó inicial com um título e um id. Esta é a primeira etapa a ser executada no grafo.
     """
-    start_node = [
-        {
-            "id": id,
-            "type": "custom",
-            "data": {
-                "desc": "",
-                "title": tittle,
-                "type": "start",
-                "variables": []
-            }
+    start_node = {
+        "id": id,
+        "type": "custom",
+        "data": {
+            "desc": "",
+            "title": tittle,
+            "type": "start",
+            "variables": []
         }
-    ]
-    
-@tool
-def create_answer_node(tittle: str, id: str, answer: str):
-    """
-    Cria um nó de resposta com um título, um id e uma resposta. Esta é a última etapa a ser executada no grafo.
-    """
-    answer_node = [
-        {
-            "id": id,
-            "type": "custom",
-            "data": {
-                "answer": answer,           # "{{#llm1.text#}}\n\n{{#llm2.text#}}"
-                "desc": "",
-                "title": tittle,
-                "type": "answer",
-                "variables": []
-            }
-        }
-    ]
+    }
 
-@tool
-def create_llm_node(id: str, title: str):
+    with open(file, "r") as infile:
+        data = yaml.safe_load(infile)
+
+    if "nodes" not in data["workflow"]["graph"]:
+        data["workflow"]["graph"]["nodes"] = []
+
+    data["workflow"]["graph"]["nodes"].append(start_node)
+
+    with open(file, "w") as outfile:
+        yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+    
+# @tool
+def create_llm_node(file: Path, id: str, tittle: str, prompt: str, memoryAvailable: bool):
     """
     Cria um nó de LLM.
     """
-    llm_node = [
-        {
-            "id": "llm1",
-            "type": "custom",
-            "data": {
-                "context": {
-                    "enabled": False,
-                    "variable_selector": []
-                },
-                "desc": "",
-                "memory": {},
-                "model": {
-                    "completion_params": {
-                        "temperature": 0.7
-                    },
-                    "mode": "chat",
-                    "name": "gpt-4",
-                    "provider": "langgenius/openai/openai"
-                },
-                "prompt_template": [
-                    {
-                        "role": "system",
-                        "text": "Seu trabalho é gerar o início de uma piada que mais tarde será passada para outro agente que completará a piada.\n\nO tema da piada será passada pelo usuário como entrada.\n\nAs piadas devem ser estruturadas em forma de pergunta e resposta, como \"O que é um ponto preto em cima do castelo?\"."
-                    }
-                ],
-                "title": "LLM 1",
-                "type": "llm",
-                "variables": [],
-                "vision": {
-                    "enabled": False
-                }
+    llm_node = {
+        "id": id,
+        "type": "custom",
+        "data": {
+            "context": {
+                "enabled": False,
+                "variable_selector": []             # necessário passar como parâmetro
+            },
+            "desc": ""
+        }
+    }
+
+    if memoryAvailable:
+        llm_node["data"]["memory"] = {
+            "query_prompt_template": "{{#sys.query#}}",
+            "role_prefix": {
+                "assistant": "",
+                "user": ""
+            },
+            "window": {
+                "enabled": False,
+                "size": 10
             }
         }
-    ]
+    else:
+        llm_node["data"]["memory"] = {}
 
+    llm_node["data"].update({
+        "model": {
+            "completion_params": {
+                "temperature": 0.7
+            },
+            "mode": "chat",
+            "name": "gpt-4",
+            "provider": "langgenius/openai/openai"
+        },
+        "prompt_template": [
+            {
+                "role": "system",
+                "text": prompt
+            }
+        ],
+        "title": tittle,
+        "type": "llm",
+        "variables": [],
+        "vision": {
+            "enabled": False
+        }
+    })
+
+    with open(file, "r") as infile:
+        data = yaml.safe_load(infile)
+
+    if "nodes" not in data["workflow"]["graph"]:
+        data["workflow"]["graph"]["nodes"] = []
+
+    data["workflow"]["graph"]["nodes"].append(llm_node)
+
+    with open(file, "w") as outfile:
+        yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+        
+
+
+# @tool
+def create_answer_node(file: Path, tittle: str, id: str, answer: str):
+    """
+    Cria um nó de resposta com um título, um id e uma resposta. Esta é a última etapa a ser executada no grafo.
+    """
+    answer_node = {
+        "id": id,
+        "type": "custom",
+        "data": {
+            "answer": answer,           # "{{#llm1.text#}}"
+            "desc": "",
+            "title": tittle,
+            "type": "answer",
+            "variables": []
+        }
+    }
+
+    with open(file, "r") as infile:
+        data = yaml.safe_load(infile)
+
+    if "nodes" not in data["workflow"]["graph"]:
+        data["workflow"]["graph"]["nodes"] = []
+
+    data["workflow"]["graph"]["nodes"].append(answer_node)
+
+    with open(file, "w") as outfile:
+        yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+
+
+# @tool
+def create_edges(file: Path, id: str, source: str, target: str):
+    """
+    Cria uma edge entre dois nós.
+    """
+    edge = {
+        "id": id,
+        "source": source,
+        "target": target,
+        "type": "custom"
+    }
+
+    with open(file, "r") as infile:
+        data = yaml.safe_load(infile)
+
+    if "nodes" not in data["workflow"]["graph"]:
+        data["workflow"]["graph"]["edges"] = []
+
+    data["workflow"]["graph"]["edges"].append(edge)
+
+    with open(file, "w") as outfile:
+        yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+    
+
+# DESCOMENTAR O CÓDIGO E EXECUTAR PARA CRIAR O ARQUIVO YAML
+
+# create_yaml_and_metadata("Contador de piadas", "Um contador de piadas que conta piadas engraçadas.")
+# create_start_node(Path("dify.yaml"), "Início", "start")
+# create_llm_node(Path("dify.yaml"), "llm1", "Contador de piadas", "Você recebe do usuário um tópico e conta uma piada engraçada", memoryAvailable=True)
+# create_answer_node(Path("dify.yaml"), "Fim", "end", "{{#llm1.text#}}")
+
+# create_edges(Path("dify.yaml"), "edge1", "start", "llm1")
+# create_edges(Path("dify.yaml"), "edge2", "llm1", "end")
