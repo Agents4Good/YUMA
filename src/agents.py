@@ -1,5 +1,5 @@
 from state import AgentState, DifyState
-from tools import make_handoff_tool, sequence_diagram_generator, metadata_creator
+from tools import make_handoff_tool, sequence_diagram_generator, metadata_creator, create_llm_node
 from outputs import ArchitectureOutput
 
 from langgraph.prebuilt import create_react_agent
@@ -22,7 +22,7 @@ end_tool = [make_handoff_tool(agent_name="__end__")]
 
 model = ChatOpenAI(model="gpt-4o-mini")
 architecture_model = model.with_structured_output(ArchitectureOutput)
-
+node_creator_dify_model = model.bind_tools([create_llm_node])
 
 # Agente reponsável por analisar os requisitos do sistema e conversar com o usuário
 def assistent_agent(state: AgentState) -> Command[Literal["human_node", "architecture_agent"]]:
@@ -110,8 +110,9 @@ def supervisor_agent(state: AgentState) -> Command[list['node_creator','edge_cre
 def node_creator(state: DifyState) -> Command[Literal['__end__']]:
     system_prompt = agents_prompts.NODE_CREATOR
 
-    response = "" # llm_call
-
+    messages = state["messages"] + [system_prompt]
+    response = node_creator_dify_model.invoke(messages)
+    print(response)
     # tool call para adicionar os nós no YAML
     print("node_creator executado")
     

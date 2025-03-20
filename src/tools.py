@@ -107,43 +107,44 @@ def create_answer_node(tittle: str, id: str, answer: str):
         }
     ]
 
-@tool
-def create_llm_node(id: str, title: str):
+@tool("create_dify_llm_node")
+def create_llm_node(id: Annotated[str, 'ID generated to the LLM node'], title: Annotated[str, 'Name of the agent']):
     """
     Cria um nó de LLM.
     """
-    llm_node = [
-        {
-            "id": "llm1",
-            "type": "custom",
-            "data": {
-                "context": {
-                    "enabled": False,
-                    "variable_selector": []
-                },
-                "desc": "",
-                "memory": {},
-                "model": {
-                    "completion_params": {
-                        "temperature": 0.7
-                    },
-                    "mode": "chat",
-                    "name": "gpt-4",
-                    "provider": "langgenius/openai/openai"
-                },
-                "prompt_template": [
-                    {
-                        "role": "system",
-                        "text": "Seu trabalho é gerar o início de uma piada que mais tarde será passada para outro agente que completará a piada.\n\nO tema da piada será passada pelo usuário como entrada.\n\nAs piadas devem ser estruturadas em forma de pergunta e resposta, como \"O que é um ponto preto em cima do castelo?\"."
-                    }
-                ],
-                "title": "LLM 1",
-                "type": "llm",
-                "variables": [],
-                "vision": {
-                    "enabled": False
-                }
-            }
-        }
-    ]
+    # llm_node = [
+    #     {
+    #         "id": id,
+    #         "type": "custom",
+    #         "data": {
+    #             "context": {
+    #                 "enabled": False,
+    #                 "variable_selector": []
+    #             },
+    #             "desc": "",
+    #             "memory": {},
+    #             "model": {
+    #                 "completion_params": {
+    #                     "temperature": 0.7
+    #                 },
+    #                 "mode": "chat",
+    #                 "name": "gpt-4",
+    #                 "provider": "langgenius/openai/openai"
+    #             },
+    #             "prompt_template": [
+    #                 {
+    #                     "role": "system",
+    #                     "text": "Seu trabalho é gerar o início de uma piada que mais tarde será passada para outro agente que completará a piada.\n\nO tema da piada será passada pelo usuário como entrada.\n\nAs piadas devem ser estruturadas em forma de pergunta e resposta, como \"O que é um ponto preto em cima do castelo?\"."
+    #                 }
+    #             ],
+    #             "title": title,
+    #             "type": "llm",
+    #             "variables": [],
+    #             "vision": {
+    #                 "enabled": False
+    #             }
+    #         }
+    #     }
+    # ]
+    print(f"Agente {id}: {title} criado")
 
