@@ -43,7 +43,9 @@ ARCHITECTURE_AGENT = """
     When you determine that the human is satisfied with your architectural proposal, set 'route_next' to true; otherwise, set 'route_next' to false.
     """
 
-SUPERVISOR_AGENT = """"""
+SUPERVISOR_AGENT ="""
+    A node for delegate task for the creation of nodes and edges.
+    """
 
 NODE_CREATOR = """"""
 

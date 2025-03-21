@@ -94,15 +94,20 @@ def human_node(state: AgentState) -> Command[Literal['assistent_agent','architec
     )
 
 
-# Agente responsável por delegar a criação dos nodes e egdes do sistema
+# Tool responsável por delegar a criação dos nodes e egdes do sistema
 def supervisor_agent(state: AgentState) -> Command[list['node_creator','edge_creator']]:
-    system_prompt = agents_prompts.SUPERVISOR_AGENT
-
-    response = ""  # llm_call
+    system_prompt =  agents_prompts.SUPERVISOR_AGENT
     metadata_creator()
-    
+
+    novoState = DifyState = {
+        "yaml_path": "../output/dify/dify.yml",
+        "architecture_output": state["architecture_output"],
+        "nodes_code": "",
+        "edges_code": ""
+    }
     return Command(
-    goto=["node_creator", "edge_creator"]
+        update=novoState,
+        goto=["node_creator", "edge_creator"]
     )
 
 
@@ -114,7 +119,6 @@ def node_creator(state: DifyState) -> Command[Literal['__end__']]:
 
     # tool call para adicionar os nós no YAML
     print("node_creator executado")
-    
     return Command(
         update={
             # colocando o response no state
