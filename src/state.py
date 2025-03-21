@@ -9,7 +9,7 @@ class AgentState(MessagesState):
     buffer: List[BaseMessage]= Field(description="the messages of the active agent.")
 
 class DifyState(MessagesState):
-    architecture_output: Optional[Dict] = Field(default=None, description="Stores the architecture output JSON.")
+    architecture_output: Dict = Field(default=None, description="Stores the architecture output JSON.")
     yaml_path: str = Field(description="")
     nodes_code: str = Field(description="")
     edges_code: str = Field(description="")
