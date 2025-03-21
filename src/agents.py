@@ -96,7 +96,7 @@ def human_node(state: AgentState) -> Command[Literal['assistent_agent','architec
 
 # Tool responsável por delegar a criação dos nodes e egdes do sistema
 def supervisor_agent(state: AgentState) -> Command[list['node_creator','edge_creator']]:
-    """A node for delegate task for the creation of nodes and edges."""
+    system_prompt =  agents_prompts.SUPERVISOR_AGENT
     metadata_creator()
 
     novoState = DifyState = {
