@@ -9,6 +9,10 @@ from langchain_core.tools.base import InjectedToolCallId
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 from utils.plantuml_parser import generate_diagram, json_to_plantuml
+from utils.tools_utils import insert_node_yaml, insert_edge_yaml
+
+YAML_PATH = Path("dify.yaml")
+
 
 def make_handoff_tool(*, agent_name: str):
     """Create a tool that can return handoff via a Command"""
@@ -52,7 +56,7 @@ def metadata_creator():
 
 
 # @tool
-def create_yaml_and_metadata(name: str, descritption: str):
+def create_yaml_and_metadata(file: Path, name: str, descritption: str):
     """
     Cria um arquivo YAML e insere os metadados a partir de um nome e uma descrição.
     """
@@ -73,8 +77,9 @@ def create_yaml_and_metadata(name: str, descritption: str):
         }
     }
 
-    with open(f"dify.yaml", "w") as outfile:
+    with open(file, "w") as outfile:
         yaml.dump(metadata, outfile, default_flow_style=False, allow_unicode=True)
+
 
 # @tool
 def create_start_node(file: Path, tittle: str, id: str):
@@ -92,17 +97,9 @@ def create_start_node(file: Path, tittle: str, id: str):
         }
     }
 
-    with open(file, "r") as infile:
-        data = yaml.safe_load(infile)
-
-    if "nodes" not in data["workflow"]["graph"]:
-        data["workflow"]["graph"]["nodes"] = []
-
-    data["workflow"]["graph"]["nodes"].append(start_node)
-
-    with open(file, "w") as outfile:
-        yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+    insert_node_yaml(file, start_node)
     
+
 # @tool
 def create_llm_node(file: Path, id: str, tittle: str, prompt: str, memoryAvailable: bool):
     """
@@ -158,18 +155,8 @@ def create_llm_node(file: Path, id: str, tittle: str, prompt: str, memoryAvailab
         }
     })
 
-    with open(file, "r") as infile:
-        data = yaml.safe_load(infile)
-
-    if "nodes" not in data["workflow"]["graph"]:
-        data["workflow"]["graph"]["nodes"] = []
-
-    data["workflow"]["graph"]["nodes"].append(llm_node)
-
-    with open(file, "w") as outfile:
-        yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+    insert_node_yaml(file, llm_node)
         
-
 
 # @tool
 def create_answer_node(file: Path, tittle: str, id: str, answer: str):
@@ -188,16 +175,7 @@ def create_answer_node(file: Path, tittle: str, id: str, answer: str):
         }
     }
 
-    with open(file, "r") as infile:
-        data = yaml.safe_load(infile)
-
-    if "nodes" not in data["workflow"]["graph"]:
-        data["workflow"]["graph"]["nodes"] = []
-
-    data["workflow"]["graph"]["nodes"].append(answer_node)
-
-    with open(file, "w") as outfile:
-        yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+    insert_node_yaml(file, answer_node)
 
 
 # @tool
@@ -212,24 +190,15 @@ def create_edges(file: Path, id: str, source: str, target: str):
         "type": "custom"
     }
 
-    with open(file, "r") as infile:
-        data = yaml.safe_load(infile)
-
-    if "nodes" not in data["workflow"]["graph"]:
-        data["workflow"]["graph"]["edges"] = []
-
-    data["workflow"]["graph"]["edges"].append(edge)
-
-    with open(file, "w") as outfile:
-        yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+    insert_edge_yaml(file, edge)
     
 
 # DESCOMENTAR O CÓDIGO E EXECUTAR PARA CRIAR O ARQUIVO YAML
 
-# create_yaml_and_metadata("Contador de piadas", "Um contador de piadas que conta piadas engraçadas.")
-# create_start_node(Path("dify.yaml"), "Início", "start")
-# create_llm_node(Path("dify.yaml"), "llm1", "Contador de piadas", "Você recebe do usuário um tópico e conta uma piada engraçada", memoryAvailable=True)
-# create_answer_node(Path("dify.yaml"), "Fim", "end", "{{#llm1.text#}}")
+create_yaml_and_metadata(YAML_PATH, "Contador de piadas", "Um contador de piadas que conta piadas engraçadas.")
+create_start_node(YAML_PATH, "Início", "start")
+create_llm_node(YAML_PATH, "llm1", "Contador de piadas", "Você recebe do usuário um tópico e conta uma piada engraçada", memoryAvailable=True)
+create_answer_node(YAML_PATH, "Fim", "end", "{{#llm1.text#}}")
 
-# create_edges(Path("dify.yaml"), "edge1", "start", "llm1")
-# create_edges(Path("dify.yaml"), "edge2", "llm1", "end")
+create_edges(YAML_PATH, "edge1", "start", "llm1")
+create_edges(YAML_PATH, "edge2", "llm1", "end")
