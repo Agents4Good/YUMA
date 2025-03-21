@@ -171,6 +171,7 @@ cython_debug/
 .pypirc
 
 # etc
+.vscode/
 graph_image.png
 
 diagram.png
