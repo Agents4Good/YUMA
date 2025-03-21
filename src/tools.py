@@ -214,7 +214,7 @@ def create_edges(file: Path, id: str, source: str, target: str):
     with open(file, "r") as infile:
         data = yaml.safe_load(infile)
 
-    if "nodes" not in data["workflow"]["graph"]:
+    if "edges" not in data["workflow"]["graph"]:
         data["workflow"]["graph"]["edges"] = []
 
     data["workflow"]["graph"]["edges"].append(edge)
