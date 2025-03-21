@@ -101,7 +101,13 @@ def create_start_node(file: Path, tittle: str, id: str):
     
 
 # @tool
-def create_llm_node(file: Path, id: str, tittle: str, prompt: str, memoryAvailable: bool):
+def create_llm_node(file: Path,
+                    id: str, 
+                    tittle: str, 
+                    prompt: str,
+                    temperature: float = 0.7,
+                    context_variable: str = "",
+                    ):
     """
     Cria um nó de LLM.
     """
@@ -110,50 +116,35 @@ def create_llm_node(file: Path, id: str, tittle: str, prompt: str, memoryAvailab
         "type": "custom",
         "data": {
             "context": {
-                "enabled": False,
-                "variable_selector": []             # necessário passar como parâmetro
+                "enabled": True,
+                "variable_selector": [
+                    context_variable.split(".")[0],
+                    context_variable.split(".")[1]
+                ] if context_variable else []
             },
-            "desc": ""
+            "desc": "",
+            "model": {
+                "completion_params": {
+                    "temperature": temperature
+                },
+                "mode": "chat",
+                "name": "gpt-4",
+                "provider": "langgenius/openai/openai"
+            },
+            "prompt_template": [
+                {
+                    "role": "system",
+                    "text": "{{#context#}}\n" + prompt
+                }
+            ],
+            "title": tittle,
+            "type": "llm",
+            "variables": [],
+            "vision": {
+                "enabled": False
+            }
         }
     }
-
-    if memoryAvailable:
-        llm_node["data"]["memory"] = {
-            "query_prompt_template": "{{#sys.query#}}",
-            "role_prefix": {
-                "assistant": "",
-                "user": ""
-            },
-            "window": {
-                "enabled": False,
-                "size": 10
-            }
-        }
-    else:
-        llm_node["data"]["memory"] = {}
-
-    llm_node["data"].update({
-        "model": {
-            "completion_params": {
-                "temperature": 0.7
-            },
-            "mode": "chat",
-            "name": "gpt-4",
-            "provider": "langgenius/openai/openai"
-        },
-        "prompt_template": [
-            {
-                "role": "system",
-                "text": prompt
-            }
-        ],
-        "title": tittle,
-        "type": "llm",
-        "variables": [],
-        "vision": {
-            "enabled": False
-        }
-    })
 
     insert_node_yaml(file, llm_node)
         
@@ -167,7 +158,7 @@ def create_answer_node(file: Path, tittle: str, id: str, answer: str):
         "id": id,
         "type": "custom",
         "data": {
-            "answer": answer,           # "{{#llm1.text#}}"
+            "answer": answer,
             "desc": "",
             "title": tittle,
             "type": "answer",
@@ -193,12 +184,32 @@ def create_edges(file: Path, id: str, source: str, target: str):
     insert_edge_yaml(file, edge)
     
 
-# DESCOMENTAR O CÓDIGO E EXECUTAR PARA CRIAR O ARQUIVO YAML
+create_yaml_and_metadata(YAML_PATH,
+                         "Contador de piadas",
+                         "Um contador de piadas que conta piadas engraçadas.")
 
-create_yaml_and_metadata(YAML_PATH, "Contador de piadas", "Um contador de piadas que conta piadas engraçadas.")
 create_start_node(YAML_PATH, "Início", "start")
-create_llm_node(YAML_PATH, "llm1", "Contador de piadas", "Você recebe do usuário um tópico e conta uma piada engraçada", memoryAvailable=True)
-create_answer_node(YAML_PATH, "Fim", "end", "{{#llm1.text#}}")
+
+create_llm_node(YAML_PATH,
+                "llm1",
+                "Criador de Perguntas",
+                """Seu trabalho é gerar o início de uma piada que mais tarde será encaminhada para outro agente que a completará\nO tema da piada será passado pelo usuário como entrada.\nAs piadas devem ser estruturadas em forma de pergunta, por exemplo:\n"O que é um ponto preto em cima do castelo?""",
+                1.0,
+                "sys.query")
+
+create_llm_node(YAML_PATH,
+                "llm2",
+                "Criador de respostas",
+                """Seu trabalho é receber um início de piada em forma de pergunta e respondê-la de forma engraçada e que faça sentido com o tópico abordado.""",
+                1.0,
+                "llm1.text"
+                )
+
+create_answer_node(YAML_PATH,
+                   "Fim",
+                   "end",
+                   """{{#llm1.text#}}\n{{#llm2.text#}}""")
 
 create_edges(YAML_PATH, "edge1", "start", "llm1")
-create_edges(YAML_PATH, "edge2", "llm1", "end")
+create_edges(YAML_PATH, "edge2", "llm1", "llm2")
+create_edges(YAML_PATH, "edge3", "llm2", "end")
