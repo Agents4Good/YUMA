@@ -52,7 +52,7 @@ NODE_CREATOR = """
     Your goal is to receive the architecture of the system asked and fill the YAML file, using the tools, that will be import in the Dify app with the nodes required to represent the agents.
     
     THE POSSIBLE NODES TYPES ARE:
-    - LLM -> Tool: create_llm_node(id: str, title: str, x)
+    - LLM -> Tool: create_llm_node(id: str, title: str, prompt: str, memoryAvailable: bool)
     
     IMPORTANT:
     - NEVER RESPOND THE USER, ONLY USE TOOLS CALLS.
