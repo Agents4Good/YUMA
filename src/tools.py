@@ -57,6 +57,7 @@ def metadata_creator():
 
 # @tool
 def create_yaml_and_metadata(file: Path, name: str, descritption: str):
+
     """
     Cria um arquivo YAML e insere os metadados a partir de um nome e uma descrição.
     """
@@ -79,8 +80,7 @@ def create_yaml_and_metadata(file: Path, name: str, descritption: str):
 
     with open(file, "w") as outfile:
         yaml.dump(metadata, outfile, default_flow_style=False, allow_unicode=True)
-
-
+        
 # @tool
 def create_start_node(file: Path, tittle: str, id: str):
     """
@@ -96,7 +96,7 @@ def create_start_node(file: Path, tittle: str, id: str):
             "variables": []
         }
     }
-
+    
     insert_node_yaml(file, start_node)
     
 
@@ -165,9 +165,8 @@ def create_answer_node(file: Path, tittle: str, id: str, answer: str):
             "variables": []
         }
     }
-
+    
     insert_node_yaml(file, answer_node)
-
 
 # @tool
 def create_edges(file: Path, id: str, source: str, target: str):
