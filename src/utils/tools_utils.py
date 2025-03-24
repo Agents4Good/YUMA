@@ -1,7 +1,8 @@
 import yaml
 from pathlib import Path
 
-def insert_node_yaml(file: Path, node: dict):
+def insert_node_yaml(file: str, node: dict):
+    file = Path(file)
     with open(file, "r") as infile:
         data = yaml.safe_load(infile)
 
@@ -11,7 +12,8 @@ def insert_node_yaml(file: Path, node: dict):
         yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
 
-def insert_edge_yaml(file: Path, edge: dict):
+def insert_edge_yaml(file: str, edge: dict):
+    file = Path(file)
     with open(file, "r") as infile:
         data = yaml.safe_load(infile)
 

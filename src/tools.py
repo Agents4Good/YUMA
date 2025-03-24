@@ -56,7 +56,7 @@ def metadata_creator():
 
 
 # @tool
-def create_yaml_and_metadata(file: Path, name: str, descritption: str):
+def create_yaml_and_metadata(file: str, name: str, descritption: str):
 
     """
     Cria um arquivo YAML e insere os metadados a partir de um nome e uma descrição.
@@ -82,7 +82,7 @@ def create_yaml_and_metadata(file: Path, name: str, descritption: str):
         yaml.dump(metadata, outfile, default_flow_style=False, allow_unicode=True)
         
 # @tool
-def create_start_node(file: Path, tittle: str, id: str):
+def create_start_node(file: str, tittle: str, id: str):
     """
     Cria o nó inicial com um título e um id. Esta é a primeira etapa a ser executada no grafo.
     """
@@ -101,9 +101,9 @@ def create_start_node(file: Path, tittle: str, id: str):
     
 
 # @tool
-def create_llm_node(file: Path,
-                    id: str, 
+def create_llm_node(file: str,
                     tittle: str, 
+                    id: str, 
                     prompt: str,
                     temperature: float = 0.7,
                     context_variable: str = "",
@@ -150,7 +150,7 @@ def create_llm_node(file: Path,
         
 
 # @tool
-def create_answer_node(file: Path, tittle: str, id: str, answer: str):
+def create_answer_node(file: str, tittle: str, id: str, answer_variables: list[str]):
     """
     Cria um nó de resposta com um título, um id e uma resposta. Esta é a última etapa a ser executada no grafo.
     """
@@ -158,7 +158,7 @@ def create_answer_node(file: Path, tittle: str, id: str, answer: str):
         "id": id,
         "type": "custom",
         "data": {
-            "answer": answer,
+            "answer": "".join(["{{#" + f"{variable}" + "#}}\n" for variable in answer_variables]).strip(),
             "desc": "",
             "title": tittle,
             "type": "answer",
@@ -169,7 +169,7 @@ def create_answer_node(file: Path, tittle: str, id: str, answer: str):
     insert_node_yaml(file, answer_node)
 
 # @tool
-def create_edges(file: Path, id: str, source: str, target: str):
+def create_edges(file: str, id: str, source: str, target: str):
     """
     Cria uma edge entre dois nós.
     """
@@ -190,15 +190,15 @@ create_yaml_and_metadata(YAML_PATH,
 create_start_node(YAML_PATH, "Início", "start")
 
 create_llm_node(YAML_PATH,
-                "llm1",
                 "Criador de Perguntas",
+                "llm1",
                 """Seu trabalho é gerar o início de uma piada que mais tarde será encaminhada para outro agente que a completará\nO tema da piada será passado pelo usuário como entrada.\nAs piadas devem ser estruturadas em forma de pergunta, por exemplo:\n"O que é um ponto preto em cima do castelo?""",
                 1.0,
                 "sys.query")
 
 create_llm_node(YAML_PATH,
-                "llm2",
                 "Criador de respostas",
+                "llm2",
                 """Seu trabalho é receber um início de piada em forma de pergunta e respondê-la de forma engraçada e que faça sentido com o tópico abordado.""",
                 1.0,
                 "llm1.text"
@@ -207,7 +207,7 @@ create_llm_node(YAML_PATH,
 create_answer_node(YAML_PATH,
                    "Fim",
                    "end",
-                   """{{#llm1.text#}}\n{{#llm2.text#}}""")
+                   ["llm1.text", "llm2.text"])
 
 create_edges(YAML_PATH, "edge1", "start", "llm1")
 create_edges(YAML_PATH, "edge2", "llm1", "llm2")
