@@ -83,7 +83,7 @@ def create_yaml_and_metadata(name: str, descritption: str):
 @tool
 def create_start_node(title: str, id: str):
     """
-    Cria o nó inicial com um título e um id. Esta é a primeira etapa a ser executada no grafo.
+    Cria o nó inicial com um título e um id. Esta é a primeira etapa a ser executada no grafo, execute uma única vez.
     title: nome do nó
     id: Identificador baseado no nome, com todas as letras minúsculas e sem caracteres especiais
     """
