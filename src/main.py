@@ -2,6 +2,7 @@ from state import AgentState, DifyState
 from agents import requirements_engineer, architecture_agent, human_node, supervisor_agent, node_creator, edge_creator
 from tools import create_llm_node
 import uuid
+import os
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Command
@@ -44,6 +45,8 @@ def build_graph():
 
     
 def main():
+    dir_path = os.getcwd() + "/generated_files"
+    os.makedirs(dir_path, exist_ok=True)
     graph = build_graph()
     print_graph(graph)
     thread_config = {"configurable": {"thread_id": uuid.uuid4()}}

@@ -10,8 +10,6 @@ def print_graph(graph: CompiledStateGraph) -> None:
 
     dir_path = os.getcwd() + "/generated_files"
 
-    os.makedirs(dir_path, exist_ok=True)
-
     image_path = os.path.join(dir_path, "graph_image.png")
 
     with open(image_path, "wb") as f:
