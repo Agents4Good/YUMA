@@ -19,6 +19,20 @@ from langchain_core.messages import HumanMessage
 from utils.io_functions import print_graph
 
 
+def node_should_continue(state: DifyState):
+    messages = state["messages"]
+    last_message = messages[-1]
+    if last_message.tool_calls:
+        return "tool_node"
+    return edge_creator
+
+def edge_should_continue(state: DifyState):
+    messages = state["messages"]
+    last_message = messages[-1]
+    if last_message.tool_calls:
+        return "tool_node"
+    return END
+
 def build_graph():
     tools = [
         create_llm_node,
@@ -37,8 +51,11 @@ def build_graph():
     subgraph_builder.add_node("tool_node", tool_node)
 
     subgraph_builder.add_edge(START, "supervisor_agent")
-    subgraph_builder.add_edge("node_creator", "tool_node")
-    subgraph_builder.add_edge("tool_node", END)
+    subgraph_builder.add_conditional_edges("node_creator", node_should_continue, ["tool_node", "edge_creator"])
+    subgraph_builder.add_edge("tool_node", "node_creator")
+    subgraph_builder.add_conditional_edges("edge_creator", edge_should_continue, ["tool_node", END])
+    subgraph_builder.add_edge("tool_node", "edge_creator")
+    subgraph_builder.add_edge("edge_creator", END)
     subgraph = subgraph_builder.compile()
 
     builder = StateGraph(AgentState)
