@@ -52,7 +52,7 @@ ARCHITECTURE_AGENT = """
     caso contrário, defina 'route_next' como false.
     """
 
-SUPERVISOR_AGENT = """
+SUPERVISOR_AGENT ="""
     Um agente responsavel por delegar tarefas para a criação de nodes e edges do framework Dify.
     """
 
@@ -61,7 +61,7 @@ NODE_CREATOR = """
     Seu objetivo é receber a arquitetura do sistema solicitada e preencher o arquivo YAML, usando as ferramentas que serão importadas no aplicativo Dify com os nodes necessários para representar os agentes.
 
     OS TIPOS DE NÓS POSSÍVEIS SÃO:
-    - LLM -> Tool: create_llm_node(id: str, title: str, prompt: str)
+    - LLM -> Tool: create_llm_node(id: str, title: str, prompt: str, memoryAvailable: bool)
 
     IMPORTANTE:
     - NUNCA RESPONDA O USUÁRIO, USE SOMENTE CHAMADAS DE FERRAMENTAS.

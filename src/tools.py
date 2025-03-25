@@ -4,7 +4,6 @@ import os
 
 from typing import Annotated
 
-from pathlib import Path
 
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
@@ -44,6 +43,7 @@ def make_handoff_tool(*, agent_name: str):
 
     return handoff_to_agent
 
+
 @tool("sequence_diagram_generator")
 def sequence_diagram_generator(architecture_output: str):
     """
@@ -53,65 +53,64 @@ def sequence_diagram_generator(architecture_output: str):
     plantuml_output = json_to_plantuml(architecture_output)
     generate_diagram(plantuml_output)
 
+
 def metadata_creator():
     pass
 
 
 def create_yaml_and_metadata(name: str, descritption: str):
-
     """
     Cria um arquivo YAML e insere os metadados a partir de um nome e uma descrição.
+    name: nome do workflow
+    description: descrição do workflow
     """
     metadata = {
-        "app": {
-            "description": descritption,
-            "mode": "advanced-chat",
-            "name": name
-        },
+        "app": {"description": descritption, "mode": "advanced-chat", "name": name},
         "version": "0.1.5",
         "workflow": {
             "conversation_variables": [],
             "environment_variables": [],
-            "graph": {
-                "edges": [],
-                "nodes": []
-            }
-        }
+            "graph": {"edges": [], "nodes": []},
+        },
     }
 
     with open(YAML_PATH, "w") as outfile:
         yaml.dump(metadata, outfile, default_flow_style=False, allow_unicode=True)
-        
+
+
 @tool
-def create_start_node(tittle: str, id: str):
+def create_start_node(title: str, id: str):
     """
     Cria o nó inicial com um título e um id. Esta é a primeira etapa a ser executada no grafo.
+    title: nome do nó
+    id: Identificador baseado no nome, com todas as letras minúsculas e sem caracteres especiais
     """
     start_node = {
         "id": id,
         "type": "custom",
-        "data": {
-            "desc": "",
-            "title": tittle,
-            "type": "start",
-            "variables": []
-        }
+        "data": {"desc": "", "title": title, "type": "start", "variables": []},
     }
-    
+
     insert_node_yaml(YAML_PATH, start_node)
-    
+
 
 @tool
-def create_llm_node(id: str, 
-                    tittle: str, 
-                    prompt: str,
-                    temperature: float = 0.7,
-                    context_variable: str = "",
-                    ):
+def create_llm_node(
+    id: str,
+    title: str,
+    prompt: str,
+    temperature: float = 0.7,
+    context_variable: str = "",
+):
     """
     Cria um nó de LLM.
+    id: Identificador baseado no nome, com todas as letras minúsculas e sem caracteres especiais
+    title: Nome do nó
+    prompt: Prompt do usuário e do sistema
+    temperatura: Temperatura da LLM
+    context_variable: variável compartilhada ente os nós do workflow. Há dois formatos possíveis para essa variável 1. sys.query: entrada do usuário, 2. <previous_node_id>.text: saída do nó anterior. Restrição - um nó pode ter apenas uma variável.
     """
-    print('-'*80)
+    print("-" * 80)
     llm_node = {
         "id": id,
         "type": "custom",
@@ -120,40 +119,35 @@ def create_llm_node(id: str,
                 "enabled": True,
                 "variable_selector": [
                     context_variable.split(".")[0],
-                    context_variable.split(".")[1]
-                ] if context_variable else []
+                    context_variable.split(".")[1],
+                ]
+                if context_variable
+                else [],
             },
             "desc": "",
             "model": {
-                "completion_params": {
-                    "temperature": temperature
-                },
+                "completion_params": {"temperature": temperature},
                 "mode": "chat",
                 "name": "gpt-4",
-                "provider": "langgenius/openai/openai"
+                "provider": "langgenius/openai/openai",
             },
-            "prompt_template": [
-                {
-                    "role": "system",
-                    "text": "{{#context#}}\n" + prompt
-                }
-            ],
-            "title": tittle,
+            "prompt_template": [{"role": "system", "text": "{{#context#}}\n" + prompt}],
+            "title": title,
             "type": "llm",
             "variables": [],
-            "vision": {
-                "enabled": False
-            }
-        }
+            "vision": {"enabled": False},
+        },
     }
 
     insert_node_yaml(YAML_PATH, llm_node)
-        
+
 
 @tool
-def create_answer_node(tittle: str, id: str, answer: str):
+def create_answer_node(title: str, id: str, answer: str):
     """
     Cria um nó de resposta com um título, um id e uma resposta. Esta é a última etapa a ser executada no grafo.
+    title: nome do nó
+    id: Identificador baseado no nome, com todas as letras minúsculas e sem caracteres especiais
     """
     answer_node = {
         "id": id,
@@ -161,28 +155,27 @@ def create_answer_node(tittle: str, id: str, answer: str):
         "data": {
             "answer": answer,
             "desc": "",
-            "title": tittle,
+            "title": title,
             "type": "answer",
-            "variables": []
-        }
+            "variables": [],
+        },
     }
-    
+
     insert_node_yaml(YAML_PATH, answer_node)
 
+
 @tool
-def create_edges(id: str, source: str, target: str):
+def create_edges(id: str, source_id: str, target_id: str):
     """
     Cria uma edge entre dois nós.
+    id: Identificador baseado no nome, com todas as letras minúsculas e sem caracteres especiais
+    source: id do nó de origem da aresta
+    target: id do nó de destino da aresta
     """
-    edge = {
-        "id": id,
-        "source": source,
-        "target": target,
-        "type": "custom"
-    }
+    edge = {"id": id, "source": source_id, "target": target_id, "type": "custom"}
 
     insert_edge_yaml(YAML_PATH, edge)
-    
+
 
 # create_yaml_and_metadata(YAML_PATH,
 #                          "Contador de piadas",
