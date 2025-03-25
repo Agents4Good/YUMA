@@ -65,9 +65,6 @@ NODE_CREATOR = """
     create_llm_node(id: str, title: str, prompt: str)
     create_answer_node(title: str, id: str, answer: str)
     create_start_node(title: str, id: str)
-
-    IMPORTANTE:
-    - NUNCA RESPONDA O USUÁRIO, USE SOMENTE CHAMADAS DE FERRAMENTAS.
 """
 
 EDGE_CREATOR = EDGE_CREATOR = """
@@ -76,7 +73,4 @@ EDGE_CREATOR = EDGE_CREATOR = """
 
     Para criar uma edge use:
     - Tool: create_edges(id: str, source_id: str, target_id: str)
-
-    IMPORTANTE:
-    - NUNCA RESPONDA O USUÁRIO, USE SOMENTE CHAMADAS DE FERRAMENTAS.
 """
