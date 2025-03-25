@@ -124,7 +124,7 @@ def supervisor_agent(
         "nodes_code": "",
         "edges_code": "",
     }
-    return Command(update=novoState, goto=["node_creator", "edge_creator"])
+    return Command(update=novoState, goto=["node_creator"])
 
 
 # Agente responsável por criar os nodes do sistema
