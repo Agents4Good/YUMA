@@ -11,8 +11,10 @@ from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 from utils.plantuml_parser import generate_diagram, json_to_plantuml
 from utils.tools_utils import insert_node_yaml, insert_edge_yaml
+import threading
 
 YAML_PATH = os.path.join("generated_files", "dify.yaml")
+semaphore = threading.Semaphore(1)
 
 
 def make_handoff_tool(*, agent_name: str):
@@ -90,8 +92,11 @@ def create_start_node(title: str, id: str):
         "type": "custom",
         "data": {"desc": "", "title": title, "type": "start", "variables": []},
     }
-
+    print("START NODE")
+    semaphore.acquire()
     insert_node_yaml(YAML_PATH, start_node)
+    semaphore.release()
+
 
 
 @tool
@@ -138,8 +143,10 @@ def create_llm_node(
             "vision": {"enabled": False},
         },
     }
-
+    print("LLM NODE")
+    semaphore.acquire()
     insert_node_yaml(YAML_PATH, llm_node)
+    semaphore.release()
 
 
 @tool
@@ -160,8 +167,10 @@ def create_answer_node(title: str, id: str, answer: str):
             "variables": [],
         },
     }
-
+    print("ANSWER NODE")
+    semaphore.acquire()
     insert_node_yaml(YAML_PATH, answer_node)
+    semaphore.release()
 
 
 @tool
