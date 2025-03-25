@@ -19,43 +19,30 @@ from langchain_core.messages import HumanMessage
 from utils.io_functions import print_graph
 
 
-def node_should_continue(state: DifyState):
-    messages = state["messages"]
-    last_message = messages[-1]
-    if last_message.tool_calls:
-        return "tool_node"
-    return edge_creator
-
-def edge_should_continue(state: DifyState):
-    messages = state["messages"]
-    last_message = messages[-1]
-    if last_message.tool_calls:
-        return "tool_node"
-    return END
-
 def build_graph():
-    tools = [
+    tools_node = [
         create_llm_node,
-        create_edges,
         create_answer_node,
         create_start_node,
     ]
+    tools_edge = [create_edges]
 
-    tool_node = ToolNode(tools)
+    tool_node_creator = ToolNode(tools_node)
+    tool_edge_creator = ToolNode(tools_edge)
 
     subgraph_builder = StateGraph(DifyState)
 
     subgraph_builder.add_node("supervisor_agent", supervisor_agent)
     subgraph_builder.add_node("node_creator", node_creator)
     subgraph_builder.add_node("edge_creator", edge_creator)
-    subgraph_builder.add_node("tool_node", tool_node)
+    subgraph_builder.add_node("tool_node_creator", tool_node_creator)
+    subgraph_builder.add_node("tool_edge_creator", tool_edge_creator)
 
     subgraph_builder.add_edge(START, "supervisor_agent")
-    subgraph_builder.add_conditional_edges("node_creator", node_should_continue, ["tool_node", "edge_creator"])
-    subgraph_builder.add_edge("tool_node", "node_creator")
-    subgraph_builder.add_conditional_edges("edge_creator", edge_should_continue, ["tool_node", END])
-    subgraph_builder.add_edge("tool_node", "edge_creator")
-    subgraph_builder.add_edge("edge_creator", END)
+    subgraph_builder.add_edge("node_creator", "tool_node_creator")
+    subgraph_builder.add_edge("tool_node_creator", "edge_creator")
+    subgraph_builder.add_edge("edge_creator", "tool_edge_creator")
+    subgraph_builder.add_edge("tool_edge_creator", END)
     subgraph = subgraph_builder.compile()
 
     builder = StateGraph(AgentState)
