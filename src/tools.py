@@ -104,7 +104,6 @@ def create_start_node(tittle: str, id: str):
 @tool
 def create_llm_node(id: str, 
                     tittle: str, 
-                    id: str, 
                     prompt: str,
                     temperature: float = 0.7,
                     context_variable: str = "",
