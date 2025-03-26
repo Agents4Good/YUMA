@@ -8,9 +8,7 @@ def print_graph(graph: CompiledStateGraph) -> None:
 
     graph_image = graph.get_graph().draw_mermaid_png()
 
-    dir_path = os.getcwd() + "/generated_files"
-
-    image_path = os.path.join(dir_path, "graph_image.png")
+    image_path = os.path.join(os.getcwd(), "graph_image.png")
 
     with open(image_path, "wb") as f:
         f.write(graph_image)

@@ -5,7 +5,7 @@ class Agent(BaseModel):
     """
     Represents an agent in the multi-agent system.
     """
-    agent: str = Field(description="The name of the agent using underlines")
+    agent: str = Field(description="The name of the agent")
     description: str = Field(description="The description of the agent")
 
 class Interaction(BaseModel):
