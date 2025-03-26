@@ -104,6 +104,7 @@ def create_start_node(tittle: str, id: str):
 @tool
 def create_llm_node(id: str, 
                     tittle: str, 
+                    id: str, 
                     prompt: str,
                     temperature: float = 0.7,
                     context_variable: str = "",
@@ -159,7 +160,7 @@ def create_answer_node(tittle: str, id: str, answer: str):
         "id": id,
         "type": "custom",
         "data": {
-            "answer": answer,
+            "answer": "".join(["{{#" + f"{variable}" + "#}}\n" for variable in answer_variables]).strip(),
             "desc": "",
             "title": tittle,
             "type": "answer",
@@ -183,7 +184,6 @@ def create_edges(id: str, source: str, target: str):
 
     insert_edge_yaml(YAML_PATH, edge)
     
-
 # create_yaml_and_metadata(YAML_PATH,
 #                          "Contador de piadas",
 #                          "Um contador de piadas que conta piadas engraçadas.")
