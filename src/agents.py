@@ -25,15 +25,15 @@ architecture_model = model.with_structured_output(ArchitectureOutput)
 node_creator_dify_model = model.bind_tools([create_llm_node])
 
 # Agente reponsável por analisar os requisitos do sistema e conversar com o usuário
-def assistent_agent(state: AgentState) -> Command[Literal["human_node", "architecture_agent"]]:
-    system_prompt = agents_prompts.ASSISTENT_AGENT
-    assistent_model = create_react_agent(
+def requirements_engineer(state: AgentState) -> Command[Literal["human_node", "architecture_agent"]]:
+    system_prompt = agents_prompts.REQUIREMENTS_ENGINEER
+    requirements_engineer_model = create_react_agent(
         model,
         tools=architecture_tool,
         prompt=system_prompt
     )
-    response = assistent_model.invoke(state)
-    response['active_agent'] = 'assistent_agent'
+    response = requirements_engineer_model.invoke(state)
+    response['active_agent'] = 'requirements_engineer'
     return Command(
         update=response, goto="human_node")
 
@@ -72,7 +72,7 @@ def architecture_agent(state: AgentState) -> Command[Literal["human_node", "dify
 
 
 # Nó que representa a interação do usuário com o sistema
-def human_node(state: AgentState) -> Command[Literal['assistent_agent','architecture_agent']]:
+def human_node(state: AgentState) -> Command[Literal['requirements_engineer','architecture_agent']]:
     """A node for collecting user input."""
     user_input = interrupt("Avalie a resposta do agente: ")
     active_agent = state["active_agent"]
@@ -96,11 +96,11 @@ def human_node(state: AgentState) -> Command[Literal['assistent_agent','architec
 
 # Tool responsável por delegar a criação dos nodes e egdes do sistema
 def supervisor_agent(state: AgentState) -> Command[list['node_creator','edge_creator']]:
-
-    create_yaml_and_metadata("Sistema do usuario", 'Sistema do usuario')
+    # Forma correta de chamada da ferramenta(só funcionou assim)
+    create_yaml_and_metadata.invoke({"name": "Sistema do usuario", "descritption": " "})
     
     novoState = DifyState = {
-        "yaml_path": "../output/dify/dify.yml",
+        "yaml_path": "generated_files/dify.yaml",
         "architecture_output": state["architecture_output"],
         "nodes_code": "",
         "edges_code": ""
