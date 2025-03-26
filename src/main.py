@@ -1,7 +1,8 @@
 from state import AgentState, DifyState
-from agents import assistent_agent, architecture_agent, human_node, supervisor_agent, node_creator, edge_creator
+from agents import requirements_engineer, architecture_agent, human_node, supervisor_agent, node_creator, edge_creator
 from tools import create_llm_node
 import uuid
+import os
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Command
@@ -31,19 +32,21 @@ def build_graph():
     builder = StateGraph(AgentState)
     
     #Nodes
-    builder.add_node("assistent_agent", assistent_agent)
+    builder.add_node("requirements_engineer", requirements_engineer)
     builder.add_node("human_node", human_node)
     builder.add_node("architecture_agent", architecture_agent)
     builder.add_node("dify", subgraph)
 
     #Edges
-    builder.add_edge(START, "assistent_agent")
+    builder.add_edge(START, "requirements_engineer")
 
     checkpointer = MemorySaver()
     return builder.compile(checkpointer=checkpointer)
 
     
 def main():
+    dir_path = os.getcwd() + "/generated_files"
+    os.makedirs(dir_path, exist_ok=True)
     graph = build_graph()
     print_graph(graph)
     thread_config = {"configurable": {"thread_id": uuid.uuid4()}}

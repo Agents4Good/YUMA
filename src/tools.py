@@ -1,5 +1,7 @@
 import yaml
 
+import os
+
 from typing import Annotated
 
 from pathlib import Path
@@ -11,7 +13,7 @@ from langgraph.types import Command
 from utils.plantuml_parser import generate_diagram, json_to_plantuml
 from utils.tools_utils import insert_node_yaml, insert_edge_yaml
 
-YAML_PATH = Path("dify.yaml")
+YAML_PATH = os.path.join("generated_files", "dify.yaml")
 
 
 def make_handoff_tool(*, agent_name: str):
@@ -49,14 +51,13 @@ def sequence_diagram_generator(architecture_output: str):
     Retorna o caminho do arquivo gerado.
     """
     plantuml_output = json_to_plantuml(architecture_output)
-    diagram_path = generate_diagram(plantuml_output)
+    generate_diagram(plantuml_output)
 
 def metadata_creator():
     pass
 
 
-# @tool
-def create_yaml_and_metadata(file: str, name: str, descritption: str):
+def create_yaml_and_metadata(name: str, descritption: str):
 
     """
     Cria um arquivo YAML e insere os metadados a partir de um nome e uma descrição.
@@ -78,11 +79,11 @@ def create_yaml_and_metadata(file: str, name: str, descritption: str):
         }
     }
 
-    with open(file, "w") as outfile:
+    with open(YAML_PATH, "w") as outfile:
         yaml.dump(metadata, outfile, default_flow_style=False, allow_unicode=True)
         
-# @tool
-def create_start_node(file: str, tittle: str, id: str):
+@tool
+def create_start_node(tittle: str, id: str):
     """
     Cria o nó inicial com um título e um id. Esta é a primeira etapa a ser executada no grafo.
     """
@@ -97,11 +98,11 @@ def create_start_node(file: str, tittle: str, id: str):
         }
     }
     
-    insert_node_yaml(file, start_node)
+    insert_node_yaml(YAML_PATH, start_node)
     
 
-# @tool
-def create_llm_node(file: str,
+@tool
+def create_llm_node(id: str, 
                     tittle: str, 
                     id: str, 
                     prompt: str,
@@ -111,6 +112,7 @@ def create_llm_node(file: str,
     """
     Cria um nó de LLM.
     """
+    print('-'*80)
     llm_node = {
         "id": id,
         "type": "custom",
@@ -146,11 +148,11 @@ def create_llm_node(file: str,
         }
     }
 
-    insert_node_yaml(file, llm_node)
+    insert_node_yaml(YAML_PATH, llm_node)
         
 
-# @tool
-def create_answer_node(file: str, tittle: str, id: str, answer_variables: list[str]):
+@tool
+def create_answer_node(tittle: str, id: str, answer: str):
     """
     Cria um nó de resposta com um título, um id e uma resposta. Esta é a última etapa a ser executada no grafo.
     """
@@ -166,10 +168,10 @@ def create_answer_node(file: str, tittle: str, id: str, answer_variables: list[s
         }
     }
     
-    insert_node_yaml(file, answer_node)
+    insert_node_yaml(YAML_PATH, answer_node)
 
-# @tool
-def create_edges(file: str, id: str, source: str, target: str):
+@tool
+def create_edges(id: str, source: str, target: str):
     """
     Cria uma edge entre dois nós.
     """
@@ -180,35 +182,34 @@ def create_edges(file: str, id: str, source: str, target: str):
         "type": "custom"
     }
 
-    insert_edge_yaml(file, edge)
+    insert_edge_yaml(YAML_PATH, edge)
     
+# create_yaml_and_metadata(YAML_PATH,
+#                          "Contador de piadas",
+#                          "Um contador de piadas que conta piadas engraçadas.")
 
-create_yaml_and_metadata(YAML_PATH,
-                         "Contador de piadas",
-                         "Um contador de piadas que conta piadas engraçadas.")
+# create_start_node(YAML_PATH, "Início", "start")
 
-create_start_node(YAML_PATH, "Início", "start")
+# create_llm_node(YAML_PATH,
+#                 "llm1",
+#                 "Criador de Perguntas",
+#                 """Seu trabalho é gerar o início de uma piada que mais tarde será encaminhada para outro agente que a completará\nO tema da piada será passado pelo usuário como entrada.\nAs piadas devem ser estruturadas em forma de pergunta, por exemplo:\n"O que é um ponto preto em cima do castelo?""",
+#                 1.0,
+#                 "sys.query")
 
-create_llm_node(YAML_PATH,
-                "Criador de Perguntas",
-                "llm1",
-                """Seu trabalho é gerar o início de uma piada que mais tarde será encaminhada para outro agente que a completará\nO tema da piada será passado pelo usuário como entrada.\nAs piadas devem ser estruturadas em forma de pergunta, por exemplo:\n"O que é um ponto preto em cima do castelo?""",
-                1.0,
-                "sys.query")
+# create_llm_node(YAML_PATH,
+#                 "llm2",
+#                 "Criador de respostas",
+#                 """Seu trabalho é receber um início de piada em forma de pergunta e respondê-la de forma engraçada e que faça sentido com o tópico abordado.""",
+#                 1.0,
+#                 "llm1.text"
+#                 )
 
-create_llm_node(YAML_PATH,
-                "Criador de respostas",
-                "llm2",
-                """Seu trabalho é receber um início de piada em forma de pergunta e respondê-la de forma engraçada e que faça sentido com o tópico abordado.""",
-                1.0,
-                "llm1.text"
-                )
+# create_answer_node(YAML_PATH,
+#                    "Fim",
+#                    "end",
+#                    """{{#llm1.text#}}\n{{#llm2.text#}}""")
 
-create_answer_node(YAML_PATH,
-                   "Fim",
-                   "end",
-                   ["llm1.text", "llm2.text"])
-
-create_edges(YAML_PATH, "edge1", "start", "llm1")
-create_edges(YAML_PATH, "edge2", "llm1", "llm2")
-create_edges(YAML_PATH, "edge3", "llm2", "end")
+# create_edges(YAML_PATH, "edge1", "start", "llm1")
+# create_edges(YAML_PATH, "edge2", "llm1", "llm2")
+# create_edges(YAML_PATH, "edge3", "llm2", "end")
