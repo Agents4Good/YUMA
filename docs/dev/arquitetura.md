@@ -50,6 +50,5 @@ graph TD
     A[Requirements Engineer] --> B[Architecture Agent]
     B --> C[Supervisor Agent]
     C --> D[Node Creator]
-    C --> E[Edge Creator]
-    D --> F[Framework Dify]
-    E --> F
+    D --> E[Edge Creator]
+    E --> F[Framework Dify]
