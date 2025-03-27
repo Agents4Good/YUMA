@@ -57,8 +57,6 @@ def sequence_diagram_generator(architecture_output: str):
 def metadata_creator():
     pass
 
-
-@tool
 def create_yaml_and_metadata(name: str, descritption: str):
     """
     Cria um arquivo YAML e insere os metadados a partir de um nome e uma descrição.
@@ -148,11 +146,13 @@ def create_llm_node(
 
 
 @tool
-def create_answer_node(tittle: str, id: str, answer_variables: list[str]):
+def create_answer_node(title: str, id: str, answer_variables: list[str]):
     """
     Cria um nó de resposta com um título, um id e uma resposta. Esta é a última etapa a ser executada no grafo.
     title: nome do nó
     id: Identificador baseado no nome, com todas as letras minúsculas e sem caracteres especiais
+        answer_variables: lista de strings com o nome das variáveis de resposta (por exemplo, ["llm1.text", "llm2.text"])
+
     """
     answer_node = {
         "id": id,
