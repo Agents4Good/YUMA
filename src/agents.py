@@ -1,5 +1,13 @@
 from state import AgentState, DifyState
-from tools import make_handoff_tool, sequence_diagram_generator, create_yaml_and_metadata, create_llm_node
+from tools import (
+    make_handoff_tool,
+    sequence_diagram_generator,
+    create_yaml_and_metadata,
+    create_llm_node,
+    create_edges,
+    create_answer_node,
+    create_start_node,
+)
 from outputs import ArchitectureOutput
 
 from langgraph.prebuilt import create_react_agent
@@ -22,97 +30,104 @@ end_tool = [make_handoff_tool(agent_name="__end__")]
 model = ChatOpenAI(model="gpt-4o-mini")
 architecture_model = model.with_structured_output(ArchitectureOutput)
 
-node_creator_dify_model = model.bind_tools([create_llm_node])
+node_creator_dify_model = model.bind_tools(
+    [create_llm_node, create_answer_node, create_start_node]
+)
+edge_creator_dify_model = model.bind_tools([create_edges])
+
 
 # Agente reponsável por analisar os requisitos do sistema e conversar com o usuário
-def requirements_engineer(state: AgentState) -> Command[Literal["human_node", "architecture_agent"]]:
+def requirements_engineer(
+    state: AgentState,
+) -> Command[Literal["human_node", "architecture_agent"]]:
     system_prompt = agents_prompts.REQUIREMENTS_ENGINEER
     requirements_engineer_model = create_react_agent(
-        model,
-        tools=architecture_tool,
-        prompt=system_prompt
+        model, tools=architecture_tool, prompt=system_prompt
     )
     response = requirements_engineer_model.invoke(state)
-    response['active_agent'] = 'requirements_engineer'
-    return Command(
-        update=response, goto="human_node")
+    response["active_agent"] = "requirements_engineer"
+    return Command(update=response, goto="human_node")
 
 
 # Agente responsável por criar a arquitetura do sistema com base nos requisitos
 def architecture_agent(state: AgentState) -> Command[Literal["human_node", "dify"]]:
-    system_prompt =  agents_prompts.ARCHITECTURE_AGENT
+    system_prompt = agents_prompts.ARCHITECTURE_AGENT
     buffer = state.get("buffer", [])
     if not buffer:
         filtered_messages = [
-            msg for msg in state["messages"]
+            msg
+            for msg in state["messages"]
             if isinstance(msg, AIMessage) and msg.content.strip() != ""
         ]
 
-        last_ai_message = next((msg for msg in reversed(filtered_messages) if isinstance(msg, AIMessage)), None)
-        
+        last_ai_message = next(
+            (msg for msg in reversed(filtered_messages) if isinstance(msg, AIMessage)),
+            None,
+        )
+
         buffer = [last_ai_message] + [SystemMessage(content=system_prompt)]
-    
+
     response = architecture_model.invoke(buffer)
-    goto = 'human_node'
+    goto = "human_node"
     if response.route_next:
-        goto = 'dify'
-    
+        goto = "dify"
+
     sequence_diagram_generator.invoke(response.model_dump_json())
-    
+
     buffer.append(AIMessage(content=response.model_dump_json()))
 
     return Command(
         update={
-            "messages" : state["messages"],
+            "messages": state["messages"],
             "active_agent": "architecture_agent",
             "architecture_output": response,
-            "buffer" : buffer
-        }, 
-        goto=goto)
+            "buffer": buffer,
+        },
+        goto=goto,
+    )
 
 
 # Nó que representa a interação do usuário com o sistema
-def human_node(state: AgentState) -> Command[Literal['requirements_engineer','architecture_agent']]:
+def human_node(
+    state: AgentState,
+) -> Command[Literal["requirements_engineer", "architecture_agent"]]:
     """A node for collecting user input."""
     user_input = interrupt("Avalie a resposta do agente: ")
     active_agent = state["active_agent"]
-    
+
     message = HumanMessage(content=user_input)
-    
+
     buffer = state.get("buffer", [])
     if buffer:
         buffer.append(message)
-        
+
     return Command(
         update={
-            "messages" : state["messages"] + [message],
-            "buffer" : buffer,
-            "active_agent" : active_agent,
-            "architecture_output" : state.get("architecture_output", None)
+            "messages": state["messages"] + [message],
+            "buffer": buffer,
+            "active_agent": active_agent,
+            "architecture_output": state.get("architecture_output", None),
         },
-        goto=active_agent
+        goto=active_agent,
     )
 
 
 # Tool responsável por delegar a criação dos nodes e egdes do sistema
-def supervisor_agent(state: AgentState) -> Command[list['node_creator','edge_creator']]:
-    # Forma correta de chamada da ferramenta(só funcionou assim)
-    create_yaml_and_metadata.invoke({"name": "Sistema do usuario", "descritption": " "})
-    
+def supervisor_agent(
+    state: AgentState,
+) -> Command[list["node_creator"]]:
+    create_yaml_and_metadata("Sistema do usuario", " ")
     novoState = DifyState = {
         "yaml_path": "generated_files/dify.yaml",
         "architecture_output": state["architecture_output"],
         "nodes_code": "",
-        "edges_code": ""
+        "edges_code": "",
     }
-    return Command(
-        update=novoState,
-        goto=["node_creator", "edge_creator"]
-    )
+    return Command(update=novoState, goto=["node_creator"])
 
 
 # Agente responsável por criar os nodes do sistema
-def node_creator(state: DifyState) -> Command[Literal['__end__']]:
+def node_creator(state: DifyState) -> Command[Literal["edge_creator"]]:
     system_prompt = agents_prompts.NODE_CREATOR
 
     messages = state["messages"] + [system_prompt]
@@ -121,19 +136,20 @@ def node_creator(state: DifyState) -> Command[Literal['__end__']]:
     # tool call para adicionar os nós no YAML
     print("node_creator executado")
     return Command(
-        update={
-            "messages" : [response]
-        },
+        update={"messages": [response]},
     )
 
 
 # Agente responsável por criar as edges do sistema
-def edge_creator(state: DifyState) -> Command[Literal['__end__']]:
+def edge_creator(state: DifyState) -> Command[Literal["__end__"]]:
     system_prompt = agents_prompts.EDGE_CREATOR
 
-    response = "" # llm_call
+    messages = state["messages"] + [system_prompt]
+    response = edge_creator_dify_model.invoke(messages)
+    print(response)
 
     # tool call para adicionar os arcos no YAML
     print("edge_creator executado")
     return Command(
+        update={"messages": [response]},
     )
