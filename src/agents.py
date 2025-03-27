@@ -27,11 +27,11 @@ load_dotenv(override=True)
 architecture_tool = [make_handoff_tool(agent_name="architecture_agent")]
 end_tool = [make_handoff_tool(agent_name="__end__")]
 
-model = ChatOpenAI(model="gpt-4o-mini")
+model = ChatOpenAI(model="gpt-4o")
 architecture_model = model.with_structured_output(ArchitectureOutput)
 
 node_creator_dify_model = model.bind_tools(
-    [create_llm_node, create_answer_node, create_start_node]
+    [create_start_node, create_llm_node, create_answer_node]
 )
 edge_creator_dify_model = model.bind_tools([create_edges])
 
@@ -131,12 +131,13 @@ def node_creator(state: DifyState) -> Command[Literal["edge_creator"]]:
     system_prompt = agents_prompts.NODE_CREATOR
 
     messages = state["messages"] + [system_prompt]
+    print(messages)
     response = node_creator_dify_model.invoke(messages)
     print(response)
     # tool call para adicionar os nós no YAML
     print("node_creator executado")
     return Command(
-        update={"messages": [response]},
+        update={"messages": [response]}
     )
 
 
