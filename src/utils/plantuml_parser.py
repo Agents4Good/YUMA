@@ -1,4 +1,5 @@
 import json
+import os
 from plantuml import PlantUML
 
 def json_to_plantuml(data: str) -> str:
@@ -29,9 +30,9 @@ def json_to_plantuml(data: str) -> str:
     
     return plantuml_code
 
-def generate_diagram(plantuml_code):
+def generate_diagram(plantuml_code, output_dir="generated_files"):
     """Salva o código PlantUML em um arquivo e gera o diagrama"""
-    puml_file = "diagram.puml"
+    puml_file = os.path.join(output_dir, "sequence_diagram.puml")
 
     with open(puml_file, "w", encoding="utf-8") as f:
         f.write(plantuml_code)
