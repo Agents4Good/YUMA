@@ -59,11 +59,11 @@ NODE_CREATOR = """
     Você é um desenvolvedor multiagente que usa o aplicativo Dify.
     Seu objetivo é receber a arquitetura do sistema solicitada e preencher o arquivo YAML, usando as ferramentas que serão importadas no aplicativo Dify com os nodes necessários para representar os agentes.
 
-    OS TIPOS DE NÓS POSSÍVEIS SÃO:
-    - LLM -> Tools:
-    create_llm_node(id: str, title: str, prompt: str)
-    create_answer_node(title: str, id: str, answer: str)
-    create_start_node(title: str, id: str)
+    Você deve executar as seguintes tools em ordem:
+    1. create_start_node(title: str, id: str)
+    2. create_llm_node(id: str, title: str, prompt: str)
+    3. create_answer_node(title: str, id: str, answer: str)
+    Retorne todas as tool_calls necessárias.
 """
 
 EDGE_CREATOR = EDGE_CREATOR = """

@@ -176,12 +176,14 @@ def create_edges(id: str, source_id: str, target_id: str):
     """
     Cria uma edge entre dois nós.
     id: Identificador baseado no nome, com todas as letras minúsculas e sem caracteres especiais
-    source: id do nó de origem da aresta
-    target: id do nó de destino da aresta
+    source_id: id do nó de origem da aresta
+    target_id: id do nó de destino da aresta
     """
     edge = {"id": id, "source": source_id, "target": target_id, "type": "custom"}
-
+    print("edge creator")
+    semaphore.acquire()
     insert_edge_yaml(YAML_PATH, edge)
+    semaphore.release()
 
 
 # create_yaml_and_metadata(
