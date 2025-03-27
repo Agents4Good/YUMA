@@ -117,7 +117,6 @@ def supervisor_agent(
     state: AgentState,
 ) -> Command[list["node_creator"]]:
     create_yaml_and_metadata("Sistema do usuario", " ")
-
     novoState = DifyState = {
         "yaml_path": "generated_files/dify.yaml",
         "architecture_output": state["architecture_output"],

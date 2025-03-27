@@ -1,5 +1,4 @@
 import yaml
-
 import os
 
 from typing import Annotated
@@ -15,7 +14,6 @@ import threading
 
 YAML_PATH = os.path.join("generated_files", "dify.yaml")
 semaphore = threading.Semaphore(1)
-
 
 def make_handoff_tool(*, agent_name: str):
     """Create a tool that can return handoff via a Command"""
@@ -60,6 +58,7 @@ def metadata_creator():
     pass
 
 
+@tool
 def create_yaml_and_metadata(name: str, descritption: str):
     """
     Cria um arquivo YAML e insere os metadados a partir de um nome e uma descrição.
@@ -115,7 +114,6 @@ def create_llm_node(
     temperatura: Temperatura da LLM
     context_variable: variável compartilhada ente os nós do workflow. Há dois formatos possíveis para essa variável 1. sys.query: entrada do usuário, 2. <previous_node_id>.text: saída do nó anterior. Restrição - um nó pode ter apenas uma variável.
     """
-    print("-" * 80)
     llm_node = {
         "id": id,
         "type": "custom",
@@ -136,7 +134,7 @@ def create_llm_node(
                 "name": "gpt-4",
                 "provider": "langgenius/openai/openai",
             },
-            "prompt_template": [{"role": "system", "text": "{{#context#}}\n" + prompt}],
+            "prompt_template": [{"role": "system", "text": prompt}],
             "title": title,
             "type": "llm",
             "variables": [],
@@ -150,7 +148,7 @@ def create_llm_node(
 
 
 @tool
-def create_answer_node(title: str, id: str, answer: str):
+def create_answer_node(tittle: str, id: str, answer_variables: list[str]):
     """
     Cria um nó de resposta com um título, um id e uma resposta. Esta é a última etapa a ser executada no grafo.
     title: nome do nó
@@ -160,7 +158,7 @@ def create_answer_node(title: str, id: str, answer: str):
         "id": id,
         "type": "custom",
         "data": {
-            "answer": answer,
+            "answer": "".join(["{{#" + f"{variable}" + "#}}\n" for variable in answer_variables]).strip(),
             "desc": "",
             "title": title,
             "type": "answer",
@@ -186,32 +184,36 @@ def create_edges(id: str, source_id: str, target_id: str):
     insert_edge_yaml(YAML_PATH, edge)
 
 
-# create_yaml_and_metadata(YAML_PATH,
+# create_yaml_and_metadata(
 #                          "Contador de piadas",
 #                          "Um contador de piadas que conta piadas engraçadas.")
 
-# create_start_node(YAML_PATH, "Início", "start")
+# create_start_node( "Início", "start")
 
-# create_llm_node(YAML_PATH,
+# create_llm_node(
 #                 "llm1",
 #                 "Criador de Perguntas",
-#                 """Seu trabalho é gerar o início de uma piada que mais tarde será encaminhada para outro agente que a completará\nO tema da piada será passado pelo usuário como entrada.\nAs piadas devem ser estruturadas em forma de pergunta, por exemplo:\n"O que é um ponto preto em cima do castelo?""",
+#                 """Seu trabalho é gerar o início de uma piada que mais tarde será encaminhada para outro agente que a completará.
+# O tema da piada é: "{{#context#}}"
+# As piadas devem ser estruturadas em forma de pergunta, por exemplo:
+# "O que é um ponto preto em cima do castelo?""",
 #                 1.0,
 #                 "sys.query")
 
-# create_llm_node(YAML_PATH,
+# create_llm_node(
 #                 "llm2",
 #                 "Criador de respostas",
-#                 """Seu trabalho é receber um início de piada em forma de pergunta e respondê-la de forma engraçada e que faça sentido com o tópico abordado.""",
+#                 """Seu trabalho é responder a pergunta: "{{#context#}}"  em forma de piada, de maneira engraçada e que faça sentido com o tópico abordado.
+# Retorne apenas a resposta da pergunta, nada mais.""",
 #                 1.0,
 #                 "llm1.text"
 #                 )
 
-# create_answer_node(YAML_PATH,
+# create_answer_node(
 #                    "Fim",
 #                    "end",
 #                    """{{#llm1.text#}}\n{{#llm2.text#}}""")
 
-# create_edges(YAML_PATH, "edge1", "start", "llm1")
-# create_edges(YAML_PATH, "edge2", "llm1", "llm2")
-# create_edges(YAML_PATH, "edge3", "llm2", "end")
+# create_edges( "edge1", "start", "llm1")
+# create_edges( "edge2", "llm1", "llm2")
+# create_edges( "edge3", "llm2", "end")

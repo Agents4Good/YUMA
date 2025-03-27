@@ -9,6 +9,7 @@ from agents import (
 )
 from tools import create_llm_node, create_edges, create_answer_node, create_start_node
 import uuid
+import os
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Command
@@ -61,6 +62,8 @@ def build_graph():
 
 
 def main():
+    dir_path = os.getcwd() + "/generated_files"
+    os.makedirs(dir_path, exist_ok=True)
     graph = build_graph()
     print_graph(graph)
     thread_config = {"configurable": {"thread_id": uuid.uuid4()}}
