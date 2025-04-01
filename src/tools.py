@@ -1,7 +1,7 @@
 import yaml
 import os
 
-from typing import Annotated, List, Literal
+from typing import Annotated, Literal
 
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
@@ -153,7 +153,7 @@ def create_llm_node(
 
 
 @tool
-def create_answer_node(title: str, node_id: str, answer_variables: List[str]):
+def create_answer_node(title: str, node_id: str, answer_variables: list[str]):
     """
     Cria o nó final do workflow responsável por exibir os outputs.
 
@@ -162,7 +162,7 @@ def create_answer_node(title: str, node_id: str, answer_variables: List[str]):
     Parâmetros:
         - title (str): Nome do nó.
         - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
-        - answer_variables (List[str]): Lista de variáveis a serem exibidas para o usuário em ordem de disposição (exemplo: ["llm1.text", "llm2.text"]).
+        - answer_variables (list[str]): Lista de variáveis a serem exibidas para o usuário em ordem de disposição (exemplo: ["llm1.text", "llm2.text"]).
     """
     answer_node = {
         "id": node_id,
