@@ -1,7 +1,7 @@
 import yaml
 import os
 
-from typing import Annotated
+from typing import Annotated, List, Literal
 
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
@@ -57,11 +57,11 @@ def sequence_diagram_generator(architecture_output: str):
 
 def create_yaml_and_metadata(name: str, descritption: str):
     """
-    Cria um arquivo YAML e insere os metadados do workflow.
+    Cria um arquivo YAML contendo os metadados do workflow.
 
     Parâmetros:
-    - name: O nome do workflow
-    - description: A descrição do workflow
+        - name (str): Nome do workflow.
+        - description (str): Descrição do workflow.
     """
     metadata = {
         "app": {"description": descritption, "mode": "advanced-chat", "name": name},
@@ -72,66 +72,56 @@ def create_yaml_and_metadata(name: str, descritption: str):
             "graph": {"edges": [], "nodes": []},
         },
     }
-
+    
+    semaphore.acquire()
     with open(YAML_PATH, "w") as outfile:
         yaml.dump(metadata, outfile, default_flow_style=False, allow_unicode=True)
+    semaphore.release()
 
 
 @tool
-def create_start_node(title: str, id: str):
+def create_start_node(title: str, node_id: str):
     """
     Cria o nó inicial do workflow responsável por capturar as entradas do usuário.
 
-    Esta é a etapa a ser executada na criação do workflow.
+    Esta é a etapa inicial do workflow.
 
     Parâmetros:
-    - title: O nome do nó
-    - id: O identificador baseado no nome, com todas as letras minúsculas e sem caracteres especiais
+        - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
     """
     start_node = {
-        "id": id,
+        "id": node_id,
         "type": "custom",
         "data": {"desc": "", "title": title, "type": "start", "variables": []},
     }
     
     print("========== Start Node ==========")
-    semaphore.acquire()
     insert_node_yaml(YAML_PATH, start_node)
-    semaphore.release()
 
 
 @tool
 def create_llm_node(
     title: str,
-    id: str,
+    node_id: str,
     role: str,
-    context_variable: str,
+    context_variable: Literal["sys.query", "<previous_node_id>.text"],
     task: str,
     temperature: float,
 ):
     """
-    Cria um nó de agente (LLM).
-
-    O workflow pode possuir mais de um nó de agente (multiagente).
+    Cria um nó de agente (LLM) para um workflow multiagente.
     
     Parâmetros:
-    > title: O nome do nó
-    > id: O identificador baseado no nome, com todas as letras minúsculas e sem caracteres especiais 
-    > role: O papel do agente
-    -- Exemplo de role: Você é um especialista em contar piadas
-    > context_variable: A variável compartilhada ente dois nós que será utilizada como contexto na task.
-    -- Há dois formatos possíveis para essa variável:
-       1. sys.query: a saída do nó inicial do workflow (possui a entrada do usuário)
-       2. <previous_node_id>.text: a saída do nó anterior (por exemplo: llm1.text)
-    > task: A função realizada pelo agente
-    -- Para os agentes conversarem entre si, é necessário fornecer o contexto na task. Para isso, utilize "{{#context#}}" quando necessário.
-       Exemplo de task: Conte uma piada sobre {{#context#}}
-       (neste exemplo, {{#context#}} foi a variável com o tópico passada para o agente)
-    > temperatura: A temperatura do LLM
-    -- O valor deve ser apenas de 0 a 1
+        - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
+        - role (str): Papel do agente no workflow (exemplo: "Você é um especialista em contar piadas").
+        - context_variable (Literal["sys.query", "<previous_node_id>.text"]): Variável de contexto compartilhada entre nós.
+        - task (str): Tarefa do agente. Use "{{#context#}}" para inserir contexto na resposta.
+        - temperature (float): Criatividade do modelo, entre 0 e 1.
     """
     llm_node = {
-        "id": id,
+        "id": node_id,
         "type": "custom",
         "data": {
             "context": {
@@ -159,27 +149,23 @@ def create_llm_node(
     }
 
     print("========== LLM Node ==========")
-    semaphore.acquire()
     insert_node_yaml(YAML_PATH, llm_node)
-    semaphore.release()
 
 
 @tool
-def create_answer_node(title: str, id: str, answer_variables: list[str]):
+def create_answer_node(title: str, node_id: str, answer_variables: List[str]):
     """
-    Cria o nó de resposta do workflow responsável por exibir os outputs.
+    Cria o nó final do workflow responsável por exibir os outputs.
 
     Esse nó deve ser criado por último no workflow.
     
     Parâmetros:
-    > title: O nome do nó
-    > id: O identificador baseado no nome, com todas as letras minúsculas e sem caracteres especiais
-    > answer_variables: lista de strings com o nome das variáveis que serão exibidas para o usuário em ordem de disposição
-    -- As variáveis devem seguir o formato: <node_id>.text
-       Exemplo de lista de variáveis: ["llm1.text", "llm2.text"]
+        - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
+        - answer_variables (List[str]): Lista de variáveis a serem exibidas para o usuário em ordem de disposição (exemplo: ["llm1.text", "llm2.text"]).
     """
     answer_node = {
-        "id": id,
+        "id": node_id,
         "type": "custom",
         "data": {
             "answer": "".join(["{{#" + f"{variable}" + "#}}\n" for variable in answer_variables]).strip(),
@@ -191,34 +177,28 @@ def create_answer_node(title: str, id: str, answer_variables: list[str]):
     }
 
     print("========== Answer Node ==========")
-    semaphore.acquire()
     insert_node_yaml(YAML_PATH, answer_node)
-    semaphore.release()
 
 
 @tool
-def create_edges(id: str, source_id: str, target_id: str):
+def create_edges(edge_id: str, source_id: str, target_id: str):
     """
-    Cria uma edge entre dois nós. 
-
+    Cria uma aresta entre dois nós no workflow.
+    
     Parâmetros:
-    > id: Identificador da edge, com todas as letras minúsculas e sem caracteres especiais
-    > source_id: id do nó de origem da aresta
-    -- Exemplos de source_id: start_node, llm1
-    > target_id: id do nó de destino da aresta
-    -- Exemplos de target_id: answer_node, llm2
+        - edge_id (str): Identificador único da aresta (minúsculas, sem caracteres especiais).
+        - source_id (str): ID do nó de origem da aresta (exemplo: "start_node", "llm1").
+        - target_id (str): ID do nó de destino da aresta (exemplo: "answer_node", "llm2").
     """
     edge = {
-        "id": id,
+        "id": edge_id,
         "source": source_id,
         "target": target_id,
         "type": "custom"
     }
 
     print("========== Edge ==========")
-    semaphore.acquire()
     insert_edge_yaml(YAML_PATH, edge)
-    semaphore.release()
 
 
 # create_yaml_and_metadata(
