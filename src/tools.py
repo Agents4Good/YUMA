@@ -3,14 +3,16 @@ import os
 
 from typing import Annotated
 
-
+from state import DifyState
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
+from langchain_core.messages import ToolMessage
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 from utils.plantuml_parser import generate_diagram, json_to_plantuml
 from utils.tools_utils import insert_node_yaml, insert_edge_yaml
 import threading
+from pathlib import Path
 
 YAML_PATH = os.path.join("generated_files", "dify.yaml")
 semaphore = threading.Semaphore(1)
@@ -54,16 +56,13 @@ def sequence_diagram_generator(architecture_output: str):
     generate_diagram(plantuml_output)
 
 
-def metadata_creator():
-    pass
-
 def create_yaml_and_metadata(name: str, descritption: str):
     """
     Cria um arquivo YAML e insere os metadados a partir de um nome e uma descrição.
     name: nome do workflow
     description: descrição do workflow
     """
-    metadata = {
+    return {
         "app": {"description": descritption, "mode": "advanced-chat", "name": name},
         "version": "0.1.5",
         "workflow": {
@@ -72,13 +71,15 @@ def create_yaml_and_metadata(name: str, descritption: str):
             "graph": {"edges": [], "nodes": []},
         },
     }
-
-    with open(YAML_PATH, "w") as outfile:
-        yaml.dump(metadata, outfile, default_flow_style=False, allow_unicode=True)
+    # with open(YAML_PATH, "w") as outfile:
+    #     yaml.dump(metadata, outfile, default_flow_style=False, allow_unicode=True)
 
 
 @tool
-def create_start_node(title: str, id: str):
+def create_start_node(
+    tool_call_id: Annotated[str, InjectedToolCallId], 
+    title: str, id: str
+    ):
     """
     Cria o nó inicial com um título e um id. Esta é a primeira etapa a ser executada no grafo, execute uma única vez.
     title: nome do nó
@@ -89,15 +90,26 @@ def create_start_node(title: str, id: str):
         "type": "custom",
         "data": {"desc": "", "title": title, "type": "start", "variables": []},
     }
+    
     print("START NODE")
-    semaphore.acquire()
-    insert_node_yaml(YAML_PATH, start_node)
-    semaphore.release()
+    return Command(
+        update={
+            "nodes_dicts" : [start_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added the start node", tool_call_id=tool_call_id
+                )]
+        }
+    )
+    # semaphore.acquire()
+    # insert_node_yaml(YAML_PATH, start_node)
+    # semaphore.release()
 
 
 
 @tool
 def create_llm_node(
+    tool_call_id: Annotated[str, InjectedToolCallId], 
     id: str,
     title: str,
     prompt: str,
@@ -140,13 +152,24 @@ def create_llm_node(
         },
     }
     print("LLM NODE")
-    semaphore.acquire()
-    insert_node_yaml(YAML_PATH, llm_node)
-    semaphore.release()
+    return Command(
+        update={
+            "nodes_dicts" : [llm_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added the LLM node", tool_call_id=tool_call_id
+                )]
+        }
+    )
+    # semaphore.acquire()
+    # insert_node_yaml(YAML_PATH, llm_node)
+    # semaphore.release()
 
 
 @tool
-def create_answer_node(title: str, id: str, answer_variables: list[str]):
+def create_answer_node(
+    tool_call_id: Annotated[str, InjectedToolCallId], 
+    title: str, id: str, answer_variables: list[str]):
     """
     Cria um nó de resposta com um título, um id e uma resposta. Esta é a última etapa a ser executada no grafo.
     title: nome do nó
@@ -165,14 +188,26 @@ def create_answer_node(title: str, id: str, answer_variables: list[str]):
             "variables": [],
         },
     }
+    
     print("ANSWER NODE")
-    semaphore.acquire()
-    insert_node_yaml(YAML_PATH, answer_node)
-    semaphore.release()
+    return Command(
+        update={
+            "nodes_dicts" : [answer_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added the answer node", tool_call_id=tool_call_id
+                )]
+        }
+    )
+    # semaphore.acquire()
+    # insert_node_yaml(YAML_PATH, answer_node)
+    # semaphore.release()
 
 
 @tool
-def create_edges(id: str, source_id: str, target_id: str):
+def create_edges(
+    tool_call_id: Annotated[str, InjectedToolCallId], 
+    id: str, source_id: str, target_id: str):
     """
     Cria uma edge entre dois nós.
     id: Identificador baseado no nome, com todas as letras minúsculas e sem caracteres especiais
@@ -180,11 +215,31 @@ def create_edges(id: str, source_id: str, target_id: str):
     target_id: id do nó de destino da aresta
     """
     edge = {"id": id, "source": source_id, "target": target_id, "type": "custom"}
-    print("edge creator")
-    semaphore.acquire()
-    insert_edge_yaml(YAML_PATH, edge)
-    semaphore.release()
+    print("CREATE EDGE")
+    return Command(
+        update={
+            "edges_dicts" : [edge],
+            "messages": [
+                ToolMessage(
+                    f"Successfully added the edge between {source_id} and {target_id}", tool_call_id=tool_call_id
+                )]
+        }
+    )
 
+    # semaphore.acquire()
+    # insert_edge_yaml(YAML_PATH, edge)
+    # semaphore.release()
+
+def write_dify_yaml(state: DifyState):
+    yaml_dify = state["metadata_dict"]  
+    yaml_dify["workflow"]["graph"]["nodes"].extend(state["nodes_dicts"])
+    yaml_dify["workflow"]["graph"]["edges"].extend(state["edges_dicts"])
+
+    file = Path(YAML_PATH)
+    with open(file, "w") as outfile:
+        yaml.dump(yaml_dify, outfile, default_flow_style=False, allow_unicode=True)
+
+    
 
 # create_yaml_and_metadata(
 #                          "Contador de piadas",
