@@ -5,24 +5,21 @@ import webbrowser
 
 """
     Para que a função funcione corretamente devem existir as seguintes variáveis no .env:
-    EMAIL="seu_email_aqui"
-    SENHA="sua_senha_aqui"
+    EMAIL="email_de_login_do_dify"
+    SENHA="senha_do_dify"
     Email e senha referentes ao login da plataforma Dify.
 """
 dotenv.load_dotenv()
 
-URL_IMPORT = "http://localhost/console/api/apps/imports"
-URL_lOGIN = "http://localhost/console/api/login"
 HEADERS = {
     "Content-Type": "application/json",
     "Authorization": "Bearer "
 }
-BASE_URL = "http://localhost/app/"
-
 
 def login():
     email = dotenv.get_key(".env", "EMAIL")
     password = dotenv.get_key(".env", "SENHA")
+    url_login = dotenv.get_key(".env","DIFY_URL_LOGIN")
     body = {
         "email": email,
         "language":"pt-BR",
@@ -30,17 +27,17 @@ def login():
         "password": password
     }
 
-    response = requests.post(URL_lOGIN, json=body, headers=HEADERS)
+    response = requests.post(url_login, json=body, headers=HEADERS)
  
     token = response.json().get("data").get("access_token")
 
     return token
 
 # Trocar o arquivo para o correto(após consertar o diretório de arquivos gerados)
-def import_yaml():
+def import_yaml(file="test_mod.yml"):
     token = login()
-
-    file = "test_mod.yml"
+    url_import = dotenv.get_key(".env", "DIFY_URL_IMPORT")
+    url_base = dotenv.get_key(".env", "DIFY_BASE_URL")
 
     with open(file, "r", encoding="utf-8") as file:
         yaml_content = yaml.dump(yaml.safe_load(file), line_break="\n ", allow_unicode=True)
@@ -52,9 +49,10 @@ def import_yaml():
 
     HEADERS["Authorization"] += token
 
-    response = requests.post(URL_IMPORT, json=body, headers=HEADERS
-                             )
-    link = BASE_URL + response.json().get("app_id") + "/workflow"
+    response = requests.post(url_import, json=body, headers=HEADERS)
+
+
+    link = url_base + response.json().get("app_id") + "/workflow"
 
     webbrowser.open(link)
 
