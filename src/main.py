@@ -70,17 +70,22 @@ def main():
     human_message = input("Digite sua entrada: ")
     user_input = AgentState(messages=[HumanMessage(content=human_message)])
     num_conversation = 0
+    
     while True:
         print()
         print(f"--- Conversation Turn {num_conversation} ---")
         print()
+
         if not num_conversation == 0:
             print('Digite "q" para sair')
             human_message = input("User: ")
             if human_message.lower() == "q":
                 break
             user_input = Command(resume=human_message)
+
         print()
+        printed_architecture = False
+
         for update in graph.stream(
             user_input,
             config=thread_config,
@@ -89,7 +94,8 @@ def main():
             for node_id, value in update.items():
                 if isinstance(value, dict) and value.get("messages", []):
                     last_message = value["messages"][-1]
-                    if value.get("active_agent") == "architecture_agent":
+
+                    if value.get("active_agent") == "architecture_agent" and not printed_architecture:
                         last_message = value.get("architecture_output")
                         print("=== Arquitetura do Sistema Multiagente ===\n")
                         print("Agentes:")
@@ -102,10 +108,14 @@ def main():
                             print(
                                 f"  {idx}. {interaction.source} -> {interaction.targets}: {interaction.description}"
                             )
+                        printed_architecture = True
                         continue
+
                     if isinstance(last_message, dict) or last_message.type != "ai":
                         continue
+
                     print(f"{node_id}: {last_message.content}")
+
         num_conversation += 1
 
 
