@@ -7,6 +7,7 @@ from tools import (
     create_edges,
     create_answer_node,
     create_start_node,
+    write_dify_yaml
 )
 from outputs import ArchitectureOutput
 
@@ -116,22 +117,20 @@ def human_node(
 def supervisor_agent(
     state: AgentState,
 ) -> Command[list["node_creator"]]:
-    create_yaml_and_metadata("Sistema do usuario", " ")
-    novoState = DifyState = {
-        "yaml_path": "generated_files/dify.yaml",
-        "architecture_output": state["architecture_output"],
-        "nodes_code": "",
-        "edges_code": "",
-    }
+    
+    yaml_metadata = create_yaml_and_metadata("Sistema do usuario", " ")
+    novoState = DifyState(
+        architecture_output= state["architecture_output"],
+        metadata_dict= yaml_metadata
+    )
     return Command(update=novoState, goto=["node_creator"])
 
 
 # Agente responsável por criar os nodes do sistema
-def node_creator(state: DifyState) -> Command[Literal["edge_creator"]]:
+def node_creator(state: DifyState) -> Command[Literal["tools_node_creator"]]:
     system_prompt = agents_prompts.NODE_CREATOR
 
     messages = state["messages"] + [system_prompt]
-    print(messages)
     response = node_creator_dify_model.invoke(messages)
     print(response)
     # tool call para adicionar os nós no YAML
@@ -142,15 +141,22 @@ def node_creator(state: DifyState) -> Command[Literal["edge_creator"]]:
 
 
 # Agente responsável por criar as edges do sistema
-def edge_creator(state: DifyState) -> Command[Literal["__end__"]]:
+def edge_creator(state: DifyState) -> Command[Literal["tools_edge_creator"]]:
     system_prompt = agents_prompts.EDGE_CREATOR
 
     messages = state["messages"] + [system_prompt]
     response = edge_creator_dify_model.invoke(messages)
-    print(response)
-
+    
     # tool call para adicionar os arcos no YAML
     print("edge_creator executado")
     return Command(
         update={"messages": [response]},
+    )
+
+
+def dify_yaml_builder(state: DifyState) -> Command[Literal["__end__"]]:
+    write_dify_yaml(state)
+    
+    return Command(
+    update={"messages": [SystemMessage(content="Successfully create the dify yaml")]},
     )
