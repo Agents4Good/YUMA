@@ -18,7 +18,7 @@ from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 from prompts import agents_prompts
 
-from typing import Literal
+from typing import Literal, List
 
 from dotenv import load_dotenv
 
@@ -160,3 +160,18 @@ def dify_yaml_builder(state: DifyState) -> Command[Literal["__end__"]]:
     return Command(
     update={"messages": [SystemMessage(content="Successfully create the dify yaml")]},
     )
+
+tools_dify = {
+    "create_llm_node" : create_llm_node,
+    "create_answer_node" : create_answer_node,
+    "create_start_node" : create_start_node,
+    "create_edges" : create_edges
+}
+
+def call_dify_tools(state: DifyState) -> List[Command]:
+    tool_calls = state["messages"][-1].tool_calls
+    commands = []
+    for tool_call in tool_calls:
+        commands.append(tools_dify[tool_call["name"]].invoke(tool_call))
+
+    return commands
