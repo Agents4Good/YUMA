@@ -3,48 +3,8 @@
 ## Propósito
 O agente `architecture_agent` é responsável por processar os requisitos definidos pelo agente `requirements_engineer` e transformar essas informações em uma estrutura arquitetural coerente para um sistema multiagente.
 
-## Implementação
-A função `architecture_agent` é definida da seguinte forma:
 
-```python
-def architecture_agent(state: AgentState) -> Command[Literal["human_node", "dify"]]:
-    system_prompt = agents_prompts.ARCHITECTURE_AGENT
-    buffer = state.get("buffer", [])
-    if not buffer:
-        filtered_messages = [
-            msg
-            for msg in state["messages"]
-            if isinstance(msg, AIMessage) and msg.content.strip() != ""
-        ]
-
-        last_ai_message = next(
-            (msg for msg in reversed(filtered_messages) if isinstance(msg, AIMessage)),
-            None,
-        )
-
-        buffer = [last_ai_message] + [SystemMessage(content=system_prompt)]
-
-    response = architecture_model.invoke(buffer)
-    goto = "human_node"
-    if response.route_next:
-        goto = "dify"
-
-    sequence_diagram_generator.invoke(response.model_dump_json())
-
-    buffer.append(AIMessage(content=response.model_dump_json()))
-
-    return Command(
-        update={
-            "messages": state["messages"],
-            "active_agent": "architecture_agent",
-            "architecture_output": response,
-            "buffer": buffer,
-        },
-        goto=goto,
-    )
-```
-
-## Prompt `ARCHITECTURE_AGENT`
+## Exemplo de Prompt `ARCHITECTURE_AGENT`
 
 ```python
 ARCHITECTURE_AGENT = """

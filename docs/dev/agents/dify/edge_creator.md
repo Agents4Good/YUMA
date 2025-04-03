@@ -3,30 +3,6 @@
 ## Propósito
 O agente `edge_creator` é responsável por criar as conexões (edges) entre os nodes dentro do framework Dify. Ele processa a arquitetura do sistema e adiciona as edges ao arquivo YAML correspondente.
 
-## Implementação
-```python
-def edge_creator(state: DifyState) -> Command[Literal["__end__"]]:
-    system_prompt = agents_prompts.EDGE_CREATOR
-
-    messages = state["messages"] + [system_prompt]
-    response = edge_creator_dify_model.invoke(messages)
-
-    return Command(
-        update={"messages": [response]},
-    )
-```
-
-## Prompt `EDGE_CREATOR`
-```python
-EDGE_CREATOR = """
-    Você é um desenvolvedor multiagente que usa o aplicativo Dify.
-    Seu objetivo é receber a arquitetura do sistema solicitada e preencher o arquivo YAML, usando as ferramentas que serão importadas no aplicativo Dify com as edges de cada nó necessárias para conectar os agentes.
-
-    Para criar uma edge use:
-    - Tool: create_edges(id: str, source_id: str, target_id: str)
-"""
-```
-
 ## Funcionalidade
 O agente `edge_creator` tem como principal função criar e organizar as conexões entre os nodes do dify, utilizando as ferramentas disponíveis no Dify. Ele segue os seguintes passos:
 

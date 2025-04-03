@@ -3,36 +3,6 @@
 ## Propósito
 O agente `node_creator` é responsável por gerar os nodes necessários para representar os agentes do sistema dentro do framework Dify. Ele processa a arquitetura gerada e preenche o arquivo YAML correspondente.
 
-## Implementação
-A função `node_creator` é definida da seguinte forma:
-
-```python
-def node_creator(state: DifyState) -> Command[Literal["edge_creator"]]:
-    system_prompt = agents_prompts.NODE_CREATOR
-
-    messages = state["messages"] + [system_prompt]
-    response = node_creator_dify_model.invoke(messages)
-    print(response)
-    return Command(
-        update={"messages": [response]},
-    )
-```
-
-## Prompt `NODE_CREATOR`
-
-```python
-NODE_CREATOR = """
-    Você é um desenvolvedor multiagente que usa o aplicativo Dify.
-    Seu objetivo é receber a arquitetura do sistema solicitada e preencher o arquivo YAML, usando as ferramentas que serão importadas no aplicativo Dify com os nodes necessários para representar os agentes.
-
-    OS TIPOS DE NÓS POSSÍVEIS SÃO:
-    - LLM -> Tools:
-    create_llm_node(id: str, title: str, prompt: str)
-    create_answer_node(title: str, id: str, answer: str)
-    create_start_node(title: str, id: str)
-"""
-```
-
 ## Funcionalidade
 O agente tem como principal função a criação e organização dos nodes no arquivo YAML, utilizando as ferramentas disponíveis no Dify. Ele segue os seguintes passos:
 

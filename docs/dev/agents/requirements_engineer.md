@@ -3,20 +3,6 @@
 ## Propósito
 O agente `requirements_engineer` tem como objetivo auxiliar na definição detalhada de sistemas multiagentes a partir de uma ideia inicial, refinando os requisitos com perguntas adicionais até que a especificação esteja completa e bem estruturada.
 
-## Implementação
-```python
-def requirements_engineer(
-    state: AgentState,
-) -> Command[Literal["human_node", "architecture_agent"]]:
-    system_prompt = agents_prompts.REQUIREMENTS_ENGINEER
-    requirements_engineer_model = create_react_agent(
-        model, tools=architecture_tool, prompt=system_prompt
-    )
-    response = requirements_engineer_model.invoke(state)
-    response["active_agent"] = "requirements_engineer"
-    return Command(update=response, goto="human_node")
-```
-
 ## Funcionalidade
 O agente utiliza um modelo baseado em `create_react_agent`, configurado com ferramentas de arquitetura (`architecture_tool`) e um prompt especializado (`REQUIREMENTS_ENGINEER`).
 
@@ -25,8 +11,7 @@ O agente utiliza um modelo baseado em `create_react_agent`, configurado com ferr
 3. **Atualiza a resposta**: Definindo `active_agent` como `requirements_engineer`.
 4. **Retorna um comando**: Com a resposta atualizada e direcionamento para `human_node`.
 
-## Prompt `REQUIREMENTS_ENGINEER`
-O prompt define o comportamento do agente:
+## Exemplo de Especificações e Restrições `REQUIREMENTS_ENGINEER`
 
 ### Objetivo
 - Especialista em arquiteturas de sistemas multiagentes.
@@ -48,7 +33,7 @@ O prompt define o comportamento do agente:
     - Não gera código ou agentes, apenas define os requisitos.
     - Encaminha os requisitos finais para `architecture_agent`.
 
-### Fluxo esperado
+## Fluxo esperado
 - **Entrada do usuário**: Uma ideia inicial contendo pelo menos um dos seguintes pontos:
     - Propósito e problema resolvido
     - Usuários finais

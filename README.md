@@ -44,7 +44,7 @@ OPENAI_API_KEY=sua-chave-aqui
 
 ---
 ## 👩🏻‍💻 Uso
-Visuzalize o exemplo de uso na documentação da API [Documentação](https://github.com/Agents4Good/GenIA/tree/feat/dify/docs).
+Visuzalize o exemplo de uso na documentação da API [Documentação](./docs/README.md).
 
 ---
 ## 🤝 Contribuição
