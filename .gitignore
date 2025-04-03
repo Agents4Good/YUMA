@@ -172,10 +172,8 @@ cython_debug/
 
 # etc
 .vscode/
-graph_image.png
 
-sequence_diagram.png
-sequence_diagram.puml
-diagram.png
-diagram.puml
+# Generated Files
+*.puml
 dify.yaml
+*.png
