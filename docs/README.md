@@ -31,7 +31,7 @@ A documentação está organizada da seguinte forma:
 
 ### 📖 Outros Documentos
 - **`arquitetura.md`** – Detalhes sobre a arquitetura geral do sistema.
-- **`guias/`** – Exemplos e guias práticos.
+- **`guias/exemplos.md`** – Exemplos e guias práticos.
 
 ## 🚀 Como Usar
 1. Consulte `arquitetura.md` para entender a estrutura geral do sistema.
