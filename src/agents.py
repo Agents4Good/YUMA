@@ -146,7 +146,7 @@ def edge_creator(state: DifyState) -> Command[Literal["tools_edge_creator"]]:
 
     messages = state["messages"] + [system_prompt]
     response = edge_creator_dify_model.invoke(messages)
-    
+    print(response)
     # tool call para adicionar os arcos no YAML
     print("edge_creator executado")
     return Command(
