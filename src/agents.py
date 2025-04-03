@@ -116,7 +116,7 @@ def human_node(
 # Tool responsável por delegar a criação dos nodes e egdes do sistema
 def supervisor_agent(
     state: AgentState,
-) -> Command[list["node_creator"]]:
+) -> Command:
     
     yaml_metadata = create_yaml_and_metadata("Sistema do usuario", " ")
     novoState = DifyState(
@@ -127,7 +127,7 @@ def supervisor_agent(
 
 
 # Agente responsável por criar os nodes do sistema
-def node_creator(state: DifyState) -> Command[Literal["tools_node_creator"]]:
+def node_creator(state: DifyState) -> Command:
     system_prompt = agents_prompts.NODE_CREATOR
 
     messages = state["messages"] + [system_prompt]
@@ -141,7 +141,7 @@ def node_creator(state: DifyState) -> Command[Literal["tools_node_creator"]]:
 
 
 # Agente responsável por criar as edges do sistema
-def edge_creator(state: DifyState) -> Command[Literal["tools_edge_creator"]]:
+def edge_creator(state: DifyState) -> Command:
     system_prompt = agents_prompts.EDGE_CREATOR
 
     messages = state["messages"] + [system_prompt]
@@ -154,7 +154,7 @@ def edge_creator(state: DifyState) -> Command[Literal["tools_edge_creator"]]:
     )
 
 
-def dify_yaml_builder(state: DifyState) -> Command[Literal["__end__"]]:
+def dify_yaml_builder(state: DifyState) -> Command:
     write_dify_yaml(state)
     
     return Command(

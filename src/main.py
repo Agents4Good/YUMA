@@ -33,6 +33,7 @@ def build_graph():
     subgraph_builder.add_node("dify_yaml_builder", dify_yaml_builder)
 
     subgraph_builder.add_edge(START, "supervisor_agent")
+    subgraph_builder.add_edge("supervisor_agent", "node_creator")
     subgraph_builder.add_edge("node_creator", "tools_node_creator")
     subgraph_builder.add_edge("tools_node_creator", "edge_creator")
     subgraph_builder.add_edge("edge_creator", "tools_edge_creator")
