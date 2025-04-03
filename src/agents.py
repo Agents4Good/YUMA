@@ -7,6 +7,7 @@ from tools import (
     create_edges,
     create_answer_node,
     create_start_node,
+    write_dify_yaml
 )
 from outputs import ArchitectureOutput
 
@@ -17,7 +18,7 @@ from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 from prompts import agents_prompts
 
-from typing import Literal
+from typing import Literal, List
 
 from dotenv import load_dotenv
 
@@ -116,14 +117,13 @@ def human_node(
 def supervisor_agent(
     state: AgentState,
 ) -> Command:
-    create_yaml_and_metadata("Sistema do usuario", " ")
-    novoState = DifyState = {
-        "yaml_path": "generated_files/dify.yaml",
-        "architecture_output": state["architecture_output"],
-        "nodes_code": "",
-        "edges_code": "",
-    }
-    return Command(update=novoState)
+    
+    yaml_metadata = create_yaml_and_metadata("Sistema do usuario", " ")
+    novoState = DifyState(
+        architecture_output= state["architecture_output"],
+        metadata_dict= yaml_metadata
+    )
+    return Command(update=novoState, goto=["node_creator"])
 
 
 # Agente responsável por criar os nodes do sistema
@@ -131,7 +131,6 @@ def node_creator(state: DifyState) -> Command:
     system_prompt = agents_prompts.NODE_CREATOR
 
     messages = state["messages"] + [system_prompt]
-    print(messages)
     response = node_creator_dify_model.invoke(messages)
     print(response)
     # tool call para adicionar os nós no YAML
@@ -148,9 +147,31 @@ def edge_creator(state: DifyState) -> Command:
     messages = state["messages"] + [system_prompt]
     response = edge_creator_dify_model.invoke(messages)
     print(response)
-
     # tool call para adicionar os arcos no YAML
     print("edge_creator executado")
     return Command(
         update={"messages": [response]},
     )
+
+
+def dify_yaml_builder(state: DifyState) -> Command:
+    write_dify_yaml(state)
+    
+    return Command(
+    update={"messages": [SystemMessage(content="Successfully create the dify yaml")]},
+    )
+
+tools_dify = {
+    "create_llm_node" : create_llm_node,
+    "create_answer_node" : create_answer_node,
+    "create_start_node" : create_start_node,
+    "create_edges" : create_edges
+}
+
+def call_dify_tools(state: DifyState) -> List[Command]:
+    tool_calls = state["messages"][-1].tool_calls
+    commands = []
+    for tool_call in tool_calls:
+        commands.append(tools_dify[tool_call["name"]].invoke(tool_call))
+
+    return commands
