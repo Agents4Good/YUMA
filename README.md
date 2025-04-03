@@ -44,7 +44,7 @@ OPENAI_API_KEY=sua-chave-aqui
 
 ---
 ## 👩🏻‍💻 Uso
-Visuzalize o exemplo de uso na documentação da API [Documentação](./docs/README.md).
+Visuzalize o exemplo de uso na [Documentação da API.](./docs/README.md).
 
 ---
 ## 🤝 Contribuição

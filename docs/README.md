@@ -8,26 +8,26 @@ A documentação está organizada da seguinte forma:
 
 ### 📌 `dev/`
 
-- **`agents/`}** – Documentação dos agentes do sistema.[Link](./dev/agents/)
-  - `dify/` – Agentes relacionados ao framework Dify.[Link](./dev/agents/dify/)
-    - `edge_creator.md` – Responsável por criar conexões entre os agentes.[Link](./dev/agents/dify/edge_creator.md)
-    - `node_creator.md` – Responsável por criar os nós do sistema.[Link](./dev/agents/dify/node_creator.md)
-    - `supervisor.md` – Gerencia a criação dos nós e conexões.[Link](./dev/agents/dify/supervisor.md)
-  - `architecture.md` – Estrutura da arquitetura dos agentes.[Link](./dev/agents/architecture.md)
-  - `requirements_engineer.md` – Define os requisitos do sistema.[Link](./dev/agents/requirements_engineer.md)
+- [**`agents/`**](./dev/agents/) – Documentação dos agentes do sistema.
+  - [`dify/`](./dev/agents/dify/)– Agentes relacionados ao framework Dify.
+    - [`edge_creator.md`](./dev/agents/dify/edge_creator.md) – Responsável por criar conexões entre os agentes.
+    - [`node_creator.md`](./dev/agents/dify/node_creator.md) – Responsável por criar os nós do sistema.
+    - [`supervisor.md`](./dev/agents/dify/supervisor.md) – Gerencia a criação dos nós e conexões.
+  - [`architecture.md`](./dev/agents/architecture.md) – Estrutura da arquitetura dos agentes.
+  - [`requirements_engineer.md`](./dev/agents/requirements_engineer.md) – Define os requisitos do sistema.
 
-- **`tools/`** – Ferramentas utilizadas no sistema.[Link](./dev/tools/)
-  - `make_handoff.md` – Responsável por repassar o controle entre agentes.[Link](./dev/tools/make_handoff.md)
-  - `sequence_diagram_generator.md` – Gera diagramas de sequência para visualização da arquitetura.[Link](./dev/tools/sequence_diagram_generator.md)
-  - `dify/` – Ferramentas do framework Dify.[Link](./dev/tools/dify/)
-    - `create_answer_node.md` – Cria nós de resposta.[Link](./dev/tools/dify/create_answer_node.md)
-    - `create_edges.md` – Cria conexões entre os agentes.[Link](./dev/tools/dify/create_edges.md)
-    - `create_llm_node.md` – Cria nós de modelo de linguagem.[Link](./dev/tools/dify/create_llm_node.md)
-    - `create_metadata.md` – Define metadados para o sistema.[Link](./dev/tools/dify/create_metadata.md)
-    - `create_start_node.md` – Cria nós iniciais do fluxo.[Link](./dev/tools/dify/create_start_node.md)
+- [**`tools/`** ](./dev/tools/)– Ferramentas utilizadas no sistema.
+  - [`make_handoff.md` ](./dev/tools/make_handoff.md)– Responsável por repassar o controle entre agentes.
+  - [`sequence_diagram_generator.md`](./dev/tools/sequence_diagram_generator.md) – Gera diagramas de sequência para visualização da arquitetura.
+  - [`dify/` ](./dev/tools/dify/)– Ferramentas do framework Dify.
+    - [`create_answer_node.md`](./dev/tools/dify/create_answer_node.md) – Cria nós de resposta.
+    - [`create_edges.md` ](./dev/tools/dify/create_edges.md)– Cria conexões entre os agentes.
+    - [`create_llm_node.md` ](./dev/tools/dify/create_llm_node.md)– Cria nós de modelo de linguagem.
+    - [`create_metadata.md`](./dev/tools/dify/create_metadata.md) – Define metadados para o sistema.
+    - [`create_start_node.md` ](./dev/tools/dify/create_start_node.md)– Cria nós iniciais do fluxo.
     
-- **`workflow/`** – Explica o fluxo de funcionamento do sistema.[Link](./dev/workflow/)
+- [**`workflow/`**](./dev/workflow/) – Explica o fluxo de funcionamento do sistema.
 
 ### 📖 Outros Documentos
-- **`arquitetura.md`** – Detalhes sobre a arquitetura geral do sistema.[Link](./dev/arquitetura.md)
-- **`guias/exemplos.md`** – Exemplos e guias práticos.[Link](./guias/exemplos.md)
+- [**`arquitetura.md`** ](./dev/arquitetura.md)– Detalhes sobre a arquitetura geral do sistema.
+- [**`guias/exemplos.md`** ](./guias/exemplos.md)– Exemplos e guias práticos.
