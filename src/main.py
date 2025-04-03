@@ -40,6 +40,7 @@ def build_graph():
     subgraph_builder.add_node("tool_edge_creator", tool_edge_creator)
 
     subgraph_builder.add_edge(START, "supervisor_agent")
+    subgraph_builder.add_edge("supervisor_agent", "node_creator")
     subgraph_builder.add_edge("node_creator", "tool_node_creator")
     subgraph_builder.add_edge("tool_node_creator", "edge_creator")
     subgraph_builder.add_edge("edge_creator", "tool_edge_creator")
