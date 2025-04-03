@@ -30,9 +30,9 @@ def insert_edge_yaml(file: str, edge: dict):
     semaphore.release()
         
 
-def create_logic_node(title: str, id: str, value: str, comparison_operator: str, context_variable: str) -> dict:
+def create_logic_node(title: str, node_id: str, value: str, comparison_operator: str, context_variable: str) -> dict:
     logic_node = {
-        "id": id,
+        "id": node_id,
         "type": "custom",
         "data": {
             "cases": [

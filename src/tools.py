@@ -222,7 +222,7 @@ def create_answer_node(
 @tool
 def create_edges(
     tool_call_id: Annotated[str, InjectedToolCallId], 
-    id: str, source_id: str, target_id: str):
+    edge_id: str, source_id: str, target_id: str):
     """
     Cria uma aresta entre dois nós no workflow.
     
@@ -231,7 +231,7 @@ def create_edges(
         - source_id (str): ID do nó de origem da aresta (exemplo: "start_node", "llm1").
         - target_id (str): ID do nó de destino da aresta (exemplo: "answer_node", "llm2").
     """
-    edge = {"id": id, "source": source_id, "target": target_id, "type": "custom"}
+    edge = {"id": edge_id, "source": source_id, "target": target_id, "type": "custom"}
     print("CREATE EDGE")
     return Command(
         update={
@@ -246,13 +246,13 @@ def create_edges(
     
 def create_start_with_logic_node(
     title: str,
-    id: str,
+    node_id: str,
     value: str,
     context_variable: str
 ):
     start_with_node = create_logic_node(
         title=title,
-        id=id,
+        id=node_id,
         value=value,
         comparison_operator="start with",
         context_variable=context_variable
@@ -265,13 +265,13 @@ def create_start_with_logic_node(
 
 def create_end_with_logic_node(
     title: str,
-    id: str,
+    node_id: str,
     value: str,
     context_variable: str
 ):
     end_with_node = create_logic_node(
         title=title,
-        id=id,
+        id=node_id,
         value=value,
         comparison_operator="end with",
         context_variable=context_variable
@@ -284,13 +284,13 @@ def create_end_with_logic_node(
 
 def create_contains_logic_node(
     title: str,
-    id: str,
+    node_id: str,
     value: str,
     context_variable: str
 ):
     end_with_node = create_logic_node(
         title=title,
-        id=id,
+        id=node_id,
         value=value,
         comparison_operator="contains",
         context_variable=context_variable
@@ -303,13 +303,13 @@ def create_contains_logic_node(
 
 def create_not_contains_logic_node(
     title: str,
-    id: str,
+    node_id: str,
     value: str,
     context_variable: str
 ):
     end_with_node = create_logic_node(
         title=title,
-        id=id,
+        id=node_id,
         value=value,
         comparison_operator="not contains",
         context_variable=context_variable
@@ -322,13 +322,13 @@ def create_not_contains_logic_node(
 
 def create_is_equals_logic_node(
     title: str,
-    id: str,
+    node_id: str,
     value: str,
     context_variable: str
 ):
     end_with_node = create_logic_node(
         title=title,
-        id=id,
+        id=node_id,
         value=value,
         comparison_operator="is",
         context_variable=context_variable
@@ -341,13 +341,13 @@ def create_is_equals_logic_node(
 
 def create_not_equals_logic_node(
     title: str,
-    id: str,
+    node_id: str,
     value: str,
     context_variable: str
 ):
     end_with_node = create_logic_node(
         title=title,
-        id=id,
+        id=node_id,
         value=value,
         comparison_operator="is not",
         context_variable=context_variable
@@ -360,13 +360,13 @@ def create_not_equals_logic_node(
 
 def create_is_empty_logic_node(
     title: str,
-    id: str,
+    node_id: str,
     value: str,
     context_variable: str
 ):
     end_with_node = create_logic_node(
         title=title,
-        id=id,
+        id=node_id,
         value=value,
         comparison_operator="empty",
         context_variable=context_variable
@@ -379,13 +379,13 @@ def create_is_empty_logic_node(
 
 def create_not_empty_logic_node(
     title: str,
-    id: str,
+    node_id: str,
     value: str,
     context_variable: str
 ):
     end_with_node = create_logic_node(
         title=title,
-        id=id,
+        id=node_id,
         value=value,
         comparison_operator="not empty",
         context_variable=context_variable
@@ -394,6 +394,7 @@ def create_not_empty_logic_node(
     semaphore.acquire()
     insert_node_yaml(YAML_PATH, end_with_node)
     semaphore.release()
+
 
 def write_dify_yaml(state: DifyState):
     yaml_dify = state["metadata_dict"]  
