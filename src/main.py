@@ -61,51 +61,55 @@ def build_graph():
     return builder.compile(checkpointer=checkpointer)
 
 
+def print_architecture(last_message):
+    """Imprime a arquitetura do sistema multiagente."""
+    print("\n=== Arquitetura do Sistema Multiagente ===\n")
+    print("Agentes:")
+
+    for idx, agent in enumerate(last_message.agents, start=1):
+        print(f"  {idx}. {agent.agent}: {agent.description}")
+
+    print("\nInterações:")
+    for idx, interaction in enumerate(last_message.interactions, start=1):
+        print(f"  {idx}. {interaction.source} -> {interaction.targets}: {interaction.description}")
+
+
 def main():
-    dir_path = os.getcwd() + "/generated_files"
+    dir_path = os.path.join(os.getcwd(), "generated_files")
     os.makedirs(dir_path, exist_ok=True)
     graph = build_graph()
     print_graph(graph)
     thread_config = {"configurable": {"thread_id": uuid.uuid4()}}
+    num_conversation = 0
+
     human_message = input("Digite sua entrada: ")
     user_input = AgentState(messages=[HumanMessage(content=human_message)])
-    num_conversation = 0
+
     while True:
-        print()
-        print(f"--- Conversation Turn {num_conversation} ---")
-        print()
-        if not num_conversation == 0:
+        print(f"\n--- Conversation Turn {num_conversation} ---\n")
+
+        if num_conversation > 0:
             print('Digite "q" para sair')
             human_message = input("User: ")
             if human_message.lower() == "q":
                 break
             user_input = Command(resume=human_message)
-        print()
-        for update in graph.stream(
-            user_input,
-            config=thread_config,
-            stream_mode="updates",
-        ):
+
+        printed_architecture = False
+
+        for update in graph.stream(user_input, config=thread_config, stream_mode="updates"):
             for node_id, value in update.items():
                 if isinstance(value, dict) and value.get("messages", []):
                     last_message = value["messages"][-1]
-                    if value.get("active_agent") == "architecture_agent":
-                        last_message = value.get("architecture_output")
-                        print("=== Arquitetura do Sistema Multiagente ===\n")
-                        print("Agentes:")
-                        for idx, agent in enumerate(last_message.agents, start=1):
-                            print(f"  {idx}. {agent.agent}: {agent.description}")
-                        print("\nInterações:")
-                        for idx, interaction in enumerate(
-                            last_message.interactions, start=1
-                        ):
-                            print(
-                                f"  {idx}. {interaction.source} -> {interaction.targets}: {interaction.description}"
-                            )
+
+                    if value.get("active_agent") == "architecture_agent" and not printed_architecture:
+                        print_architecture(value.get("architecture_output"))
+                        printed_architecture = True
                         continue
-                    if isinstance(last_message, dict) or last_message.type != "ai":
-                        continue
-                    print(f"{node_id}: {last_message.content}")
+
+                    if not isinstance(last_message, dict) and last_message.type == "ai":
+                        print(f"{node_id}: {last_message.content}")
+
         num_conversation += 1
 
 
