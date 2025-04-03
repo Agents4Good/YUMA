@@ -561,7 +561,6 @@ def create_not_empty_logic_node(
     )
 
     
-@tool
 def write_dify_yaml(state: DifyState):
     yaml_dify = state["metadata_dict"]  
     yaml_dify["workflow"]["graph"]["nodes"].extend(state["nodes_dicts"])
