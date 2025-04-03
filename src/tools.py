@@ -76,8 +76,6 @@ def create_yaml_and_metadata(name: str, descritption: str):
             "graph": {"edges": [], "nodes": []},
         },
     }
-    # with open(YAML_PATH, "w") as outfile:
-    #     yaml.dump(metadata, outfile, default_flow_style=False, allow_unicode=True)
 
 
 @tool
@@ -110,10 +108,6 @@ def create_start_node(
                 )]
         }
     )
-    # semaphore.acquire()
-    # insert_node_yaml(YAML_PATH, start_node)
-    # semaphore.release()
-
 
 
 def create_llm_node(
@@ -173,9 +167,6 @@ def create_llm_node(
                 )]
         }
     )
-    # semaphore.acquire()
-    # insert_node_yaml(YAML_PATH, llm_node)
-    # semaphore.release()
 
 
 @tool
@@ -214,9 +205,6 @@ def create_answer_node(
                 )]
         }
     )
-    # semaphore.acquire()
-    # insert_node_yaml(YAML_PATH, answer_node)
-    # semaphore.release()
 
 
 @tool
@@ -245,6 +233,7 @@ def create_edges(
     
     
 def create_start_with_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
     title: str,
     node_id: str,
     value: str,
@@ -258,12 +247,20 @@ def create_start_with_logic_node(
         context_variable=context_variable
     )
     
-    semaphore.acquire()
-    insert_node_yaml(YAML_PATH, start_with_node)
-    semaphore.release()
+    print("START WITH NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [start_with_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added start with node", tool_call_id=tool_call_id
+                )]
+        }
+    )
     
 
 def create_end_with_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
     title: str,
     node_id: str,
     value: str,
@@ -277,18 +274,26 @@ def create_end_with_logic_node(
         context_variable=context_variable
     )
     
-    semaphore.acquire()
-    insert_node_yaml(YAML_PATH, end_with_node)
-    semaphore.release()
+    print("END WITH NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [end_with_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added end with node", tool_call_id=tool_call_id
+                )]
+        }
+    )
     
 
 def create_contains_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
     title: str,
     node_id: str,
     value: str,
     context_variable: str
 ):
-    end_with_node = create_logic_node(
+    contains_node = create_logic_node(
         title=title,
         id=node_id,
         value=value,
@@ -296,18 +301,26 @@ def create_contains_logic_node(
         context_variable=context_variable
     )
     
-    semaphore.acquire()
-    insert_node_yaml(YAML_PATH, end_with_node)
-    semaphore.release()
+    print("CONTAINS NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [contains_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added contains node", tool_call_id=tool_call_id
+                )]
+        }
+    )
 
 
 def create_not_contains_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
     title: str,
     node_id: str,
     value: str,
     context_variable: str
 ):
-    end_with_node = create_logic_node(
+    not_contains_node = create_logic_node(
         title=title,
         id=node_id,
         value=value,
@@ -315,18 +328,26 @@ def create_not_contains_logic_node(
         context_variable=context_variable
     )
     
-    semaphore.acquire()
-    insert_node_yaml(YAML_PATH, end_with_node)
-    semaphore.release()
+    print("NOT CONTAINS NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [not_contains_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added not contains node", tool_call_id=tool_call_id
+                )]
+        }
+    )
 
 
 def create_is_equals_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
     title: str,
     node_id: str,
     value: str,
     context_variable: str
 ):
-    end_with_node = create_logic_node(
+    is_equals_node = create_logic_node(
         title=title,
         id=node_id,
         value=value,
@@ -334,18 +355,26 @@ def create_is_equals_logic_node(
         context_variable=context_variable
     )
     
-    semaphore.acquire()
-    insert_node_yaml(YAML_PATH, end_with_node)
-    semaphore.release()
+    print("IS EQUALS NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [is_equals_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added is equals node", tool_call_id=tool_call_id
+                )]
+        }
+    )
 
 
 def create_not_equals_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
     title: str,
     node_id: str,
     value: str,
     context_variable: str
 ):
-    end_with_node = create_logic_node(
+    not_equals_node = create_logic_node(
         title=title,
         id=node_id,
         value=value,
@@ -353,18 +382,26 @@ def create_not_equals_logic_node(
         context_variable=context_variable
     )
     
-    semaphore.acquire()
-    insert_node_yaml(YAML_PATH, end_with_node)
-    semaphore.release()
+    print("NOT EQUALS NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [not_equals_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added not equals node", tool_call_id=tool_call_id
+                )]
+        }
+    )
 
 
 def create_is_empty_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
     title: str,
     node_id: str,
     value: str,
     context_variable: str
 ):
-    end_with_node = create_logic_node(
+    is_empty_node = create_logic_node(
         title=title,
         id=node_id,
         value=value,
@@ -372,18 +409,26 @@ def create_is_empty_logic_node(
         context_variable=context_variable
     )
     
-    semaphore.acquire()
-    insert_node_yaml(YAML_PATH, end_with_node)
-    semaphore.release()
+    print("IS EMPTY NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [is_empty_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added is empty node", tool_call_id=tool_call_id
+                )]
+        }
+    )
 
 
 def create_not_empty_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
     title: str,
     node_id: str,
     value: str,
     context_variable: str
 ):
-    end_with_node = create_logic_node(
+    not_empty_node = create_logic_node(
         title=title,
         id=node_id,
         value=value,
@@ -391,9 +436,16 @@ def create_not_empty_logic_node(
         context_variable=context_variable
     )
     
-    semaphore.acquire()
-    insert_node_yaml(YAML_PATH, end_with_node)
-    semaphore.release()
+    print("NOT EMPTY NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [not_empty_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added not empty node", tool_call_id=tool_call_id
+                )]
+        }
+    )
 
 
 def write_dify_yaml(state: DifyState):
@@ -404,39 +456,3 @@ def write_dify_yaml(state: DifyState):
     file = Path(YAML_PATH)
     with open(file, "w") as outfile:
         yaml.dump(yaml_dify, outfile, default_flow_style=False, allow_unicode=True)
-
-    
-
-# create_yaml_and_metadata(
-#                          "Contador de piadas",
-#                          "Um contador de piadas que conta piadas engraçadas.")
-
-# create_start_node( "Início", "start")
-
-# create_llm_node(
-#                 "llm1",
-#                 "Criador de Perguntas",
-#                 """Seu trabalho é gerar o início de uma piada que mais tarde será encaminhada para outro agente que a completará.
-# O tema da piada é: "{{#context#}}"
-# As piadas devem ser estruturadas em forma de pergunta, por exemplo:
-# "O que é um ponto preto em cima do castelo?""",
-#                 1.0,
-#                 "sys.query")
-
-# create_llm_node(
-#                 "llm2",
-#                 "Criador de respostas",
-#                 """Seu trabalho é responder a pergunta: "{{#context#}}"  em forma de piada, de maneira engraçada e que faça sentido com o tópico abordado.
-# Retorne apenas a resposta da pergunta, nada mais.""",
-#                 1.0,
-#                 "llm1.text"
-#                 )
-
-# create_answer_node(
-#                    "Fim",
-#                    "end",
-#                    """{{#llm1.text#}}\n{{#llm2.text#}}""")
-
-# create_edges( "edge1", "start", "llm1")
-# create_edges( "edge2", "llm1", "llm2")
-# create_edges( "edge3", "llm2", "end")
