@@ -1,39 +1,39 @@
-<h1 align="center">Gerador de Aplicações</h1>
+# 📚 Documentação do Sistema Multiagente
 
-> Gerador de aplicações multiagentes.
+Bem-vindo à documentação do sistema multiagente! Aqui você encontrará informações detalhadas sobre a arquitetura, especificação e implementação dos agentes que compõem o sistema.
 
----
-## 🏛️ Arquitetura
+## 📂 Estrutura da Documentação
 
-O sistema é baseado em uma arquitetura multi-agente, onde diferentes agentes desempenham papéis específicos. Abaixo está uma visão geral:
+A documentação está organizada da seguinte forma:
 
-| **Agente**       | **Descrição**                              |
-|-------------------|--------------------------------------------|
-| Agente X         | Realiza a tarefa A dentro do sistema.      |
-| Agente Y         | Foca na comunicação entre os módulos.      |
-| Agente Z         | Monitora o desempenho geral do sistema.    |
+### 📌 `dev/`
 
----
-## 🚀 Instalação
+- **`agents/`** – Documentação dos agentes do sistema.
+  - `dify/` – Agentes relacionados ao framework Dify.
+    - `edge_creator.md` – Responsável por criar conexões entre os agentes.
+    - `node_creator.md` – Responsável por criar os nós do sistema.
+    - `supervisor.md` – Gerencia a criação dos nós e conexões.
+  - `architecture.md` – Estrutura da arquitetura dos agentes.
+  - `requirements_engineer.md` – Define os requisitos do sistema.
 
-Passo a passo de como instalar e executar seu sistema
+- **`tools/`** – Ferramentas utilizadas no sistema.
+  - `make_handoff.md` – Responsável por repassar o controle entre agentes.
+  - `sequence_diagram_generator.md` – Gera diagramas de sequência para visualização da arquitetura.
+  - `dify/` – Ferramentas do framework Dify.
+    - `create_answer_node.md` – Cria nós de resposta.
+    - `create_edges.md` – Cria conexões entre os agentes.
+    - `create_llm_node.md` – Cria nós de modelo de linguagem.
+    - `create_metadata.md` – Define metadados para o sistema.
+    - `create_start_node.md` – Cria nós iniciais do fluxo.
+    
 
-```
-Adicione blocos de comando se necessário.
-```
+- **`workflow/`** – Explica o fluxo de funcionamento do sistema.
 
----
-## 👩🏻‍💻 Uso
-Exemplos de como utilizar o código ou aplicação.
+### 📖 Outros Documentos
+- **`arquitetura.md`** – Detalhes sobre a arquitetura geral do sistema.
+- **`guias/`** – Exemplos e guias práticos.
 
-```
-Adicione blocos de comando se necessário.
-```
-
----
-## 🤝 Contribuição
-Guia para colaboradores, pull requests...
-
----
-## 📜 Licença
-Informar a licença do projeto.
+## 🚀 Como Usar
+1. Consulte `arquitetura.md` para entender a estrutura geral do sistema.
+2. Veja `dev/agents/` para informações sobre os agentes do sistema.
+3. Explore `guias/` para exemplos práticos de uso.
