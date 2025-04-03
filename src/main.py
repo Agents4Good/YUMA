@@ -70,8 +70,6 @@ def print_architecture(last_message):
 
 
 def main():
-    dir_path = os.path.join(os.getcwd(), "generated_files")
-    os.makedirs(dir_path, exist_ok=True)
     graph = build_graph()
     print_graph(graph)
     thread_config = {"configurable": {"thread_id": uuid.uuid4()}}

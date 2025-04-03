@@ -1,7 +1,7 @@
 import yaml
 import os
 
-
+from utils.io_functions import get_path
 from state import DifyState
 from typing import Annotated, Literal
 
@@ -15,7 +15,7 @@ from utils.tools_utils import insert_node_yaml, insert_edge_yaml
 import threading
 from pathlib import Path
 
-YAML_PATH = os.path.join("generated_files", "dify.yaml")
+YAML_PATH = get_path("dify.yaml")
 semaphore = threading.Semaphore(1)
 
 
