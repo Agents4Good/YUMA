@@ -241,7 +241,7 @@ def create_start_with_logic_node(
 ):
     start_with_node = create_logic_node(
         title=title,
-        id=node_id,
+        node_id=node_id,
         value=value,
         comparison_operator="start with",
         context_variable=context_variable
@@ -268,7 +268,7 @@ def create_end_with_logic_node(
 ):
     end_with_node = create_logic_node(
         title=title,
-        id=node_id,
+        node_id=node_id,
         value=value,
         comparison_operator="end with",
         context_variable=context_variable
@@ -295,7 +295,7 @@ def create_contains_logic_node(
 ):
     contains_node = create_logic_node(
         title=title,
-        id=node_id,
+        node_id=node_id,
         value=value,
         comparison_operator="contains",
         context_variable=context_variable
@@ -322,7 +322,7 @@ def create_not_contains_logic_node(
 ):
     not_contains_node = create_logic_node(
         title=title,
-        id=node_id,
+        node_id=node_id,
         value=value,
         comparison_operator="not contains",
         context_variable=context_variable
@@ -349,7 +349,7 @@ def create_is_equals_logic_node(
 ):
     is_equals_node = create_logic_node(
         title=title,
-        id=node_id,
+        node_id=node_id,
         value=value,
         comparison_operator="is",
         context_variable=context_variable
@@ -376,7 +376,7 @@ def create_not_equals_logic_node(
 ):
     not_equals_node = create_logic_node(
         title=title,
-        id=node_id,
+        node_id=node_id,
         value=value,
         comparison_operator="is not",
         context_variable=context_variable
@@ -398,13 +398,12 @@ def create_is_empty_logic_node(
     tool_call_id: Annotated[str, InjectedToolCallId],
     title: str,
     node_id: str,
-    value: str,
     context_variable: str
 ):
     is_empty_node = create_logic_node(
         title=title,
-        id=node_id,
-        value=value,
+        node_id=node_id,
+        value="",
         comparison_operator="empty",
         context_variable=context_variable
     )
@@ -425,13 +424,12 @@ def create_not_empty_logic_node(
     tool_call_id: Annotated[str, InjectedToolCallId],
     title: str,
     node_id: str,
-    value: str,
     context_variable: str
 ):
     not_empty_node = create_logic_node(
         title=title,
-        id=node_id,
-        value=value,
+        node_id=node_id,
+        value="",
         comparison_operator="not empty",
         context_variable=context_variable
     )
