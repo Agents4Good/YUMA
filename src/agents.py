@@ -22,6 +22,8 @@ from typing import Literal, List
 
 from dotenv import load_dotenv
 
+from utils.io_functions import import_yaml
+
 
 load_dotenv(override=True)
 
@@ -157,6 +159,8 @@ def edge_creator(state: DifyState) -> Command:
 def dify_yaml_builder(state: DifyState) -> Command:
     write_dify_yaml(state)
     
+    import_yaml("dify.yaml")
+
     return Command(
     update={"messages": [SystemMessage(content="Successfully create the dify yaml")]},
     )
