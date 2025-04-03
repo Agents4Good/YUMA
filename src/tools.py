@@ -83,7 +83,7 @@ def create_yaml_and_metadata(name: str, descritption: str):
 @tool
 def create_start_node(
     tool_call_id: Annotated[str, InjectedToolCallId], 
-    title: str, id: str
+    title: str, node_id: str
     ):
     """
     Cria o nó inicial do workflow responsável por capturar as entradas do usuário.
@@ -95,7 +95,7 @@ def create_start_node(
         - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
     """
     start_node = {
-        "id": id,
+        "id": node_id,
         "type": "custom",
         "data": {"desc": "", "title": title, "type": "start", "variables": []},
     }
@@ -119,7 +119,6 @@ def create_start_node(
 @tool
 def create_llm_node(
     tool_call_id: Annotated[str, InjectedToolCallId], 
-    id: str,
     title: str,
     node_id: str,
     role: str,
@@ -183,7 +182,7 @@ def create_llm_node(
 @tool
 def create_answer_node(
     tool_call_id: Annotated[str, InjectedToolCallId], 
-    title: str, id: str, answer_variables: list[str]):
+    title: str, node_id: str, answer_variables: list[str]):
     """
     Cria o nó final do workflow responsável por exibir os outputs.
 
