@@ -6,10 +6,12 @@ from agents import (
     supervisor_agent,
     node_creator,
     edge_creator,
+    dify_yaml_builder,
+    call_dify_tools
 )
-from tools import create_llm_node, create_edges, create_answer_node, create_start_node
 import uuid
 import os
+
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Command
@@ -21,29 +23,21 @@ from utils.io_functions import print_graph
 
 
 def build_graph():
-    tools_node = [
-        create_llm_node,
-        create_answer_node,
-        create_start_node,
-    ]
-    tools_edge = [create_edges]
-
-    tool_node_creator = ToolNode(tools_node)
-    tool_edge_creator = ToolNode(tools_edge)
-
     subgraph_builder = StateGraph(DifyState)
 
     subgraph_builder.add_node("supervisor_agent", supervisor_agent)
     subgraph_builder.add_node("node_creator", node_creator)
     subgraph_builder.add_node("edge_creator", edge_creator)
-    subgraph_builder.add_node("tool_node_creator", tool_node_creator)
-    subgraph_builder.add_node("tool_edge_creator", tool_edge_creator)
+    subgraph_builder.add_node("tools_node_creator", call_dify_tools)
+    subgraph_builder.add_node("tools_edge_creator", call_dify_tools)
+    subgraph_builder.add_node("dify_yaml_builder", dify_yaml_builder)
 
     subgraph_builder.add_edge(START, "supervisor_agent")
-    subgraph_builder.add_edge("node_creator", "tool_node_creator")
-    subgraph_builder.add_edge("tool_node_creator", "edge_creator")
-    subgraph_builder.add_edge("edge_creator", "tool_edge_creator")
-    subgraph_builder.add_edge("tool_edge_creator", END)
+    subgraph_builder.add_edge("node_creator", "tools_node_creator")
+    subgraph_builder.add_edge("tools_node_creator", "edge_creator")
+    subgraph_builder.add_edge("edge_creator", "tools_edge_creator")
+    subgraph_builder.add_edge("tools_edge_creator", "dify_yaml_builder")
+    subgraph_builder.add_edge("dify_yaml_builder", END)
     subgraph = subgraph_builder.compile()
 
     builder = StateGraph(AgentState)
