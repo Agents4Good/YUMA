@@ -2,17 +2,23 @@ import yaml
 import os
 
 
+from state import DifyState
+from typing import Annotated, Literal
 
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
+from langchain_core.messages import ToolMessage
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 from utils.plantuml_parser import generate_diagram, json_to_plantuml
 from utils.tools_utils import create_logic_node, insert_node_yaml, insert_edge_yaml
 import threading
+from pathlib import Path
 
 YAML_PATH = os.path.join("generated_files", "dify.yaml")
 semaphore = threading.Semaphore(1)
+
+
 
 def make_handoff_tool(*, agent_name: str):
     """Create a tool that can return handoff via a Command"""
@@ -55,11 +61,13 @@ def sequence_diagram_generator(architecture_output: str):
 
 def create_yaml_and_metadata(name: str, descritption: str):
     """
-    Cria um arquivo YAML e insere os metadados a partir de um nome e uma descrição.
-    name: nome do workflow
-    description: descrição do workflow
+    Cria um arquivo YAML contendo os metadados do workflow.
+
+    Parâmetros:
+        - name (str): Nome do workflow.
+        - description (str): Descrição do workflow.
     """
-    metadata = {
+    return {
         "app": {"description": descritption, "mode": "advanced-chat", "name": name},
         "version": "0.1.5",
         "workflow": {
@@ -68,46 +76,68 @@ def create_yaml_and_metadata(name: str, descritption: str):
             "graph": {"edges": [], "nodes": []},
         },
     }
+    # with open(YAML_PATH, "w") as outfile:
+    #     yaml.dump(metadata, outfile, default_flow_style=False, allow_unicode=True)
 
-    with open(YAML_PATH, "w") as outfile:
-        yaml.dump(metadata, outfile, default_flow_style=False, allow_unicode=True)
 
-
-def create_start_node(title: str, id: str):
+@tool
+def create_start_node(
+    tool_call_id: Annotated[str, InjectedToolCallId], 
+    title: str, node_id: str
+    ):
     """
-    Cria o nó inicial com um título e um id. Esta é a primeira etapa a ser executada no grafo, execute uma única vez.
-    title: nome do nó
-    id: Identificador baseado no nome, com todas as letras minúsculas e sem caracteres especiais
+    Cria o nó inicial do workflow responsável por capturar as entradas do usuário.
+
+    Esta é a etapa inicial do workflow.
+
+    Parâmetros:
+        - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
     """
     start_node = {
-        "id": id,
+        "id": node_id,
         "type": "custom",
         "data": {"desc": "", "title": title, "type": "start", "variables": []},
     }
+    
     print("START NODE")
-    semaphore.acquire()
-    insert_node_yaml(YAML_PATH, start_node)
-    semaphore.release()
+    return Command(
+        update={
+            "nodes_dicts" : [start_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added the start node", tool_call_id=tool_call_id
+                )]
+        }
+    )
+    # semaphore.acquire()
+    # insert_node_yaml(YAML_PATH, start_node)
+    # semaphore.release()
 
 
 
 def create_llm_node(
-    id: str,
+    tool_call_id: Annotated[str, InjectedToolCallId], 
     title: str,
-    prompt: str,
-    temperature: float = 0.7,
-    context_variable: str = "",
+    node_id: str,
+    role: str,
+    context_variable: str,
+    task: str,
+    temperature: float,
 ):
     """
-    Cria um nó de LLM.
-    id: Identificador baseado no nome, com todas as letras minúsculas e sem caracteres especiais
-    title: Nome do nó
-    prompt: Prompt do usuário e do sistema
-    temperatura: Temperatura da LLM
-    context_variable: variável compartilhada ente os nós do workflow. Há dois formatos possíveis para essa variável 1. sys.query: entrada do usuário, 2. <previous_node_id>.text: saída do nó anterior. Restrição - um nó pode ter apenas uma variável.
+    Cria um nó de agente (LLM) para um workflow multiagente.
+    
+    Parâmetros:
+        - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
+        - role (str): Papel do agente no workflow (exemplo: "Você é um especialista em contar piadas").
+        - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
+        - task (str): Tarefa do agente. Use exatamente "{{#context#}}" para inserir contexto na resposta. (exemplo: "Seu trabalho é responder a pergunta: "{{#context#}}").
+        - temperature (float): Criatividade do modelo, entre 0 e 1.
     """
     llm_node = {
-        "id": id,
+        "id": node_id,
         "type": "custom",
         "data": {
             "context": {
@@ -126,7 +156,7 @@ def create_llm_node(
                 "name": "gpt-4",
                 "provider": "langgenius/openai/openai",
             },
-            "prompt_template": [{"role": "system", "text": prompt}],
+            "prompt_template": [{"role": "system", "text": f"""{role}\n{task}"""}],
             "title": title,
             "type": "llm",
             "variables": [],
@@ -134,21 +164,36 @@ def create_llm_node(
         },
     }
     print("LLM NODE")
-    semaphore.acquire()
-    insert_node_yaml(YAML_PATH, llm_node)
-    semaphore.release()
+    return Command(
+        update={
+            "nodes_dicts" : [llm_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added the LLM node", tool_call_id=tool_call_id
+                )]
+        }
+    )
+    # semaphore.acquire()
+    # insert_node_yaml(YAML_PATH, llm_node)
+    # semaphore.release()
 
 
-def create_answer_node(title: str, id: str, answer_variables: list[str]):
+@tool
+def create_answer_node(
+    tool_call_id: Annotated[str, InjectedToolCallId], 
+    title: str, node_id: str, answer_variables: list[str]):
     """
-    Cria um nó de resposta com um título, um id e uma resposta. Esta é a última etapa a ser executada no grafo.
-    title: nome do nó
-    id: Identificador baseado no nome, com todas as letras minúsculas e sem caracteres especiais
-        answer_variables: lista de strings com o nome das variáveis de resposta (por exemplo, ["llm1.text", "llm2.text"])
+    Cria o nó final do workflow responsável por exibir os outputs.
 
+    Esse nó deve ser criado por último no workflow.
+    
+    Parâmetros:
+        - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
+        - answer_variables (list[str]): Lista de variáveis a serem exibidas para o usuário em ordem de disposição (exemplo: ["llm1.text", "llm2.text"]).
     """
     answer_node = {
-        "id": id,
+        "id": node_id,
         "type": "custom",
         "data": {
             "answer": "".join(["{{#" + f"{variable}" + "#}}\n" for variable in answer_variables]).strip(),
@@ -158,24 +203,45 @@ def create_answer_node(title: str, id: str, answer_variables: list[str]):
             "variables": [],
         },
     }
+    
     print("ANSWER NODE")
-    semaphore.acquire()
-    insert_node_yaml(YAML_PATH, answer_node)
-    semaphore.release()
+    return Command(
+        update={
+            "nodes_dicts" : [answer_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added the answer node", tool_call_id=tool_call_id
+                )]
+        }
+    )
+    # semaphore.acquire()
+    # insert_node_yaml(YAML_PATH, answer_node)
+    # semaphore.release()
 
 
-def create_edges(id: str, source_id: str, target_id: str):
+@tool
+def create_edges(
+    tool_call_id: Annotated[str, InjectedToolCallId], 
+    id: str, source_id: str, target_id: str):
     """
-    Cria uma edge entre dois nós.
-    id: Identificador baseado no nome, com todas as letras minúsculas e sem caracteres especiais
-    source_id: id do nó de origem da aresta
-    target_id: id do nó de destino da aresta
+    Cria uma aresta entre dois nós no workflow.
+    
+    Parâmetros:
+        - edge_id (str): Identificador único da aresta (minúsculas, sem caracteres especiais).
+        - source_id (str): ID do nó de origem da aresta (exemplo: "start_node", "llm1").
+        - target_id (str): ID do nó de destino da aresta (exemplo: "answer_node", "llm2").
     """
     edge = {"id": id, "source": source_id, "target": target_id, "type": "custom"}
-    print("edge creator")
-    semaphore.acquire()
-    insert_edge_yaml(YAML_PATH, edge)
-    semaphore.release()
+    print("CREATE EDGE")
+    return Command(
+        update={
+            "edges_dicts" : [edge],
+            "messages": [
+                ToolMessage(
+                    f"Successfully added the edge between {source_id} and {target_id}", tool_call_id=tool_call_id
+                )]
+        }
+    )
     
     
 def create_start_with_logic_node(
@@ -329,6 +395,16 @@ def create_not_empty_logic_node(
     insert_node_yaml(YAML_PATH, end_with_node)
     semaphore.release()
 
+def write_dify_yaml(state: DifyState):
+    yaml_dify = state["metadata_dict"]  
+    yaml_dify["workflow"]["graph"]["nodes"].extend(state["nodes_dicts"])
+    yaml_dify["workflow"]["graph"]["edges"].extend(state["edges_dicts"])
+
+    file = Path(YAML_PATH)
+    with open(file, "w") as outfile:
+        yaml.dump(yaml_dify, outfile, default_flow_style=False, allow_unicode=True)
+
+    
 
 # create_yaml_and_metadata(
 #                          "Contador de piadas",
