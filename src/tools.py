@@ -1,7 +1,6 @@
 import yaml
 import os
 
-from typing import Annotated
 
 
 from langchain_core.tools import tool
@@ -9,7 +8,7 @@ from langchain_core.tools.base import InjectedToolCallId
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 from utils.plantuml_parser import generate_diagram, json_to_plantuml
-from utils.tools_utils import insert_node_yaml, insert_edge_yaml
+from utils.tools_utils import create_logic_node, insert_node_yaml, insert_edge_yaml
 import threading
 
 YAML_PATH = os.path.join("generated_files", "dify.yaml")
@@ -54,9 +53,6 @@ def sequence_diagram_generator(architecture_output: str):
     generate_diagram(plantuml_output)
 
 
-def metadata_creator():
-    pass
-
 def create_yaml_and_metadata(name: str, descritption: str):
     """
     Cria um arquivo YAML e insere os metadados a partir de um nome e uma descrição.
@@ -77,7 +73,6 @@ def create_yaml_and_metadata(name: str, descritption: str):
         yaml.dump(metadata, outfile, default_flow_style=False, allow_unicode=True)
 
 
-@tool
 def create_start_node(title: str, id: str):
     """
     Cria o nó inicial com um título e um id. Esta é a primeira etapa a ser executada no grafo, execute uma única vez.
@@ -96,7 +91,6 @@ def create_start_node(title: str, id: str):
 
 
 
-@tool
 def create_llm_node(
     id: str,
     title: str,
@@ -145,7 +139,6 @@ def create_llm_node(
     semaphore.release()
 
 
-@tool
 def create_answer_node(title: str, id: str, answer_variables: list[str]):
     """
     Cria um nó de resposta com um título, um id e uma resposta. Esta é a última etapa a ser executada no grafo.
@@ -171,7 +164,6 @@ def create_answer_node(title: str, id: str, answer_variables: list[str]):
     semaphore.release()
 
 
-@tool
 def create_edges(id: str, source_id: str, target_id: str):
     """
     Cria uma edge entre dois nós.
@@ -183,6 +175,158 @@ def create_edges(id: str, source_id: str, target_id: str):
     print("edge creator")
     semaphore.acquire()
     insert_edge_yaml(YAML_PATH, edge)
+    semaphore.release()
+    
+    
+def create_start_with_logic_node(
+    title: str,
+    id: str,
+    value: str,
+    context_variable: str
+):
+    start_with_node = create_logic_node(
+        title=title,
+        id=id,
+        value=value,
+        comparison_operator="start with",
+        context_variable=context_variable
+    )
+    
+    semaphore.acquire()
+    insert_node_yaml(YAML_PATH, start_with_node)
+    semaphore.release()
+    
+
+def create_end_with_logic_node(
+    title: str,
+    id: str,
+    value: str,
+    context_variable: str
+):
+    end_with_node = create_logic_node(
+        title=title,
+        id=id,
+        value=value,
+        comparison_operator="end with",
+        context_variable=context_variable
+    )
+    
+    semaphore.acquire()
+    insert_node_yaml(YAML_PATH, end_with_node)
+    semaphore.release()
+    
+
+def create_contains_logic_node(
+    title: str,
+    id: str,
+    value: str,
+    context_variable: str
+):
+    end_with_node = create_logic_node(
+        title=title,
+        id=id,
+        value=value,
+        comparison_operator="contains",
+        context_variable=context_variable
+    )
+    
+    semaphore.acquire()
+    insert_node_yaml(YAML_PATH, end_with_node)
+    semaphore.release()
+
+
+def create_not_contains_logic_node(
+    title: str,
+    id: str,
+    value: str,
+    context_variable: str
+):
+    end_with_node = create_logic_node(
+        title=title,
+        id=id,
+        value=value,
+        comparison_operator="not contains",
+        context_variable=context_variable
+    )
+    
+    semaphore.acquire()
+    insert_node_yaml(YAML_PATH, end_with_node)
+    semaphore.release()
+
+
+def create_is_equals_logic_node(
+    title: str,
+    id: str,
+    value: str,
+    context_variable: str
+):
+    end_with_node = create_logic_node(
+        title=title,
+        id=id,
+        value=value,
+        comparison_operator="is",
+        context_variable=context_variable
+    )
+    
+    semaphore.acquire()
+    insert_node_yaml(YAML_PATH, end_with_node)
+    semaphore.release()
+
+
+def create_not_equals_logic_node(
+    title: str,
+    id: str,
+    value: str,
+    context_variable: str
+):
+    end_with_node = create_logic_node(
+        title=title,
+        id=id,
+        value=value,
+        comparison_operator="is not",
+        context_variable=context_variable
+    )
+    
+    semaphore.acquire()
+    insert_node_yaml(YAML_PATH, end_with_node)
+    semaphore.release()
+
+
+def create_is_empty_logic_node(
+    title: str,
+    id: str,
+    value: str,
+    context_variable: str
+):
+    end_with_node = create_logic_node(
+        title=title,
+        id=id,
+        value=value,
+        comparison_operator="empty",
+        context_variable=context_variable
+    )
+    
+    semaphore.acquire()
+    insert_node_yaml(YAML_PATH, end_with_node)
+    semaphore.release()
+
+
+def create_not_empty_logic_node(
+    title: str,
+    id: str,
+    value: str,
+    context_variable: str
+):
+    end_with_node = create_logic_node(
+        title=title,
+        id=id,
+        value=value,
+        comparison_operator="not empty",
+        context_variable=context_variable
+    )
+    
+    semaphore.acquire()
+    insert_node_yaml(YAML_PATH, end_with_node)
     semaphore.release()
 
 
