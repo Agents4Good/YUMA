@@ -158,11 +158,13 @@ def edge_creator(state: DifyState) -> Command:
 
 def dify_yaml_builder(state: DifyState) -> Command:
     write_dify_yaml(state)
-    
-    import_yaml("dify.yaml")
+    try:
+        import_yaml("dify.yaml")
+    except Exception as e:
+        print("Não foi possível importar o yaml automaticamente no Dify.")
 
     return Command(
-    update={"messages": [SystemMessage(content="Successfully create the dify yaml")]},
+        update={"messages": [SystemMessage(content="Successfully create the dify yaml")]},
     )
 
 tools_dify = {
