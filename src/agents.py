@@ -22,6 +22,8 @@ from typing import Literal, List
 
 from dotenv import load_dotenv
 
+from utils.io_functions import import_yaml
+
 
 load_dotenv(override=True)
 
@@ -156,9 +158,13 @@ def edge_creator(state: DifyState) -> Command:
 
 def dify_yaml_builder(state: DifyState) -> Command:
     write_dify_yaml(state)
-    
+    try:
+        import_yaml("dify.yaml")
+    except Exception as e:
+        print("Não foi possível importar o yaml automaticamente no Dify.")
+
     return Command(
-    update={"messages": [SystemMessage(content="Successfully create the dify yaml")]},
+        update={"messages": [SystemMessage(content="Successfully create the dify yaml")]},
     )
 
 tools_dify = {

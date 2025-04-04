@@ -12,8 +12,8 @@ class Interaction(BaseModel):
     """
     Represents an interaction between agents.
     """
-    source: str = Field(description="The name of the source agent")
-    targets: str = Field(description="The target agent that the source agent interacts with")
+    source: str = Field(description="The name of the source agent using underlines")
+    targets: str = Field(description="The target agent that the source agent interacts with, using underlines")
     description: str = Field(description="A short description of what a agent will comunicate the other")
 
 class ArchitectureOutput(BaseModel):
