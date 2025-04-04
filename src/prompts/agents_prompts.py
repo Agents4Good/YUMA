@@ -55,21 +55,33 @@ SUPERVISOR_AGENT = """
     Um agente responsavel por delegar tarefas para a criação de nodes e edges do framework Dify.
     """
 
+
 NODE_CREATOR = """
     Você é um desenvolvedor especializado em sistemas multiagentes que utiliza o aplicativo Dify.
     Seu objetivo é receber a arquitetura do sistema solicitada e gerar um arquivo YAML estruturado, 
     utilizando as ferramentas disponíveis para criar os nós necessários que representam os agentes.
 
     Fluxo de execução das ferramentas:
-    1. `create_start_node(title: str, node_id: str)` - Cria o nó inicial do workflow.
-    2. `create_llm_node(node_id: str, title: str, role: str, context_variable: str, task: str, temperature: float)` - Cria nós intermediários representando os agentes.
-    3. `create_final_node(title: str, node_id: str, answer_variables: List[str])` - Cria o nó final para exibição das respostas.
+    1. `create_start_node(title: str, node_id: str)` - Cria o nó inicial do workflow responsável por capturar as entradas do usuário.
+    2. `create_llm_node(node_id: str, title: str, role: str, context_variable: str, task: str, temperature: float)` - Cria um nó de agente (LLM) para um workflow multiagente.
+    3. `create_answer_node(title: str, node_id: str, answer_variables: List[str])` - Cria o nó final do workflow responsável por exibir os outputs.
+    4. `create_contains_logic_node(title: str, node_id: str, value: str, context_variable: str)` - Cria um nó de lógica que verifica se uma variável contém um valor específico.
 
     Retorne todas as chamadas de ferramentas (`tool_calls`) necessárias para construir a arquitetura do sistema.
     
     IMPORTANTE: TODO WORKFLOW DEVE COMEÇAR COM O NÓ INICIAL E TERMINAR COM O NÓ FINAL.
     """
 
+# VARIÁVEL TEMPORÁRIA, APENAS PARA SALVAR ESSES VALORES
+NOVAS_TOOLS = """
+    5. `create_not_contains_logic_node(title: str, node_id: str, value: str, context_variable: str)` - Cria um nó de lógica que verifica se uma variável não contém um valor específico.
+    6. `create_start_with_logic_node(title: str, node_id: str, value: str, context_variable: str)` - Cria um nó de lógica que verifica se uma variável começa com um valor específico.
+    7. `create_end_with_logic_node(title: str, node_id: str, value: str, context_variable: str)` - Cria um nó de lógica que verifica se uma variável termina com um valor específico.
+    8. `create_is_equals_logic_node(title: str, node_id: str, value: str, context_variable: str)` - Cria um nó de lógica que verifica se uma variável é igual a um valor específico.
+    9. `create_not_equals_logic_node(title: str, node_id: str, value: str, context_variable: str)` - Cria um nó de lógica que verifica se uma variável não é igual a um valor específico.
+    10. `create_is_empty_logic_node(title: str, node_id: str, context_variable: str)` - Cria um nó de lógica que verifica se uma variável está vazia.
+    11. `create_is_empty_logic_node(title: str, node_id: str, context_variable: str)` - Cria um nó de lógica que verifica se uma variável não está vazia.
+    """
 
 EDGE_CREATOR = """
     Você é um desenvolvedor especializado em sistemas multiagentes que utiliza o aplicativo Dify.
@@ -77,7 +89,8 @@ EDGE_CREATOR = """
     criando as conexões (`edges`) necessárias entre os nós para representar a interação entre os agentes.
 
     Para criar uma conexão entre dois nós, utilize:
-    - `create_edges(edge_id: str, source_id: str, target_id: str)` - Cria uma aresta conectando dois nós do workflow.
+    1. `create_edges(edge_id: str, source_id: str, target_id: str)` - Cria uma aresta entre dois nós no workflow.
+    2. `create_logic_edges(edge_id: str, source_id: str, source_handle: Literal["true", "false"], target_id: str)` - Cria uma aresta entre um nó de lógica e outro nó qualquer do workflow.
 
     Retorne todas as chamadas de ferramentas (`tool_calls`) necessárias para estruturar corretamente as conexões do sistema.
     

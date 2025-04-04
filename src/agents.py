@@ -5,9 +5,19 @@ from tools import (
     create_yaml_and_metadata,
     create_llm_node,
     create_edges,
+    create_logic_edges,
     create_answer_node,
     create_start_node,
-    write_dify_yaml
+    create_start_with_logic_node,
+    create_end_with_logic_node,
+    create_contains_logic_node,
+    create_not_contains_logic_node,
+    create_is_equals_logic_node,
+    create_not_equals_logic_node,
+    create_is_empty_logic_node,
+    create_not_empty_logic_node,
+    write_dify_yaml,
+    
 )
 from outputs import ArchitectureOutput
 
@@ -34,9 +44,21 @@ model = ChatOpenAI(model="gpt-4o")
 architecture_model = model.with_structured_output(ArchitectureOutput)
 
 node_creator_dify_model = model.bind_tools(
-    [create_start_node, create_llm_node, create_answer_node]
+    [
+        create_start_node,
+        create_llm_node,
+        create_answer_node,
+        # create_start_with_logic_node,
+        # create_end_with_logic_node,
+        create_contains_logic_node,
+        # create_not_contains_logic_node,
+        # create_is_equals_logic_node,
+        # create_not_equals_logic_node,
+        # create_is_empty_logic_node,
+        # create_not_empty_logic_node
+     ]
 )
-edge_creator_dify_model = model.bind_tools([create_edges])
+edge_creator_dify_model = model.bind_tools([create_edges, create_logic_edges])
 
 
 # Agente reponsável por analisar os requisitos do sistema e conversar com o usuário
@@ -171,7 +193,16 @@ tools_dify = {
     "create_llm_node" : create_llm_node,
     "create_answer_node" : create_answer_node,
     "create_start_node" : create_start_node,
-    "create_edges" : create_edges
+    # "create_start_with_logic_node": create_start_with_logic_node,
+    # "create_end_with_logic_node": create_end_with_logic_node,
+    "create_contains_logic_node": create_contains_logic_node,
+    # "create_not_contains_logic_node": create_not_contains_logic_node,
+    # "create_is_equals_logic_node": create_is_equals_logic_node,
+    # "create_not_equals_logic_node": create_not_equals_logic_node,
+    # "create_is_empty_logic_node": create_is_empty_logic_node,
+    # "create_not_empty_logic_node": create_not_empty_logic_node,
+    "create_edges" : create_edges,
+    "create_logic_edges": create_logic_edges
 }
 
 def call_dify_tools(state: DifyState) -> List[Command]:

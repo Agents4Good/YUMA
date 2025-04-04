@@ -11,7 +11,7 @@ from langchain_core.messages import ToolMessage
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 from utils.plantuml_parser import generate_diagram, json_to_plantuml
-from utils.tools_utils import insert_node_yaml, insert_edge_yaml
+from utils.tools_utils import create_logic_node, insert_node_yaml, insert_edge_yaml
 import threading
 from pathlib import Path
 
@@ -76,8 +76,6 @@ def create_yaml_and_metadata(name: str, descritption: str):
             "graph": {"edges": [], "nodes": []},
         },
     }
-    # with open(YAML_PATH, "w") as outfile:
-    #     yaml.dump(metadata, outfile, default_flow_style=False, allow_unicode=True)
 
 
 @tool
@@ -110,10 +108,6 @@ def create_start_node(
                 )]
         }
     )
-    # semaphore.acquire()
-    # insert_node_yaml(YAML_PATH, start_node)
-    # semaphore.release()
-
 
 
 @tool
@@ -134,7 +128,7 @@ def create_llm_node(
         - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
         - role (str): Papel do agente no workflow (exemplo: "Você é um especialista em contar piadas").
         - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
-        - task (str): Tarefa do agente. Use exatamente "{{#context#}}" para inserir contexto na resposta. (exemplo: "Seu trabalho é responder a pergunta: "{{#context#}}").
+        - task (str): O que o agente faz. Para receber os dados do nó anterior use exatamente "{{#context#}}". (exemplo: "Seu trabalho é responder a pergunta: "{{#context#}}").
         - temperature (float): Criatividade do modelo, entre 0 e 1.
     """
     llm_node = {
@@ -174,9 +168,6 @@ def create_llm_node(
                 )]
         }
     )
-    # semaphore.acquire()
-    # insert_node_yaml(YAML_PATH, llm_node)
-    # semaphore.release()
 
 
 @tool
@@ -215,15 +206,15 @@ def create_answer_node(
                 )]
         }
     )
-    # semaphore.acquire()
-    # insert_node_yaml(YAML_PATH, answer_node)
-    # semaphore.release()
 
 
 @tool
 def create_edges(
     tool_call_id: Annotated[str, InjectedToolCallId], 
-    id: str, source_id: str, target_id: str):
+    edge_id: str,
+    source_id: str,
+    target_id: str
+):
     """
     Cria uma aresta entre dois nós no workflow.
     
@@ -232,7 +223,8 @@ def create_edges(
         - source_id (str): ID do nó de origem da aresta (exemplo: "start_node", "llm1").
         - target_id (str): ID do nó de destino da aresta (exemplo: "answer_node", "llm2").
     """
-    edge = {"id": id, "source": source_id, "target": target_id, "type": "custom"}
+    edge = {"id": edge_id, "source": source_id, "target": target_id, "type": "custom"}
+    
     print("CREATE EDGE")
     return Command(
         update={
@@ -243,11 +235,332 @@ def create_edges(
                 )]
         }
     )
+   
 
-    # semaphore.acquire()
-    # insert_edge_yaml(YAML_PATH, edge)
-    # semaphore.release()
+@tool
+def create_logic_edges(
+    tool_call_id: Annotated[str, InjectedToolCallId], 
+    edge_id: str,
+    source_id: str,
+    source_handle: Literal["true", "false"],
+    target_id: str
+):
+    """
+    Cria uma aresta entre um nó de lógica e outro nó qualquer do workflow.
+    Há duas saídas do mesmo nó de lógica, uma para "true" e outra para "false".
+    
+    Parâmetros:
+        - edge_id (str): Identificador único da aresta (minúsculas, sem caracteres especiais).
+        - source_id (str): ID do nó de lógica (exemplo: "start_with_node").
+        - source_handle (Literal["true", "false"]): Para qual saída booleana a aresta deve ser criada.
+        - target_id (str): ID do nó de destino da aresta (exemplo: "llm1", "llm2").
+    """
+    logic_edge = {"id": edge_id, "source": source_id, "sourceHandle": source_handle, "target": target_id, "type": "custom"}
+    
+    print("CREATE LOGIC EDGE")
+    return Command(
+        update={
+            "edges_dicts" : [logic_edge],
+            "messages": [
+                ToolMessage(
+                    f"Successfully added logic edge between {source_id} and {target_id}", tool_call_id=tool_call_id
+                )]
+        }
+    ) 
 
+
+@tool
+def create_start_with_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
+    title: str,
+    node_id: str,
+    value: str,
+    context_variable: str
+):
+    """
+    Cria um nó de lógica que verifica se uma variável começa com um valor específico.
+    
+    Parâmetros:
+        - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
+        - value (str): Valor a ser verificado se é o início da variável.
+        - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
+    """
+    start_with_node = create_logic_node(
+        title=title,
+        node_id=node_id,
+        value=value,
+        comparison_operator="start with",
+        context_variable=context_variable
+    )
+    
+    print("START WITH NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [start_with_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added start with node", tool_call_id=tool_call_id
+                )]
+        }
+    )
+    
+    
+@tool
+def create_end_with_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
+    title: str,
+    node_id: str,
+    value: str,
+    context_variable: str
+):
+    """
+    Cria um nó de lógica que verifica se uma variável termina com um valor específico.
+    
+    Parâmetros:
+        - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
+        - value (str): Valor a ser verificado se é o final da variável.
+        - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
+    """
+    end_with_node = create_logic_node(
+        title=title,
+        node_id=node_id,
+        value=value,
+        comparison_operator="end with",
+        context_variable=context_variable
+    )
+    
+    print("END WITH NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [end_with_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added end with node", tool_call_id=tool_call_id
+                )]
+        }
+    )
+    
+    
+@tool
+def create_contains_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
+    title: str,
+    node_id: str,
+    value: str,
+    context_variable: str
+):
+    """
+    Cria um nó de lógica que verifica se uma variável contém um valor específico.
+    
+    Parâmetros:
+        - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
+        - value (str): Valor a ser verificado se está contido na variável.
+        - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
+    """
+    contains_node = create_logic_node(
+        title=title,
+        node_id=node_id,
+        value=value,
+        comparison_operator="contains",
+        context_variable=context_variable
+    )
+    
+    print("CONTAINS NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [contains_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added contains node", tool_call_id=tool_call_id
+                )]
+        }
+    )
+
+    
+@tool
+def create_not_contains_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
+    title: str,
+    node_id: str,
+    value: str,
+    context_variable: str
+):
+    """
+    Cria um nó de lógica que verifica se uma variável não contém um valor específico.
+    
+    Parâmetros:
+        - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
+        - value (str): Valor a ser verificado se não está contido na variável.
+        - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
+    """
+    not_contains_node = create_logic_node(
+        title=title,
+        node_id=node_id,
+        value=value,
+        comparison_operator="not contains",
+        context_variable=context_variable
+    )
+    
+    print("NOT CONTAINS NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [not_contains_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added not contains node", tool_call_id=tool_call_id
+                )]
+        }
+    )
+
+    
+@tool
+def create_is_equals_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
+    title: str,
+    node_id: str,
+    value: str,
+    context_variable: str
+):
+    """
+    Cria um nó de lógica que verifica se uma variável é igual a um valor específico.
+    
+    Parâmetros:
+        - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
+        - value (str): Valor a ser verificado se é igual à variável.
+        - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
+    """
+    is_equals_node = create_logic_node(
+        title=title,
+        node_id=node_id,
+        value=value,
+        comparison_operator="is",
+        context_variable=context_variable
+    )
+    
+    print("IS EQUALS NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [is_equals_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added is equals node", tool_call_id=tool_call_id
+                )]
+        }
+    )
+
+    
+@tool
+def create_not_equals_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
+    title: str,
+    node_id: str,
+    value: str,
+    context_variable: str
+):
+    """
+    Cria um nó de lógica que verifica se uma variável não é igual a um valor específico.
+    
+    Parâmetros:
+        - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
+        - value (str): Valor a ser verificado se não é igual à variável.
+        - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
+    """
+    not_equals_node = create_logic_node(
+        title=title,
+        node_id=node_id,
+        value=value,
+        comparison_operator="is not",
+        context_variable=context_variable
+    )
+    
+    print("NOT EQUALS NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [not_equals_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added not equals node", tool_call_id=tool_call_id
+                )]
+        }
+    )
+
+    
+@tool
+def create_is_empty_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
+    title: str,
+    node_id: str,
+    context_variable: str
+):
+    """
+    Cria um nó de lógica que verifica se uma variável está vazia.
+    
+    Parâmetros:
+        - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
+        - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
+    """
+    is_empty_node = create_logic_node(
+        title=title,
+        node_id=node_id,
+        value="",
+        comparison_operator="empty",
+        context_variable=context_variable
+    )
+    
+    print("IS EMPTY NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [is_empty_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added is empty node", tool_call_id=tool_call_id
+                )]
+        }
+    )
+
+    
+@tool
+def create_not_empty_logic_node(
+    tool_call_id: Annotated[str, InjectedToolCallId],
+    title: str,
+    node_id: str,
+    context_variable: str
+):
+    """
+    Cria um nó de lógica que verifica se uma variável não está vazia.
+    
+    Parâmetros:
+        - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
+        - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
+    """
+    not_empty_node = create_logic_node(
+        title=title,
+        node_id=node_id,
+        value="",
+        comparison_operator="not empty",
+        context_variable=context_variable
+    )
+    
+    print("NOT EMPTY NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [not_empty_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added not empty node", tool_call_id=tool_call_id
+                )]
+        }
+    )
+
+    
 def write_dify_yaml(state: DifyState):
     yaml_dify = state["metadata_dict"]  
     yaml_dify["workflow"]["graph"]["nodes"].extend(state["nodes_dicts"])
@@ -256,39 +569,3 @@ def write_dify_yaml(state: DifyState):
     file = Path(YAML_PATH)
     with open(file, "w") as outfile:
         yaml.dump(yaml_dify, outfile, default_flow_style=False, allow_unicode=True)
-
-    
-
-# create_yaml_and_metadata(
-#                          "Contador de piadas",
-#                          "Um contador de piadas que conta piadas engraçadas.")
-
-# create_start_node( "Início", "start")
-
-# create_llm_node(
-#                 "llm1",
-#                 "Criador de Perguntas",
-#                 """Seu trabalho é gerar o início de uma piada que mais tarde será encaminhada para outro agente que a completará.
-# O tema da piada é: "{{#context#}}"
-# As piadas devem ser estruturadas em forma de pergunta, por exemplo:
-# "O que é um ponto preto em cima do castelo?""",
-#                 1.0,
-#                 "sys.query")
-
-# create_llm_node(
-#                 "llm2",
-#                 "Criador de respostas",
-#                 """Seu trabalho é responder a pergunta: "{{#context#}}"  em forma de piada, de maneira engraçada e que faça sentido com o tópico abordado.
-# Retorne apenas a resposta da pergunta, nada mais.""",
-#                 1.0,
-#                 "llm1.text"
-#                 )
-
-# create_answer_node(
-#                    "Fim",
-#                    "end",
-#                    """{{#llm1.text#}}\n{{#llm2.text#}}""")
-
-# create_edges( "edge1", "start", "llm1")
-# create_edges( "edge2", "llm1", "llm2")
-# create_edges( "edge3", "llm2", "end")
