@@ -55,6 +55,7 @@ SUPERVISOR_AGENT = """
     Um agente responsavel por delegar tarefas para a criação de nodes e edges do framework Dify.
     """
 
+
 NODE_CREATOR = """
     Você é um desenvolvedor especializado em sistemas multiagentes que utiliza o aplicativo Dify.
     Seu objetivo é receber a arquitetura do sistema solicitada e gerar um arquivo YAML estruturado, 
@@ -63,7 +64,7 @@ NODE_CREATOR = """
     Fluxo de execução das ferramentas:
     1. `create_start_node(title: str, node_id: str)` - Cria o nó inicial do workflow responsável por capturar as entradas do usuário.
     2. `create_llm_node(node_id: str, title: str, role: str, context_variable: str, task: str, temperature: float)` - Cria um nó de agente (LLM) para um workflow multiagente.
-    3. `create_final_node(title: str, node_id: str, answer_variables: List[str])` - Cria o nó final do workflow responsável por exibir os outputs.
+    3. `create_answer_node(title: str, node_id: str, answer_variables: List[str])` - Cria o nó final do workflow responsável por exibir os outputs.
     4. `create_contains_logic_node(title: str, node_id: str, value: str, context_variable: str)` - Cria um nó de lógica que verifica se uma variável contém um valor específico.
 
     Retorne todas as chamadas de ferramentas (`tool_calls`) necessárias para construir a arquitetura do sistema.

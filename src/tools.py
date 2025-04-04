@@ -128,7 +128,7 @@ def create_llm_node(
         - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
         - role (str): Papel do agente no workflow (exemplo: "Você é um especialista em contar piadas").
         - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
-        - task (str): Tarefa do agente. Use exatamente "{{#context#}}" para inserir contexto na resposta. (exemplo: "Seu trabalho é responder a pergunta: "{{#context#}}").
+        - task (str): O que o agente faz. Para receber os dados do nó anterior use exatamente "{{#context#}}". (exemplo: "Seu trabalho é responder a pergunta: "{{#context#}}").
         - temperature (float): Criatividade do modelo, entre 0 e 1.
     """
     llm_node = {
