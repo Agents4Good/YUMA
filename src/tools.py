@@ -175,14 +175,16 @@ def create_answer_node(
     tool_call_id: Annotated[str, InjectedToolCallId], 
     title: str, node_id: str, answer_variables: list[str]):
     """
-    Cria o nó final do workflow responsável por exibir os outputs.
+    Cria um nó que exibe o conteúdo de uma ou mais variáveis para o usuário.
 
-    Esse nó deve ser criado por último no workflow.
-    
+    Este nó pode ser utilizado múltiplas vezes no workflow, sendo criado um para cada variável ou grupo de variáveis, conforme necessário.
+
+    Idealmente, esses nós devem ser posicionados ao final do workflow.
+
     Parâmetros:
         - title (str): Nome do nó.
         - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
-        - answer_variables (list[str]): Lista de variáveis a serem exibidas para o usuário em ordem de disposição (exemplo: ["llm1.text", "llm2.text"]).
+        - answer_variables (list[str]): Lista de variáveis a serem exibidas para o usuário em ordem de disposição (exemplo: ["llm1.text", "llm2.text"], ["llm3.text"]).
     """
     answer_node = {
         "id": node_id,
