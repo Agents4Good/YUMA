@@ -20,19 +20,15 @@ from tools import (
     
 )
 from outputs import ArchitectureOutput
-
 from langgraph.prebuilt import create_react_agent
 from langgraph.types import Command, interrupt
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-
 from prompts import agents_prompts
-
 from typing import Literal, List
-
 from dotenv import load_dotenv
-
 from utils.io_functions import import_yaml
+import os
 
 
 load_dotenv(override=True)
@@ -40,7 +36,8 @@ load_dotenv(override=True)
 architecture_tool = [make_handoff_tool(agent_name="architecture_agent")]
 end_tool = [make_handoff_tool(agent_name="__end__")]
 
-model = ChatOpenAI(model="gpt-4o")
+model = ChatOpenAI(model=,os.getenv("BASE_URL"), base_url=os.getenv("BASE_URL"))
+
 architecture_model = model.with_structured_output(ArchitectureOutput)
 
 node_creator_dify_model = model.bind_tools(
