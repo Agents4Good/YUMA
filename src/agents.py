@@ -39,7 +39,7 @@ load_dotenv(override=True)
 architecture_tool = [make_handoff_tool(agent_name="architecture_agent")]
 end_tool = [make_handoff_tool(agent_name="__end__")]
 
-model = ChatOpenAI(model=os.getenv("MODEL_ID"), base_url=os.getenv("BASE_URL"))
+model = ChatOpenAI(model=os.getenv("MODEL_ID"), base_url=os.getenv("BASE_URL_DEEP_INFRA"))
 
 architecture_model = model
 
