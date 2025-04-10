@@ -29,6 +29,9 @@ from typing import Literal, List
 from dotenv import load_dotenv
 from utils.io_functions import import_yaml
 import os
+from langchain_core.output_parsers import JsonOutputParser
+import re
+import json
 
 
 load_dotenv(override=True)
@@ -36,9 +39,9 @@ load_dotenv(override=True)
 architecture_tool = [make_handoff_tool(agent_name="architecture_agent")]
 end_tool = [make_handoff_tool(agent_name="__end__")]
 
-model = ChatOpenAI(model=,os.getenv("BASE_URL"), base_url=os.getenv("BASE_URL"))
+model = ChatOpenAI(model=os.getenv("MODEL_ID"), base_url=os.getenv("BASE_URL"))
 
-architecture_model = model.with_structured_output(ArchitectureOutput)
+architecture_model = model
 
 node_creator_dify_model = model.bind_tools(
     [
@@ -88,8 +91,34 @@ def architecture_agent(state: AgentState) -> Command[Literal["human_node", "dify
         )
 
         buffer = [last_ai_message] + [SystemMessage(content=system_prompt)]
+    
+    parser = JsonOutputParser(pydantic_object=ArchitectureOutput)
 
     response = architecture_model.invoke(buffer)
+    content = response.content
+    try:
+        if "```" in content:
+            pattern = r'```(?:json)?\s*(.*?)```'
+            match = re.search(pattern, content, re.DOTALL)
+            if match:
+                raw_json_str = match.group(1)
+                response = parser.parse(raw_json_str)
+                response = ArchitectureOutput(**response)
+        elif isinstance(content, dict) :
+            parsed = json.loads(content)
+            response = ArchitectureOutput(**parsed)
+        if isinstance(content, str):
+            parsed = json.loads(content)
+            response = ArchitectureOutput(**parsed)
+        if isinstance(content, ArchitectureOutput):
+            response = ArchitectureOutput(**content)
+    except Exception as e:
+        print("Erro ao parsear JSON:", e)
+        print("Resposta bruta:", content)
+    
+    print("response")
+    print(response)
+        
     goto = "human_node"
     if response.route_next:
         goto = "dify"
@@ -156,6 +185,7 @@ def node_creator(state: DifyState) -> Command:
     print(response)
     # tool call para adicionar os nós no YAML
     print("node_creator executado")
+    print(response)
     return Command(
         update={"messages": [response]}
     )
@@ -163,6 +193,7 @@ def node_creator(state: DifyState) -> Command:
 
 # Agente responsável por criar as edges do sistema
 def edge_creator(state: DifyState) -> Command:
+    print("edge_creator")
     system_prompt = agents_prompts.EDGE_CREATOR
 
     messages = state["messages"] + [system_prompt]
@@ -204,6 +235,7 @@ tools_dify = {
 
 def call_dify_tools(state: DifyState) -> List[Command]:
     tool_calls = state["messages"][-1].tool_calls
+    print(tool_calls)
     commands = []
     for tool_call in tool_calls:
         commands.append(tools_dify[tool_call["name"]].invoke(tool_call))
