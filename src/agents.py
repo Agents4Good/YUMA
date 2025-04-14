@@ -25,14 +25,14 @@ from langgraph.prebuilt import create_react_agent
 from langgraph.types import Command, interrupt
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-
 from prompts import agents_prompts
-
 from typing import Literal, List
-
 from dotenv import load_dotenv
-
-from utils.io_functions import import_yaml
+from utils.dify_gateway import dify_import_yaml
+import os
+from langchain_core.output_parsers import JsonOutputParser
+import re
+import json
 
 
 load_dotenv(override=True)
@@ -181,9 +181,14 @@ def edge_creator(state: DifyState) -> Command:
 def dify_yaml_builder(state: DifyState) -> Command:
     write_dify_yaml(state)
     try:
-        import_yaml("dify.yaml")
+        dify_import_yaml("dify.yaml", "local")
     except Exception as e:
-        print("Não foi possível importar o yaml automaticamente no Dify.")
+        print("Não foi possível importar o yaml para o app Dify local, tentando importar na web")
+        try:
+            dify_import_yaml("dify.yaml", "web")
+        except Exception as e:
+            print(e)
+            print("Não foi possível importar o yaml para o app Dify local")
 
     return Command(
         update={"messages": [SystemMessage(content="Successfully create the dify yaml")]},
