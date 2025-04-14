@@ -49,6 +49,19 @@ ARCHITECTURE_AGENT = """
     Quando você determinar que o humano está satisfeito com sua proposta arquitetônica, defina 'route_next' como true;
     caso contrário, defina 'route_next' como false.
 
+    FORMATO DA RESPOTA:
+    - Responda APENAS com um JSON válido, não adicione perguntas, comentários ou explicações. O JSON deve estar no seguinte formato:
+    {
+      "agents": [
+        {"agent": "The name of the agent using underlines", "description": "Descrição opcional"},
+        {"agent": "The name of the agent using underlines", "description": "Outra descrição"}
+      ],
+      "interactions": [
+        {"source": "The name of the source agent using underlines", "targets": "The target agent that the source agent interacts with, using underlines", "description": "A short description of what a agent will comunicate the other"}
+      ],
+      "route_next": Determines if the graph should proceed to the next node (True) or remain in the current node (False).
+    }
+
     """
 
 SUPERVISOR_AGENT = """
@@ -68,7 +81,13 @@ NODE_CREATOR = """
     4. `create_contains_logic_node(title: str, node_id: str, value: str, context_variable: str)` - Cria um nó de lógica que verifica se uma variável contém um valor específico.
 
     Retorne todas as chamadas de ferramentas (`tool_calls`) necessárias para construir a arquitetura do sistema.
-    
+    Você deve retornar a lista `tool_calls` no seguinte formato:
+        tool_calls = [
+        {"name": "create_start_node", "arguments": {"title": "Receber tópico", "node_id": "inicio"}},
+        {"name": "create_llm_node", "arguments": {"node_id": "llm1", "title": "...", role: str, context_variable: str, task: str, temperature: float}},
+        ...
+        ]
+        
     IMPORTANTE: TODO WORKFLOW DEVE COMEÇAR COM O NÓ INICIAL E TERMINAR COM O NÓ FINAL.
     """
 
