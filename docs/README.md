@@ -1,39 +1,33 @@
-<h1 align="center">Gerador de Aplicações</h1>
+# 📚 Documentação do GenIA
 
-> Gerador de aplicações multiagentes.
+Bem-vindo à documentação do GenIA! Aqui você encontrará informações detalhadas sobre a arquitetura, especificação e implementação dos agentes que compõem o sistema.
 
----
-## 🏛️ Arquitetura
+## 📂 Estrutura da Documentação
 
-O sistema é baseado em uma arquitetura multi-agente, onde diferentes agentes desempenham papéis específicos. Abaixo está uma visão geral:
+A documentação está organizada da seguinte forma:
 
-| **Agente**       | **Descrição**                              |
-|-------------------|--------------------------------------------|
-| Agente X         | Realiza a tarefa A dentro do sistema.      |
-| Agente Y         | Foca na comunicação entre os módulos.      |
-| Agente Z         | Monitora o desempenho geral do sistema.    |
+### 📌 `dev/`
 
----
-## 🚀 Instalação
+- [**`agents/`**](./dev/agents/) – Documentação dos agentes do sistema.
+  - [`dify/`](./dev/agents/dify/)– Agentes relacionados ao framework Dify.
+    - [`edge_creator.md`](./dev/agents/dify/edge_creator.md) – Responsável por criar conexões entre os agentes.
+    - [`node_creator.md`](./dev/agents/dify/node_creator.md) – Responsável por criar os nós do sistema.
+    - [`supervisor.md`](./dev/agents/dify/supervisor.md) – Gerencia a criação dos nós e conexões.
+  - [`architecture.md`](./dev/agents/architecture.md) – Estrutura da arquitetura dos agentes.
+  - [`requirements_engineer.md`](./dev/agents/requirements_engineer.md) – Define os requisitos do sistema.
 
-Passo a passo de como instalar e executar seu sistema
+- [**`tools/`** ](./dev/tools/)– Ferramentas utilizadas no sistema.
+  - [`make_handoff.md` ](./dev/tools/make_handoff.md)– Responsável por repassar o controle entre agentes.
+  - [`sequence_diagram_generator.md`](./dev/tools/sequence_diagram_generator.md) – Gera diagramas de sequência para visualização da arquitetura.
+  - [`dify/` ](./dev/tools/dify/)– Ferramentas do framework Dify.
+    - [`create_answer_node.md`](./dev/tools/dify/create_answer_node.md) – Cria nós de resposta.
+    - [`create_edges.md` ](./dev/tools/dify/create_edges.md)– Cria conexões entre os agentes.
+    - [`create_llm_node.md` ](./dev/tools/dify/create_llm_node.md)– Cria nós de modelo de linguagem.
+    - [`create_metadata.md`](./dev/tools/dify/create_metadata.md) – Define metadados para o sistema.
+    - [`create_start_node.md` ](./dev/tools/dify/create_start_node.md)– Cria nós iniciais do fluxo.
+    
+- [**`workflow/`**](./dev/workflow/) – Explica o fluxo de funcionamento do sistema.
 
-```
-Adicione blocos de comando se necessário.
-```
-
----
-## 👩🏻‍💻 Uso
-Exemplos de como utilizar o código ou aplicação.
-
-```
-Adicione blocos de comando se necessário.
-```
-
----
-## 🤝 Contribuição
-Guia para colaboradores, pull requests...
-
----
-## 📜 Licença
-Informar a licença do projeto.
+### 📖 Outros Documentos
+- [**`arquitetura.md`** ](./dev/arquitetura.md)– Detalhes sobre a arquitetura geral do sistema.
+- [**`guias/exemplos.md`** ](./guias/exemplos.md)– Exemplos e guias práticos.

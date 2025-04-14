@@ -44,11 +44,7 @@ OPENAI_API_KEY=sua-chave-aqui
 
 ---
 ## 👩🏻‍💻 Uso
-Exemplos de como utilizar o código ou aplicação.
-
-```
-Adicione blocos de comando se necessário.
-```
+Visuzalize o exemplo de uso na [Documentação da API.](./docs/README.md).
 
 ---
 ## 🤝 Contribuição
