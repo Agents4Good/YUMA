@@ -1,6 +1,6 @@
 # 📚 Documentação do GenIA
 
-Bem-vindo à documentação do sistema multiagente! Aqui você encontrará informações detalhadas sobre a arquitetura, especificação e implementação dos agentes que compõem o sistema.
+Bem-vindo à documentação do GenIA! Aqui você encontrará informações detalhadas sobre a arquitetura, especificação e implementação dos agentes que compõem o sistema.
 
 ## 📂 Estrutura da Documentação
 
