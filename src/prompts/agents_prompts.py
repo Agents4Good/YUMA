@@ -51,7 +51,8 @@ ARCHITECTURE_AGENT = """
 
     FORMATO DA RESPOTA:
     - Responda APENAS com um JSON válido, não adicione perguntas, comentários ou explicações. O JSON deve estar no seguinte formato:
-    {
+    
+    ```{
       "agents": [
         {"agent": "The name of the agent using underlines", "description": "Descrição opcional"},
         {"agent": "The name of the agent using underlines", "description": "Outra descrição"}
@@ -60,8 +61,7 @@ ARCHITECTURE_AGENT = """
         {"source": "The name of the source agent using underlines", "targets": "The target agent that the source agent interacts with, using underlines", "description": "A short description of what a agent will comunicate the other"}
       ],
       "route_next": Determines if the graph should proceed to the next node (True) or remain in the current node (False).
-    }
-
+    }```
     """
 
 SUPERVISOR_AGENT = """

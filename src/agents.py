@@ -92,38 +92,15 @@ def architecture_agent(state: AgentState) -> Command[Literal["human_node", "dify
         )
 
         buffer = [last_ai_message] + [SystemMessage(content=system_prompt)]
-    
-    parser = JsonOutputParser(pydantic_object=ArchitectureOutput)
 
     response = architecture_model.invoke(buffer)
-    content = response.content
-    try:
-        if "```" in content:
-            pattern = r'```(?:json)?\s*(.*?)```'
-            match = re.search(pattern, content, re.DOTALL)
-            if match:
-                raw_json_str = match.group(1)
-                response = parser.parse(raw_json_str)
-                response = ArchitectureOutput(**response)
-        elif isinstance(content, dict) :
-            parsed = json.loads(content)
-            response = ArchitectureOutput(**parsed)
-        if isinstance(content, str):
-            parsed = json.loads(content)
-            response = ArchitectureOutput(**parsed)
-        if isinstance(content, ArchitectureOutput):
-            response = ArchitectureOutput(**content)
-    except Exception as e:
-        print("Erro ao parsear JSON:", e)
-        print("Resposta bruta:", content)
+
+    response = _extract_json(response.content)
     
-    print("response")
-    print(response)
-        
     goto = "human_node"
     if response.route_next:
         goto = "dify"
-
+    
     sequence_diagram_generator.invoke(response.model_dump_json())
 
     buffer.append(AIMessage(content=response.model_dump_json()))
@@ -139,7 +116,37 @@ def architecture_agent(state: AgentState) -> Command[Literal["human_node", "dify
     )
 
 
-# Nó que representa a interação do usuário com o sistema
+def _extract_json(content):
+    parser = JsonOutputParser(pydantic_object=ArchitectureOutput)
+    response = None
+
+    try:
+        if isinstance(content, str) and "```" in content:
+            pattern = r'```(?:json)?\s*(.*?)```'
+            match = re.search(pattern, content, re.DOTALL)
+            if match:
+                raw_json_str = match.group(1)
+                parsed = parser.parse(raw_json_str)
+                response = ArchitectureOutput(**parsed)
+
+        elif isinstance(content, str):
+            json_start = content.find('{')
+            if json_start != -1:
+                raw_json_str = content[json_start:]
+                parsed = json.loads(raw_json_str)
+                response = ArchitectureOutput(**parsed)
+
+        else:
+            print("================ Resposta não é uma string ou JSON válido ================")
+            print(content)
+            
+        return response
+
+    except Exception as e:
+        print("Erro ao parsear JSON:", e)
+        print("Resposta bruta:", content)
+
+
 def human_node(
     state: AgentState,
 ) -> Command[Literal["requirements_engineer", "architecture_agent"]]:
