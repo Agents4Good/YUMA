@@ -148,8 +148,8 @@ def create_llm_node(
             "model": {
                 "completion_params": {"temperature": temperature},
                 "mode": "chat",
-                "name": "gpt-4",
-                "provider": "langgenius/openai/openai",
+                "name": "claude-3-haiku-20240307",
+                "provider": "langgenius/anthropic/anthropic",
             },
             "prompt_template": [{"role": "system", "text": f"""{role}\n{task}"""}],
             "title": title,
