@@ -284,7 +284,8 @@ tools_dify = {
     # "create_is_empty_logic_node": create_is_empty_logic_node,
     # "create_not_empty_logic_node": create_not_empty_logic_node,
     "create_edges" : create_edges,
-    "create_logic_edges": create_logic_edges
+    "create_logic_edges": create_logic_edges,
+    "create_http_node": create_http_node
 }
 
 def call_dify_tools(state: DifyState) -> List[Command]:

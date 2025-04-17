@@ -11,7 +11,7 @@ from langchain_core.messages import ToolMessage
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
 from utils.plantuml_parser import generate_diagram, json_to_plantuml
-from utils.tools_utils import create_logic_node, insert_node_yaml, insert_edge_yaml, create_http_node
+from utils.tools_utils import create_logic_node, insert_node_yaml, insert_edge_yaml, create_http_node_struct
 import threading
 from pathlib import Path
 
@@ -564,18 +564,18 @@ def create_not_empty_logic_node(
 @tool
 def create_http_node(
     tool_call_id: Annotated[str, InjectedToolCallId],
-    node_id: str,
-    title: str
+    title: str,
+    node_id: str
 ):
     """
     Cria um nó HTTP que possibilita requisições .
 
     Parametros:
-        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
         - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
     """
 
-    http_node = create_http_node(
+    http_node = create_http_node_struct(
                 node_id=node_id,
                 title=title
     )
