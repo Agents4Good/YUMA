@@ -16,6 +16,7 @@ from tools import (
     create_not_equals_logic_node,
     create_is_empty_logic_node,
     create_not_empty_logic_node,
+    create_http_node,
     write_dify_yaml,
     
 )
@@ -60,7 +61,8 @@ node_creator_dify_model = model.bind_tools(
         # create_is_equals_logic_node,
         # create_not_equals_logic_node,
         # create_is_empty_logic_node,
-        # create_not_empty_logic_node
+        # create_not_empty_logic_node,
+        create_http_node
      ]
 )
 edge_creator_dify_model = model.bind_tools([create_edges, create_logic_edges])
