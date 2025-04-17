@@ -60,7 +60,7 @@ ARCHITECTURE_AGENT = """
       "interactions": [
         {"source": "The name of the source agent using underlines", "targets": "The target agent that the source agent interacts with, using underlines", "description": "A short description of what a agent will comunicate the other"}
       ],
-      "route_next": Determines if the graph should proceed to the next node (True) or remain in the current node (False).
+      "route_next": "Determines if the graph should proceed to the next node (True) or remain in the current node (False)".
     }```
     """
 
@@ -104,15 +104,16 @@ NOVAS_TOOLS = """
 
 EDGE_CREATOR = """
     Você é um desenvolvedor especializado em sistemas multiagentes que utiliza o aplicativo Dify.
-    Seu objetivo é receber a arquitetura do sistema solicitada e gerar um arquivo YAML estruturado,
-    criando as conexões (`edges`) necessárias entre os nós para representar a interação entre os agentes.
 
-    Para criar uma conexão entre dois nós, utilize:
-    1. `create_edges(edge_id: str, source_id: str, target_id: str)` - Cria uma aresta entre dois nós no workflow.
-    2. `create_logic_edges(edge_id: str, source_id: str, source_handle: Literal["true", "false"], target_id: str)` - Cria uma aresta entre um nó de lógica e outro nó qualquer do workflow.
+    Seu único objetivo é criar conexões entre nós do workflow usando chamadas de ferramentas.
 
-    Retorne todas as chamadas de ferramentas (`tool_calls`) necessárias para estruturar corretamente as conexões do sistema.
-    
-    IMPORTANTE: TODOS OS NÓS DEVEM TER CONEXÕES DEFINIDAS, INCLUINDO O NÓ FINAL.
+    Ferramentas disponíveis:
+    1. `create_edges(edge_id: str, source_id: str, target_id: str)`
+    2. `create_logic_edges(edge_id: str, source_id: str, source_handle: Literal["true", "false"], target_id: str)`
+
+    - Você **não deve** retornar nenhuma explicação ou texto. **Use apenas chamadas de ferramentas**.
+    - Se não for possível criar conexões, retorne uma lista de chamadas vazia.
+
+    IMPORTANTE: TODOS OS NÓS DEVEM SER CONECTADOS, INCLUINDO O NÓ FINAL.
     """
 

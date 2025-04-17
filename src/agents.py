@@ -42,7 +42,11 @@ end_tool = [make_handoff_tool(agent_name="__end__")]
 
 model = ChatOpenAI(model=os.getenv("MODEL_ID"), base_url=os.getenv("BASE_URL_DEEP_INFRA"))
 
-architecture_model = model
+
+architecture_model = ChatOpenAI(
+                        model=os.getenv("MODEL_ID"),
+                        base_url=os.getenv("BASE_URL_DEEP_INFRA"),
+                        model_kwargs={"response_format": {"type": "json_object"}})
 
 node_creator_dify_model = model.bind_tools(
     [
@@ -97,7 +101,7 @@ def architecture_agent(state: AgentState) -> Command[Literal["human_node", "dify
         
         var = model.invoke(f"A seguinte mensagem descreve um sistema que deve ser desenvolvido. Seu objetivo é informar o objetivo do sistema, extrair os requisitos do usuário e listar as funcionalidades principais. Descrição: {last_ai_message.content}")
         
-        buffer = [SystemMessage(content=system_prompt)] + [var.content] 
+        buffer = [SystemMessage(content=system_prompt).content] + [var.content] 
 
     print("============================================================")
     print(buffer)
