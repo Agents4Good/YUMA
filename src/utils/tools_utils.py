@@ -61,50 +61,19 @@ def create_logic_node(title: str, node_id: str, value: str, comparison_operator:
     }
     return logic_node
 
-# Estrutura básica de um nó HTTP no dify, existem variações com tratamento de erro também
 def create_http_node(node_id: str,
                     title: str,
-                    authorization_config: dict,
-                    authorization_type: str, 
-                    body: dict,
-                    body_type: str,
-                    headers: dict,
-                    method: str,
-                    params: dict,
-                    retry_enabled: bool = False,
-                    url: str = "",
-                    variables: dict = None
                     ) -> dict:
     http_node = {
         "id": node_id,
         "type": "custom",
         "data": {
-            "authorization": {
-                "config": authorization_config,
-                "type": authorization_type
-            },
             "body": {
-                "data":body,
-                "type": body_type
-            },
-            "desc": "",
-            "headers": headers,
-            "method": method,
-            "params": params,
-            "retry_config": {
-                "max_retries": 3,
-                "retry_enabled": retry_enabled,
-                "retry_interval": 100
-            },
-            "timeout": {
-                "max_connect_timeout": 0,
-                "max_read_timeout": 0,
-                "max_write_timeout": 0
+                "type": None,
+                "data": []
             },
             "title": title,
-            "type": "http-request",
-            "url": url,
-            "variables": variables
+            "type": "http-request"
         }
     }
 
