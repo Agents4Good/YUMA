@@ -16,6 +16,7 @@ from tools import (
     create_not_equals_logic_node,
     create_is_empty_logic_node,
     create_not_empty_logic_node,
+    create_http_node,
     write_dify_yaml,
     
 )
@@ -42,7 +43,11 @@ end_tool = [make_handoff_tool(agent_name="__end__")]
 
 model = ChatOpenAI(model=os.getenv("MODEL_ID"), base_url=os.getenv("BASE_URL_DEEP_INFRA"))
 
-architecture_model = model
+
+architecture_model = ChatOpenAI(
+                        model=os.getenv("MODEL_ID"),
+                        base_url=os.getenv("BASE_URL_DEEP_INFRA"),
+                        model_kwargs={"response_format": {"type": "json_object"}})
 
 node_creator_dify_model = model.bind_tools(
     [
@@ -56,7 +61,8 @@ node_creator_dify_model = model.bind_tools(
         # create_is_equals_logic_node,
         # create_not_equals_logic_node,
         # create_is_empty_logic_node,
-        # create_not_empty_logic_node
+        # create_not_empty_logic_node,
+        create_http_node
      ]
 )
 edge_creator_dify_model = model.bind_tools([create_edges, create_logic_edges])
@@ -90,40 +96,32 @@ def architecture_agent(state: AgentState) -> Command[Literal["human_node", "dify
             (msg for msg in reversed(filtered_messages) if isinstance(msg, AIMessage)),
             None,
         )
+        
+        print("============================================================")
+        print(last_ai_message)
+        print("============================================================")
+        
+        var = model.invoke(f"A seguinte mensagem descreve um sistema que deve ser desenvolvido. Seu objetivo é informar o objetivo do sistema, extrair os requisitos do usuário e listar as funcionalidades principais. Descrição: {last_ai_message.content}")
+        
+        buffer = [SystemMessage(content=system_prompt).content] + [var.content] 
 
-        buffer = [last_ai_message] + [SystemMessage(content=system_prompt)]
-    
-    parser = JsonOutputParser(pydantic_object=ArchitectureOutput)
+    print("============================================================")
+    print(buffer)
+    print("============================================================")
 
     response = architecture_model.invoke(buffer)
-    content = response.content
-    try:
-        if "```" in content:
-            pattern = r'```(?:json)?\s*(.*?)```'
-            match = re.search(pattern, content, re.DOTALL)
-            if match:
-                raw_json_str = match.group(1)
-                response = parser.parse(raw_json_str)
-                response = ArchitectureOutput(**response)
-        elif isinstance(content, dict) :
-            parsed = json.loads(content)
-            response = ArchitectureOutput(**parsed)
-        if isinstance(content, str):
-            parsed = json.loads(content)
-            response = ArchitectureOutput(**parsed)
-        if isinstance(content, ArchitectureOutput):
-            response = ArchitectureOutput(**content)
-    except Exception as e:
-        print("Erro ao parsear JSON:", e)
-        print("Resposta bruta:", content)
     
-    print("response")
+    print("============================================================")
     print(response)
-        
+    print("============================================================")
+    
+    response = _extract_json(response.content)
+    
+
     goto = "human_node"
     if response.route_next:
         goto = "dify"
-
+    
     sequence_diagram_generator.invoke(response.model_dump_json())
 
     buffer.append(AIMessage(content=response.model_dump_json()))
@@ -139,7 +137,39 @@ def architecture_agent(state: AgentState) -> Command[Literal["human_node", "dify
     )
 
 
-# Nó que representa a interação do usuário com o sistema
+def _extract_json(content):
+    parser = JsonOutputParser(pydantic_object=ArchitectureOutput)
+    response = None
+
+    try:
+        if isinstance(content, str) and "```" in content:
+            print("================ Resposta é uma string com JSON ================")
+            pattern = r"```(?:json)?\s*({.*?})\s*```"
+            match = re.search(pattern, content, re.DOTALL)
+            if match:
+                raw_json_str = match.group(1)
+                parsed = parser.parse(raw_json_str)
+                response = ArchitectureOutput(**parsed)
+
+        elif isinstance(content, str):
+            print("================ Resposta é uma string ================")
+            json_start = content.find('{')
+            if json_start != -1:
+                raw_json_str = content[json_start:]
+                parsed = json.loads(raw_json_str)
+                response = ArchitectureOutput(**parsed)
+
+        else:
+            print("================ Resposta não é uma string ou JSON válido ================")
+            print(content)
+            
+        return response
+
+    except Exception as e:
+        print("Erro ao parsear JSON:", e)
+        print("Resposta bruta:", content)
+
+
 def human_node(
     state: AgentState,
 ) -> Command[Literal["requirements_engineer", "architecture_agent"]]:
@@ -163,6 +193,24 @@ def human_node(
         goto=active_agent,
     )
 
+# from langchain_core.prompts import FewShotPromptTemplate
+
+# examples = [
+#     {
+#         "input": """
+#         """
+#     },
+#     {
+        
+#     }
+# ]
+
+# prompt = FewShotPromptTemplate(
+#     examples=examples,
+#     example_prompt=example_prompt,
+#     suffix="Question: {input}",
+#     input_variables=["input"],
+# )
 
 # Tool responsável por delegar a criação dos nodes e egdes do sistema
 def supervisor_agent(
@@ -236,7 +284,8 @@ tools_dify = {
     # "create_is_empty_logic_node": create_is_empty_logic_node,
     # "create_not_empty_logic_node": create_not_empty_logic_node,
     "create_edges" : create_edges,
-    "create_logic_edges": create_logic_edges
+    "create_logic_edges": create_logic_edges,
+    "create_http_node": create_http_node
 }
 
 def call_dify_tools(state: DifyState) -> List[Command]:

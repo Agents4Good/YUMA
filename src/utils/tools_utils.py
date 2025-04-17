@@ -60,3 +60,22 @@ def create_logic_node(title: str, node_id: str, value: str, comparison_operator:
         }
     }
     return logic_node
+
+
+def create_http_node_struct(node_id: str,
+                    title: str,
+                    ) -> dict:
+    http_node = {
+        "id": node_id,
+        "type": "custom",
+        "data": {
+            "body": {
+                "type": None,
+                "data": []
+            },
+            "title": title,
+            "type": "http-request"
+        }
+    }
+
+    return http_node
