@@ -14,9 +14,7 @@ process = subprocess.Popen(
 
 time.sleep(1)
 process.stdin.write(
-    (
-        "Preciso de um sistema automatizado para avaliar alunos em uma atividade escolar, dividido em quatro etapas: 1. A primeira etapa recebe uma pergunta objetiva contendo a nota do aluno, como por exemplo: \"O aluno foi aprovado na atividade? Nota: 7.7\" Com base na regra de que a nota mínima para aprovação é 7.0, o sistema deve interpretar a nota e responder apenas com 'sim' ou 'não'. 2. Se a resposta for 'sim', o sistema avança para a segunda etapa, que retorna a mensagem: 'Aprovado na atividade'. 3. Se a resposta for 'não', o sistema segue para a terceira etapa, que retorna a mensagem: 'Reprovado na atividade'. 4. Após a avaliação, o resultado final do aluno deve ser respondido para o usuário visualizar."
-    )
+        "Preciso de um sistema automatizado para avaliar alunos em uma atividade escolar, dividido em quatro etapas: 1. A primeira etapa recebe uma pergunta objetiva contendo a nota do aluno, como por exemplo: \"O aluno foi aprovado na atividade? Nota: 7.7\" Com base na regra de que a nota mínima para aprovação é 7.0, o sistema deve interpretar a nota e responder apenas com 'sim' ou 'não'. 2. Se a resposta for 'sim', o sistema avança para a segunda etapa, que retorna a mensagem: 'Aprovado na atividade'. 3. Se a resposta for 'não', o sistema segue para a terceira etapa, que retorna a mensagem: 'Reprovado na atividade'. 4. Após a avaliação, o resultado final do aluno deve ser respondido para o usuário visualizar.\n"
 )
 process.stdin.flush()
 
@@ -26,7 +24,7 @@ process.stdin.write(
     "2 - qualquer pessoa. " +
     "3 - apenas a verficação da afirmação. " +
     "4 - utilize a serializaçãodo dify para yaml. " +
-    "5 - nenhum. "
+    "5 - nenhum.\n"
 )
 process.stdin.flush()
 
@@ -38,6 +36,9 @@ time.sleep(1)
 process.stdin.write("Prossiga.\n")
 process.stdin.flush()
 
+time.sleep(1)
+process.stdin.write("Prossiga.\n")
+process.stdin.flush()
 
 time.sleep(1)
 process.stdin.write("q\n")
