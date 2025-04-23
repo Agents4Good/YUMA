@@ -1,31 +1,36 @@
-from state import AgentState, DifyState
-from agents import (
+from schema.genia import AgentState
+from schema.dify import DifyState
+from agentshub.genia import (
     requirements_engineer,
-    architecture_agent,
+    architect,
     human_node,
-    supervisor_agent,
+)
+
+from agentshub.dify import (
+    supervisor,
     node_creator,
-    edge_creator,
+    edge_creator
+)
+
+from utils.dify import (
     dify_yaml_builder,
     call_dify_tools
 )
-import uuid
-import os
 
+import uuid
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph.prebuilt import ToolNode
 from langchain_core.messages import HumanMessage
 
-from utils.io_functions import print_graph
+from utils.genia.io_functions import print_graph
 
 
 def build_graph():
     subgraph_builder = StateGraph(DifyState)
 
-    subgraph_builder.add_node("supervisor_agent", supervisor_agent)
+    subgraph_builder.add_node("supervisor_agent", supervisor)
     subgraph_builder.add_node("node_creator", node_creator)
     subgraph_builder.add_node("edge_creator", edge_creator)
     subgraph_builder.add_node("tools_node_creator", call_dify_tools)
@@ -46,7 +51,7 @@ def build_graph():
     # Nodes
     builder.add_node("requirements_engineer", requirements_engineer)
     builder.add_node("human_node", human_node)
-    builder.add_node("architecture_agent", architecture_agent)
+    builder.add_node("architecture_agent", architect)
     builder.add_node("dify", subgraph)
 
     # Edges

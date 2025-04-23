@@ -1,7 +1,7 @@
 import json
-import os
-from utils.io_functions import get_path
+from utils.genia.io_functions import get_generated_files_path
 from plantuml import PlantUML
+
 
 def json_to_plantuml(data: str) -> str:
     """
@@ -33,7 +33,7 @@ def json_to_plantuml(data: str) -> str:
 
 def generate_diagram(plantuml_code):
     """Salva o código PlantUML em um arquivo e gera o diagrama"""
-    puml_file = get_path("sequence_diagram.puml")
+    puml_file = get_generated_files_path("sequence_diagram.puml")
 
     with open(puml_file, "w", encoding="utf-8") as f:
         f.write(plantuml_code)

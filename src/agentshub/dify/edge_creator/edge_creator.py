@@ -1,7 +1,7 @@
-from schema import DifyState
+from schema.dify import DifyState
 from langgraph.types import Command
-from prompt import EDGE_CREATOR
-from models import edge_creator_dify_model
+from .prompt import EDGE_CREATOR
+from models.dify import edge_creator_dify_model
 
 
 # Agente responsável por criar as edges do sistema

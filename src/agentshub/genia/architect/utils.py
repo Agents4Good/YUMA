@@ -1,5 +1,5 @@
 from langchain_core.output_parsers import JsonOutputParser
-from structured_output import ArchitectureOutput
+from .structured_output import ArchitectureOutput
 import re
 import json
 

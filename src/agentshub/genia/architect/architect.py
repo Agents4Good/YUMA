@@ -1,16 +1,17 @@
-    from state import AgentState
-from prompt import ARCHITECTURE_AGENT
+from schema.genia import AgentState
+from .prompt import ARCHITECT_AGENT
 from langgraph.types import Command
 from typing import Literal
 from langchain_core.messages import SystemMessage, AIMessage
-from models import architecture_model, model
-from utils import extract_json
+from models.genia import architecture_model
+from models import model
+from .utils import extract_json
 from tools.genia.utils import sequence_diagram_generator
 
 
 # Agente responsável por criar a arquitetura do sistema com base nos requisitos
-def architecture_agent(state: AgentState) -> Command[Literal["human_node", "dify"]]:
-    system_prompt = ARCHITECTURE_AGENT
+def architect(state: AgentState) -> Command[Literal["human_node", "dify"]]:
+    system_prompt = ARCHITECT_AGENT
     buffer = state.get("buffer", [])
     if not buffer:
         filtered_messages = [

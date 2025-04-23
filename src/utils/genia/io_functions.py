@@ -1,25 +1,23 @@
 from langgraph.graph.state import CompiledStateGraph
 import os
-import requests
-import yaml
-import dotenv
-import webbrowser
-from playwright.sync_api import sync_playwright
 
 HEADERS = {
     "Content-Type": "application/json",
     "Authorization": "Bearer "
 }
 
-def get_path(file_name: str) -> str:
+
+def get_generated_files_path(file_name: str) -> str:
     PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
     dir_path = os.path.join(PROJECT_ROOT, "generated_files")
     os.makedirs(dir_path, exist_ok=True)
     return os.path.join(dir_path, file_name)
 
+
 def get_dotenv_path(file=".env") -> str:
     PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
     return os.path.join(PROJECT_ROOT, file)
+
 
 def print_graph(graph: CompiledStateGraph, filename="graph_image.png") -> None:
     """
@@ -28,7 +26,7 @@ def print_graph(graph: CompiledStateGraph, filename="graph_image.png") -> None:
     if not isinstance(graph, CompiledStateGraph):
         raise TypeError("O parâmetro 'graph' deve ser uma instância de CompiledStateGraph")
 
-    file_path = get_path(filename)
+    file_path = get_generated_files_path(filename)
     graph_obj = graph.get_graph()
     graph_image = graph_obj.draw_mermaid_png()
 

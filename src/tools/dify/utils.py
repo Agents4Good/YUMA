@@ -1,9 +1,10 @@
 import yaml
 from pathlib import Path
 import threading
-from state import DifyState
+from schema.dify import DifyState
+from utils.genia import get_generated_files_path
 
-YAML_PATH = get_path("dify.yaml")
+YAML_PATH = get_generated_files_path("dify.yaml")
 semaphore = threading.Semaphore(1)
 
 

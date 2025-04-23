@@ -1,4 +1,4 @@
-ARCHITECTURE_AGENT = """
+ARCHITECT_AGENT = """
     Você é um especialista em arquiteturas de sistemas multiagentes. 
     Seu objetivo é receber uma descrição do sistema e criar a arquitetura do sistema solicitado, usando a saída estruturada.
 

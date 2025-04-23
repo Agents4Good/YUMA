@@ -1,7 +1,7 @@
-from schema import DifyState
+from schema.dify import DifyState
 from langgraph.types import Command
-from prompt import NODE_CREATOR
-from models import node_creator_dify_model
+from .prompt import NODE_CREATOR
+from models.dify import node_creator_dify_model
 
 
 # Agente responsável por criar os nodes do sistema

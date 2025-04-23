@@ -2,30 +2,35 @@ from playwright.sync_api import sync_playwright
 import time
 import requests
 import webbrowser
-import os
 import dotenv
 import yaml
+from utils.genia import get_generated_files_path, get_dotenv_path
+from schema.dify import DifyState
+from langgraph.types import Command
+from langchain_core.messages import SystemMessage
+from typing import List
+from tools.dify import (
+    create_llm_node,
+    create_answer_node,
+    create_start_node,
+    create_contains_logic_node,
+    create_edges,
+    create_logic_edges,
+    create_http_node
+)
+from tools.dify import (
+    write_dify_yaml
+)
 
 HEADERS = {
     "Content-Type": "application/json",
     "Authorization": "Bearer "
 }
 
-def get_dotenv_path(file=".env") -> str:
-    PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-    return os.path.join(PROJECT_ROOT, file)
-
 dotenv_path = get_dotenv_path()
 
 
-def get_path(file_name: str) -> str:
-    PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-    dir_path = os.path.join(PROJECT_ROOT, "generated_files")
-    os.makedirs(dir_path, exist_ok=True)
-    return os.path.join(dir_path, file_name)
-
-
-def wait_for_token(page, key="console_token", timeout=120000):
+def _wait_for_token(page, key="console_token", timeout=120000):
     """Espera até o token estar disponível no localStorage ou atinge timeout."""
     print(f"Aguardando o login... (timeout: {timeout}s)")
     start_time = time.time()
@@ -40,14 +45,14 @@ def wait_for_token(page, key="console_token", timeout=120000):
     raise TimeoutError("Token não foi encontrado no localStorage dentro do tempo limite.")
 
 
-def get_dify_web_token():
+def _get_dify_web_token():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
         context = browser.new_context()
         page = context.new_page()
         page.goto(dotenv.get_key(dotenv_path, "DIFY_WEB_URL_BASE"))
 
-        token = wait_for_token(page)
+        token = _wait_for_token(page)
 
         print("✅ TOKEN capturado.")
 
@@ -55,8 +60,8 @@ def get_dify_web_token():
         return token
 
 
-def dify_import_yaml_web(body, url_import, url_base):
-    token = get_dify_web_token()
+def _dify_import_yaml_web(body, url_import, url_base):
+    token = _get_dify_web_token()
     HEADERS["Authorization"] += token
 
     try:
@@ -72,7 +77,7 @@ def dify_import_yaml_web(body, url_import, url_base):
     return link
 
 
-def dify_login_local():
+def _dify_login_local():
     """
     Para que a função funcione corretamente devem existir as seguintes variáveis no .env:
     EMAIL="email_de_login_do_dify"
@@ -102,8 +107,8 @@ def dify_login_local():
         raise RuntimeError(f"Failed to login: {e}")
 
 
-def dify_import_yaml_local(body, url_import, url_base):
-    token = dify_login_local()
+def _dify_import_yaml_local(body, url_import, url_base):
+    token = _dify_login_local()
     HEADERS["Authorization"] += token
 
     try:
@@ -121,7 +126,7 @@ def dify_import_yaml_local(body, url_import, url_base):
 
 
 def dify_import_yaml(file="dify.yaml", target="web"):
-    file_path = get_path(file)
+    file_path = get_generated_files_path(file)
     url_import = dotenv.get_key(dotenv_path, "DIFY_URL_IMPORT") if target == "local" else dotenv.get_key(dotenv_path, "DIFY_WEB_URL_IMPORT")
     url_base = dotenv.get_key(dotenv_path, "DIFY_BASE_URL") if target == "local" else dotenv.get_key(dotenv_path, "DIFY_WEB_URL_BASE")
     
@@ -133,6 +138,49 @@ def dify_import_yaml(file="dify.yaml", target="web"):
         "yaml_content": yaml_content
     }
     
-    return dify_import_yaml_local(body, url_import, url_base) if target == "local" else dify_import_yaml_web(body, url_import, url_base)
-    
+    return _dify_import_yaml_local(body, url_import, url_base) if target == "local" else _dify_import_yaml_web(body, url_import, url_base)
+
    
+def dify_yaml_builder(state: DifyState) -> Command:
+    write_dify_yaml(state)
+    try:
+        dify_import_yaml("dify.yaml", "local")
+    except Exception as e:
+        print("Não foi possível importar o yaml para o app Dify local, tentando importar na web")
+        try:
+            dify_import_yaml("dify.yaml", "web")
+        except Exception as e:
+            print(e)
+            print("Não foi possível importar o yaml para o app Dify local")
+
+    return Command(
+        update={"messages": [SystemMessage(content="Successfully create the dify yaml")]},
+    )
+
+
+tools_dify = {
+    "create_llm_node" : create_llm_node,
+    "create_answer_node" : create_answer_node,
+    "create_start_node" : create_start_node,
+    # "create_start_with_logic_node": create_start_with_logic_node,
+    # "create_end_with_logic_node": create_end_with_logic_node,
+    "create_contains_logic_node": create_contains_logic_node,
+    # "create_not_contains_logic_node": create_not_contains_logic_node,
+    # "create_is_equals_logic_node": create_is_equals_logic_node,
+    # "create_not_equals_logic_node": create_not_equals_logic_node,
+    # "create_is_empty_logic_node": create_is_empty_logic_node,
+    # "create_not_empty_logic_node": create_not_empty_logic_node,
+    "create_edges" : create_edges,
+    "create_logic_edges": create_logic_edges,
+    "create_http_node": create_http_node
+}
+
+
+def call_dify_tools(state: DifyState) -> List[Command]:
+    tool_calls = state["messages"][-1].tool_calls
+    print(tool_calls)
+    commands = []
+    for tool_call in tool_calls:
+        commands.append(tools_dify[tool_call["name"]].invoke(tool_call))
+
+    return commands
