@@ -8,14 +8,14 @@ HEADERS = {
 
 
 def get_generated_files_path(file_name: str) -> str:
-    PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+    PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
     dir_path = os.path.join(PROJECT_ROOT, "generated_files")
     os.makedirs(dir_path, exist_ok=True)
     return os.path.join(dir_path, file_name)
 
 
 def get_dotenv_path(file=".env") -> str:
-    PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+    PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
     return os.path.join(PROJECT_ROOT, file)
 
 

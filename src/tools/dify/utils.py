@@ -1,22 +1,9 @@
 import yaml
 from pathlib import Path
 import threading
-from schema.dify import DifyState
-from utils.genia import get_generated_files_path
 
-YAML_PATH = get_generated_files_path("dify.yaml")
 semaphore = threading.Semaphore(1)
 
-
-def write_dify_yaml(state: DifyState):
-    yaml_dify = state["metadata_dict"]  
-    yaml_dify["workflow"]["graph"]["nodes"].extend(state["nodes_dicts"])
-    yaml_dify["workflow"]["graph"]["edges"].extend(state["edges_dicts"])
-
-    file = Path(YAML_PATH)
-    with open(file, "w") as outfile:
-        yaml.dump(yaml_dify, outfile, default_flow_style=False, allow_unicode=True)
-        
 
 def insert_node_yaml(file: str, node: dict):
     semaphore.acquire()
@@ -42,9 +29,15 @@ def insert_edge_yaml(file: str, edge: dict):
     with open(file, "w") as outfile:
         yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
     semaphore.release()
-        
 
-def create_logic_node(title: str, node_id: str, value: str, comparison_operator: str, context_variable: str) -> dict:
+
+def create_logic_node(
+    title: str,
+    node_id: str,
+    value: str,
+    comparison_operator: str,
+    context_variable: str,
+) -> dict:
     logic_node = {
         "id": node_id,
         "type": "custom",
@@ -57,21 +50,23 @@ def create_logic_node(title: str, node_id: str, value: str, comparison_operator:
                             "comparison_operator": comparison_operator,
                             "value": value,
                             "varType": "string",
-                            "variable_selector": [
-                                context_variable.split(".")[0],
-                                context_variable.split(".")[1],
-                            ]
-                            if context_variable
-                            else []
+                            "variable_selector": (
+                                [
+                                    context_variable.split(".")[0],
+                                    context_variable.split(".")[1],
+                                ]
+                                if context_variable
+                                else []
+                            ),
                         }
                     ],
-                    "logical_operator": "and"
+                    "logical_operator": "and",
                 }
             ],
             "desc": "",
             "title": title,
-            "type": "if-else"
-        }
+            "type": "if-else",
+        },
     }
     return logic_node
 
