@@ -14,8 +14,8 @@ def sequence_diagram_generator(architecture_output: str):
     """
     plantuml_output = json_to_plantuml(architecture_output)
     generate_diagram(plantuml_output)
-    
-    
+
+
 def make_handoff_tool(*, agent_name: str):
     """Create a tool that can return handoff via a Command"""
     tool_name = f"transfer_to_{agent_name}"

@@ -14,6 +14,4 @@ def node_creator(state: DifyState) -> Command:
     # tool call para adicionar os nós no YAML
     print("node_creator executado")
     print(response)
-    return Command(
-        update={"messages": [response]}
-    )
+    return Command(update={"messages": [response]})

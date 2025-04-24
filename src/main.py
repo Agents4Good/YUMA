@@ -71,7 +71,9 @@ def print_architecture(last_message):
 
     print("\nInterações:")
     for idx, interaction in enumerate(last_message.interactions, start=1):
-        print(f"  {idx}. {interaction.source} -> {interaction.targets}: {interaction.description}")
+        print(
+            f"  {idx}. {interaction.source} -> {interaction.targets}: {interaction.description}"
+        )
 
 
 def main():
@@ -95,12 +97,17 @@ def main():
 
         printed_architecture = False
 
-        for update in graph.stream(user_input, config=thread_config, stream_mode="updates"):
+        for update in graph.stream(
+            user_input, config=thread_config, stream_mode="updates"
+        ):
             for node_id, value in update.items():
                 if isinstance(value, dict) and value.get("messages", []):
                     last_message = value["messages"][-1]
 
-                    if value.get("active_agent") == "architecture_agent" and not printed_architecture:
+                    if (
+                        value.get("active_agent") == "architecture_agent"
+                        and not printed_architecture
+                    ):
                         print_architecture(value.get("architecture_output"))
                         printed_architecture = True
                         continue
