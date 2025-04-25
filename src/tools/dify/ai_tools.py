@@ -5,6 +5,9 @@ from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.messages import ToolMessage
 from langgraph.types import Command
 
+LLAMA = ["claude-3-haiku-20240307", "langgenius/anthropic/anthropic"]
+OPENAI = ["gpt-4", "langgenius/openai/openai"]
+
 
 @tool
 def create_llm_node(
@@ -24,7 +27,7 @@ def create_llm_node(
         - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
         - role (str): Papel do agente no workflow (exemplo: "Você é um especialista em contar piadas").
         - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
-        - task (str): O que o agente faz. Para receber os dados do nó anterior use exatamente "{{#context#}}". (exemplo: "Seu trabalho é responder a pergunta: "{{#context#}}").
+        - task (str): O que o agente faz.
         - temperature (float): Criatividade do modelo, entre 0 e 1.
     """
     llm_node = {
@@ -44,10 +47,13 @@ def create_llm_node(
             "model": {
                 "completion_params": {"temperature": temperature},
                 "mode": "chat",
-                "name": "claude-3-haiku-20240307",
-                "provider": "langgenius/anthropic/anthropic",
+                "name": LLAMA[0],
+                "provider": LLAMA[1],
             },
-            "prompt_template": [{"role": "system", "text": f"""{role}\n{task}"""}],
+            "prompt_template": [
+                {"role": "system", "text": f"""{role}\n{task}"""},
+                {"role": "user", "text": "{{#context#}}"}
+            ],
             "title": title,
             "type": "llm",
             "variables": [],
