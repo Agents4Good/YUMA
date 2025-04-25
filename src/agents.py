@@ -20,7 +20,7 @@ from tools import (
     write_dify_yaml,
     
 )
-from outputs import ArchitectureOutput
+from outputs import ArchitectureOutput, SupervisorOutput
 
 from langgraph.prebuilt import create_react_agent
 from langgraph.types import Command, interrupt
@@ -44,10 +44,30 @@ end_tool = [make_handoff_tool(agent_name="__end__")]
 model = ChatOpenAI(model=os.getenv("MODEL_ID"), base_url=os.getenv("BASE_URL_DEEP_INFRA"))
 
 
-architecture_model = ChatOpenAI(
+structured_model = ChatOpenAI(
                         model=os.getenv("MODEL_ID"),
                         base_url=os.getenv("BASE_URL_DEEP_INFRA"),
                         model_kwargs={"response_format": {"type": "json_object"}})
+
+start_node_creator_model = model.bind_tools(
+    [create_start_node]
+)
+
+llm_node_creator_model = model.bind_tools(
+    [create_llm_node]
+)
+
+answer_node_creator_model = model.bind_tools(
+    [create_answer_node]
+)
+
+logic_node_creator_model = model.bind_tools(
+    [create_contains_logic_node]
+)
+
+http_node_creator_model = model.bind_tools(
+    [create_http_node]
+)
 
 node_creator_dify_model = model.bind_tools(
     [
@@ -109,13 +129,13 @@ def architecture_agent(state: AgentState) -> Command[Literal["human_node", "dify
     print(buffer)
     print("============================================================")
 
-    response = architecture_model.invoke(buffer)
+    response = structured_model.invoke(buffer)
     
     print("============================================================")
     print(response)
     print("============================================================")
     
-    response = _extract_json(response.content)
+    response = _extract_json(response.content, ArchitectureOutput)
     
 
     goto = "human_node"
@@ -137,8 +157,8 @@ def architecture_agent(state: AgentState) -> Command[Literal["human_node", "dify
     )
 
 
-def _extract_json(content):
-    parser = JsonOutputParser(pydantic_object=ArchitectureOutput)
+def _extract_json(content, response_format):
+    parser = JsonOutputParser(pydantic_object=response_format)
     response = None
 
     try:
@@ -149,7 +169,7 @@ def _extract_json(content):
             if match:
                 raw_json_str = match.group(1)
                 parsed = parser.parse(raw_json_str)
-                response = ArchitectureOutput(**parsed)
+                response = response_format(**parsed)
 
         elif isinstance(content, str):
             print("================ Resposta é uma string ================")
@@ -157,7 +177,7 @@ def _extract_json(content):
             if json_start != -1:
                 raw_json_str = content[json_start:]
                 parsed = json.loads(raw_json_str)
-                response = ArchitectureOutput(**parsed)
+                response = response_format(**parsed)
 
         else:
             print("================ Resposta não é uma string ou JSON válido ================")
@@ -201,7 +221,6 @@ def human_node(
 #         """
 #     },
 #     {
-        
 #     }
 # ]
 
@@ -216,9 +235,23 @@ def human_node(
 def supervisor_agent(
     state: AgentState,
 ) -> Command:
+    system_prompt = agents_prompts.SUPERVISOR_AGENT
+
+    messages = state["messages"] + [system_prompt]
+    response = node_creator_dify_model.invoke(messages)
+    print(response)
+    
+    response = _extract_json(response, SupervisorOutput)
+    
+    print("supervisor_agent executado")
+    print(response)
+    response.agents = response.agents.insert(0, 'start_node_creator')
+    response.agents = response.agents.append('answer_node_creator')
     
     yaml_metadata = create_yaml_and_metadata("Sistema do usuario", " ")
+    
     novoState = DifyState(
+        messages= state["messages"] + AIMessage(response),
         architecture_output= state["architecture_output"],
         metadata_dict= yaml_metadata
     )
@@ -239,6 +272,65 @@ def node_creator(state: DifyState) -> Command:
         update={"messages": [response]}
     )
 
+def llm_node_creator(state: DifyState) -> Command:
+    system_prompt = agents_prompts.LLM_NODE_CREATOR
+
+    messages = state["messages"] + [system_prompt]
+    response = node_creator_dify_model.invoke(messages)
+   
+    print("llm_node_creator executado")
+    print(response)
+    return Command(
+        update={"messages": [response]}
+    )
+
+def start_node_creator(state: DifyState) -> Command:
+    system_prompt = agents_prompts.START_NODE_CREATOR
+
+    messages = state["messages"] + [system_prompt]
+    response = node_creator_dify_model.invoke(messages)
+   
+    print("start_node_creator executado")
+    print(response)
+    return Command(
+        update={"messages": [response]}
+    )
+    
+def answer_node_creator(state: DifyState) -> Command:
+    system_prompt = agents_prompts.ANSWER_NODE_CREATOR
+
+    messages = state["messages"] + [system_prompt]
+    response = node_creator_dify_model.invoke(messages)
+   
+    print("answer_node_creator executado")
+    print(response)
+    return Command(
+        update={"messages": [response]}
+    )
+    
+def logic_node_creator(state: DifyState) -> Command:
+    system_prompt = agents_prompts.LOGIC_NODE_CREATOR
+
+    messages = state["messages"] + [system_prompt]
+    response = node_creator_dify_model.invoke(messages)
+   
+    print("logic_node_creator executado")
+    print(response)
+    return Command(
+        update={"messages": [response]}
+    )
+ 
+def http_node_creator(state: DifyState) -> Command:
+    system_prompt = agents_prompts.HTTP_NODE_CREATOR
+
+    messages = state["messages"] + [system_prompt]
+    response = node_creator_dify_model.invoke(messages)
+   
+    print("http_node_creator executado")
+    print(response)
+    return Command(
+        update={"messages": [response]}
+    )
 
 # Agente responsável por criar as edges do sistema
 def edge_creator(state: DifyState) -> Command:

@@ -7,7 +7,12 @@ from agents import (
     node_creator,
     edge_creator,
     dify_yaml_builder,
-    call_dify_tools
+    call_dify_tools,
+    start_node_creator,
+    llm_node_creator,
+    http_node_creator,
+    logic_node_creator,
+    answer_node_creator
 )
 import uuid
 import os
@@ -22,19 +27,28 @@ from langchain_core.messages import HumanMessage
 from utils.io_functions import print_graph
 
 
+dify_agents = ["start_node_creator", "llm_node_creator", "logic_node_creator", "http_node_creator", "answer_node_creator"]
+# CHECAR GRAFO PARA VER SE ESTÁ CORRETO
+def supervisor_conditional_edge(state: DifyState):
+    return state["messages"][-1].agents
+
 def build_graph():
     subgraph_builder = StateGraph(DifyState)
 
     subgraph_builder.add_node("supervisor_agent", supervisor_agent)
-    subgraph_builder.add_node("node_creator", node_creator)
     subgraph_builder.add_node("edge_creator", edge_creator)
     subgraph_builder.add_node("tools_node_creator", call_dify_tools)
     subgraph_builder.add_node("tools_edge_creator", call_dify_tools)
     subgraph_builder.add_node("dify_yaml_builder", dify_yaml_builder)
+    subgraph_builder.add_node("start_node_creator", start_node_creator)
+    subgraph_builder.add_node("llm_node_creator", llm_node_creator)
+    subgraph_builder.add_node("logic_node_creator", logic_node_creator)
+    subgraph_builder.add_node("http_node_creator", http_node_creator)
+    subgraph_builder.add_node("answer_node_creator", answer_node_creator)
 
     subgraph_builder.add_edge(START, "supervisor_agent")
-    subgraph_builder.add_edge("supervisor_agent", "node_creator")
-    subgraph_builder.add_edge("node_creator", "tools_node_creator")
+    subgraph_builder.add_conditional_edges("supervisor_agent", supervisor_conditional_edge)
+    subgraph_builder.add_edge(dify_agents, "tools_node_creator")
     subgraph_builder.add_edge("tools_node_creator", "edge_creator")
     subgraph_builder.add_edge("edge_creator", "tools_edge_creator")
     subgraph_builder.add_edge("tools_edge_creator", "dify_yaml_builder")
@@ -71,7 +85,7 @@ def print_architecture(last_message):
 
 def main():
     graph = build_graph()
-    print_graph(graph)
+    # print_graph(graph)
     thread_config = {"configurable": {"thread_id": uuid.uuid4()}}
     num_conversation = 0
 
