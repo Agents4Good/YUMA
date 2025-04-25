@@ -24,3 +24,9 @@ class ArchitectureOutput(BaseModel):
     interactions: List[Interaction] = Field(description="List of interactions between agents, "
                                                         "where each interaction has a source agent and a target agent")
     route_next: bool = Field(default_factory=lambda: False, description="Determines if the graph should proceed to the next node (True) or remain in the current node (False).")
+    
+class SupervisorOutput(BaseModel):
+    """
+    Represents the Dify's agents that will be run.
+    """
+    agents: List[str] = Field(description="List of Dify's agents")
