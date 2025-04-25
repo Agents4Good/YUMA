@@ -70,3 +70,56 @@ def create_llm_node(
                 )]
         }
     )
+
+
+def create_agent_node(
+    tool_call_id: Annotated[str, InjectedToolCallId], 
+    title: str,
+    node_id: str,
+    instruction: str,
+    context_variable: str,
+):
+    agent_node = {
+        "id": node_id,
+        "type": "custom",
+        "data": {
+            "agent_parameters": {
+                "instruction": {
+                    "value": instruction,    
+                },
+                "model": {
+                    "value": {
+                        "mode": "chat",
+                        "model": LLAMA[0],
+                        "model_type": "llm",
+                        "provider": LLAMA[1],
+                    }
+                },
+                "query": {
+                    "value": [
+                    context_variable.split(".")[0],
+                    context_variable.split(".")[1],
+                ]
+                if context_variable
+                else [],
+                },
+                "agent_strategy_label": "FunctionCalling",
+                "agent_strategy_name": "function_calling",
+                "agent_strategy_provider_name": "langgenius/agent/agent",
+                "desc": "",
+                "title": title,
+                "type": "agent",
+                "tools": "TOOLS HERE // TODO"
+            }
+        }
+    }
+    print("AGENT NODE")
+    return Command(
+        update={
+            "nodes_dicts" : [agent_node],
+            "messages": [
+                ToolMessage(
+                    "Successfully added the agent node", tool_call_id=tool_call_id
+                )]
+        }
+    )
