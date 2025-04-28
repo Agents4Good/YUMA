@@ -4,6 +4,7 @@ import threading
 
 semaphore = threading.Semaphore(1)
 
+
 def insert_node_yaml(file: str, node: dict):
     semaphore.acquire()
     file = Path(file)
@@ -28,9 +29,15 @@ def insert_edge_yaml(file: str, edge: dict):
     with open(file, "w") as outfile:
         yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
     semaphore.release()
-        
 
-def create_logic_node(title: str, node_id: str, value: str, comparison_operator: str, context_variable: str) -> dict:
+
+def create_logic_node(
+    title: str,
+    node_id: str,
+    value: str,
+    comparison_operator: str,
+    context_variable: str,
+) -> dict:
     logic_node = {
         "id": node_id,
         "type": "custom",
@@ -43,39 +50,41 @@ def create_logic_node(title: str, node_id: str, value: str, comparison_operator:
                             "comparison_operator": comparison_operator,
                             "value": value,
                             "varType": "string",
-                            "variable_selector": [
-                                context_variable.split(".")[0],
-                                context_variable.split(".")[1],
-                            ]
-                            if context_variable
-                            else []
+                            "variable_selector": (
+                                [
+                                    context_variable.split(".")[0],
+                                    context_variable.split(".")[1],
+                                ]
+                                if context_variable
+                                else []
+                            ),
                         }
                     ],
-                    "logical_operator": "and"
+                    "logical_operator": "and",
                 }
             ],
             "desc": "",
             "title": title,
-            "type": "if-else"
-        }
+            "type": "if-else",
+        },
     }
     return logic_node
 
 
-def create_http_node_struct(node_id: str,
-                    title: str,
-                    ) -> dict:
-    http_node = {
-        "id": node_id,
-        "type": "custom",
-        "data": {
-            "body": {
-                "type": None,
-                "data": []
-            },
-            "title": title,
-            "type": "http-request"
-        }
-    }
+def create_yaml_metadata(name: str, descritption: str):
+    """
+    Cria os metadados do arquivo YAML.
 
-    return http_node
+    Parâmetros:
+        - name (str): Nome do workflow.
+        - description (str): Descrição do workflow.
+    """
+    return {
+        "app": {"description": descritption, "mode": "advanced-chat", "name": name},
+        "version": "0.1.5",
+        "workflow": {
+            "conversation_variables": [],
+            "environment_variables": [],
+            "graph": {"edges": [], "nodes": []},
+        },
+    }

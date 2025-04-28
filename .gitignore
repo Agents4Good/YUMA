@@ -177,3 +177,6 @@ cython_debug/
 *.puml
 dify.yaml
 *.png
+
+# PyCharm
+/.idea/

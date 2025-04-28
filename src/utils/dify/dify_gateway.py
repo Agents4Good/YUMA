@@ -2,30 +2,43 @@ from playwright.sync_api import sync_playwright
 import time
 import requests
 import webbrowser
-import os
 import dotenv
 import yaml
+from utils.genia import get_generated_files_path, get_dotenv_path
 
-HEADERS = {
-    "Content-Type": "application/json",
-    "Authorization": "Bearer "
-}
-
-def get_dotenv_path(file=".env") -> str:
-    PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-    return os.path.join(PROJECT_ROOT, file)
+HEADERS = {"Content-Type": "application/json", "Authorization": "Bearer "}
 
 dotenv_path = get_dotenv_path()
 
 
-def get_path(file_name: str) -> str:
-    PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-    dir_path = os.path.join(PROJECT_ROOT, "generated_files")
-    os.makedirs(dir_path, exist_ok=True)
-    return os.path.join(dir_path, file_name)
+def dify_import_yaml(file="dify.yaml", target="web"):
+    file_path = get_generated_files_path(file)
+    url_import = (
+        dotenv.get_key(dotenv_path, "DIFY_URL_IMPORT")
+        if target == "local"
+        else dotenv.get_key(dotenv_path, "DIFY_WEB_URL_IMPORT")
+    )
+    url_base = (
+        dotenv.get_key(dotenv_path, "DIFY_BASE_URL")
+        if target == "local"
+        else dotenv.get_key(dotenv_path, "DIFY_WEB_URL_BASE")
+    )
+
+    with open(file_path, "r", encoding="utf-8") as file:
+        yaml_content = yaml.dump(
+            yaml.safe_load(file), line_break="\n ", allow_unicode=True
+        )
+
+    body = {"mode": "yaml-content", "yaml_content": yaml_content}
+
+    return (
+        _dify_import_yaml_local(body, url_import, url_base)
+        if target == "local"
+        else _dify_import_yaml_web(body, url_import, url_base)
+    )
 
 
-def wait_for_token(page, key="console_token", timeout=120000):
+def _wait_for_token(page, key="console_token", timeout=120000):
     """Espera até o token estar disponível no localStorage ou atinge timeout."""
     print(f"Aguardando o login... (timeout: {timeout}s)")
     start_time = time.time()
@@ -37,17 +50,19 @@ def wait_for_token(page, key="console_token", timeout=120000):
         if token:
             return token
         time.sleep(1)
-    raise TimeoutError("Token não foi encontrado no localStorage dentro do tempo limite.")
+    raise TimeoutError(
+        "Token não foi encontrado no localStorage dentro do tempo limite."
+    )
 
 
-def get_dify_web_token():
+def _get_dify_web_token():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
         context = browser.new_context()
         page = context.new_page()
         page.goto(dotenv.get_key(dotenv_path, "DIFY_WEB_URL_BASE"))
 
-        token = wait_for_token(page)
+        token = _wait_for_token(page)
 
         print("✅ TOKEN capturado.")
 
@@ -55,8 +70,8 @@ def get_dify_web_token():
         return token
 
 
-def dify_import_yaml_web(body, url_import, url_base):
-    token = get_dify_web_token()
+def _dify_import_yaml_web(body, url_import, url_base):
+    token = _get_dify_web_token()
     HEADERS["Authorization"] += token
 
     try:
@@ -72,7 +87,7 @@ def dify_import_yaml_web(body, url_import, url_base):
     return link
 
 
-def dify_login_local():
+def _dify_login_local():
     """
     Para que a função funcione corretamente devem existir as seguintes variáveis no .env:
     EMAIL="email_de_login_do_dify"
@@ -85,12 +100,12 @@ def dify_login_local():
     password = dotenv.get_key(dotenv_path, "SENHA")
     if password is None:
         raise ValueError("Variável de ambiente SENHA não encontrada no arquivo .env.")
-    url_login = dotenv.get_key(dotenv_path,"DIFY_URL_LOGIN")
+    url_login = dotenv.get_key(dotenv_path, "DIFY_URL_LOGIN")
     body = {
         "email": email,
-        "language":"pt-BR",
+        "language": "pt-BR",
         "remember_me": "true",
-        "password": password
+        "password": password,
     }
 
     try:
@@ -102,8 +117,8 @@ def dify_login_local():
         raise RuntimeError(f"Failed to login: {e}")
 
 
-def dify_import_yaml_local(body, url_import, url_base):
-    token = dify_login_local()
+def _dify_import_yaml_local(body, url_import, url_base):
+    token = _dify_login_local()
     HEADERS["Authorization"] += token
 
     try:
@@ -112,27 +127,8 @@ def dify_import_yaml_local(body, url_import, url_base):
     except requests.exceptions.RequestException as e:
         raise RuntimeError(f"Failed to import YAML: {e}")
 
-
     link = url_base + response.json().get("app_id") + "/workflow"
 
     webbrowser.open(link)
 
     return link
-
-
-def dify_import_yaml(file="dify.yaml", target="web"):
-    file_path = get_path(file)
-    url_import = dotenv.get_key(dotenv_path, "DIFY_URL_IMPORT") if target == "local" else dotenv.get_key(dotenv_path, "DIFY_WEB_URL_IMPORT")
-    url_base = dotenv.get_key(dotenv_path, "DIFY_BASE_URL") if target == "local" else dotenv.get_key(dotenv_path, "DIFY_WEB_URL_BASE")
-    
-    with open(file_path, "r", encoding="utf-8") as file:
-        yaml_content = yaml.dump(yaml.safe_load(file), line_break="\n ", allow_unicode=True)
-
-    body = {
-        "mode": "yaml-content",
-        "yaml_content": yaml_content
-    }
-    
-    return dify_import_yaml_local(body, url_import, url_base) if target == "local" else dify_import_yaml_web(body, url_import, url_base)
-    
-   
