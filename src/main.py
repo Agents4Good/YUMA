@@ -4,7 +4,6 @@ from agents import (
     architecture_agent,
     human_node,
     supervisor_agent,
-    node_creator,
     edge_creator,
     dify_yaml_builder,
     call_dify_tools,
@@ -30,7 +29,9 @@ from utils.io_functions import print_graph
 dify_agents = ["start_node_creator", "llm_node_creator", "logic_node_creator", "http_node_creator", "answer_node_creator"]
 # CHECAR GRAFO PARA VER SE ESTÁ CORRETO
 def supervisor_conditional_edge(state: DifyState):
-    return state["messages"][-1].agents
+    print("=============================\nconditional_edge")
+    print(state["messages"][-1])
+    return state["messages"][-1].content
 
 def build_graph():
     subgraph_builder = StateGraph(DifyState)
