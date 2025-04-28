@@ -3,9 +3,9 @@ from .prompt import ARCHITECT_AGENT
 from langgraph.types import Command
 from typing import Literal
 from langchain_core.messages import SystemMessage, AIMessage
-from models.genia import architecture_model
-from models import model
-from .utils import extract_json
+from models import model, structured_model
+from utils.genia import extract_json
+from .structured_output import ArchitectureOutput
 from tools.genia.utils import sequence_diagram_generator
 
 
@@ -39,13 +39,13 @@ def architect(state: AgentState) -> Command[Literal["human_node", "dify"]]:
     print(buffer)
     print("============================================================")
 
-    response = architecture_model.invoke(buffer)
+    response = structured_model.invoke(buffer)
 
     print("============================================================")
     print(response)
     print("============================================================")
 
-    response = extract_json(response.content)
+    response = extract_json(response.content, ArchitectureOutput)
 
     goto = "human_node"
     if response.route_next:
