@@ -1,4 +1,6 @@
-from typing import Annotated
+from typing import Annotated, Literal
+
+from .utils import DIFY_AGENT_TOOLS
 
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
@@ -11,7 +13,7 @@ OPENAI = ["gpt-4", "langgenius/openai/openai"]
 
 @tool
 def create_llm_node(
-    tool_call_id: Annotated[str, InjectedToolCallId], 
+    tool_call_id: Annotated[str, InjectedToolCallId],
     title: str,
     node_id: str,
     role: str,
@@ -21,7 +23,7 @@ def create_llm_node(
 ):
     """
     Cria um nó de agente (LLM) para um workflow multiagente.
-    
+
     Parâmetros:
         - title (str): Nome do nó.
         - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
@@ -72,23 +74,42 @@ def create_llm_node(
     )
 
 
+@tool
 def create_agent_node(
-    tool_call_id: Annotated[str, InjectedToolCallId], 
+    tool_call_id: Annotated[str, InjectedToolCallId],
     title: str,
     node_id: str,
     instruction: str,
     context_variable: str,
+    tool: Literal["web_scraper"],
+    temperature: float,
 ):
+    """
+    Cria um nó de agente ReAct que utiliza tools para um workflow multiagente.
+
+    Parâmetros:
+        - title (str): Nome do nó.
+        - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
+        - instruction (str): Instrução do agente no workflow (exemplo: "Você é um agente especialista em busca de informações na web.").
+        - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
+        - tool: Literal["web_scraper"]: Ferramenta utilizada pelo agente.
+        - temperature (float): Criatividade do modelo, entre 0 e 1.
+    """
     agent_node = {
         "id": node_id,
         "type": "custom",
         "data": {
             "agent_parameters": {
                 "instruction": {
-                    "value": instruction,    
+                    "type": "constant",
+                    "value": instruction,
                 },
                 "model": {
+                    "type": "constant",
                     "value": {
+                        "completion_params": {
+                            "temperature": temperature,
+                        },
                         "mode": "chat",
                         "model": LLAMA[0],
                         "model_type": "llm",
@@ -96,30 +117,27 @@ def create_agent_node(
                     }
                 },
                 "query": {
-                    "value": [
-                    context_variable.split(".")[0],
-                    context_variable.split(".")[1],
-                ]
-                if context_variable
-                else [],
+                    "type": "constant",
+                    "value": f"""{{{{#{context_variable}#}}}}"""
                 },
-                "agent_strategy_label": "FunctionCalling",
-                "agent_strategy_name": "function_calling",
-                "agent_strategy_provider_name": "langgenius/agent/agent",
-                "desc": "",
-                "title": title,
-                "type": "agent",
-                "tools": "TOOLS HERE // TODO"
-            }
-        }
+                "tools": DIFY_AGENT_TOOLS.get(tool),
+            },
+            "agent_strategy_label": "FunctionCalling",
+            "agent_strategy_name": "function_calling",
+            "agent_strategy_provider_name": "langgenius/agent/agent",
+            "desc": "",
+            "title": title,
+            "type": "agent",
+        },
     }
     print("AGENT NODE")
     return Command(
         update={
-            "nodes_dicts" : [agent_node],
+            "nodes_dicts": [agent_node],
             "messages": [
                 ToolMessage(
                     "Successfully added the agent node", tool_call_id=tool_call_id
-                )]
+                )
+            ],
         }
     )
