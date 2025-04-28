@@ -62,7 +62,15 @@ answer_node_creator_model = model.bind_tools(
 )
 
 logic_node_creator_model = model.bind_tools(
-    [create_contains_logic_node]
+    [create_contains_logic_node,
+    # create_start_with_logic_node,
+    # create_end_with_logic_node,
+    # create_not_contains_logic_node,
+    # create_is_equals_logic_node,
+    # create_not_equals_logic_node,
+    # create_is_empty_logic_node,
+    # create_not_empty_logic_node,
+    ]
 )
 
 http_node_creator_model = model.bind_tools(
@@ -237,32 +245,32 @@ def supervisor_agent(
 ) -> Command:
     system_prompt = agents_prompts.SUPERVISOR_AGENT
 
-    messages = state["messages"] + [system_prompt]
-    response = node_creator_dify_model.invoke(messages)
+    messages = state["messages"] + [SystemMessage(system_prompt)]
+    response = structured_model.invoke(messages)
     print(response)
     
-    response = _extract_json(response, SupervisorOutput)
+    response = _extract_json(response.content, SupervisorOutput)
     
     print("supervisor_agent executado")
     print(response)
-    response.agents = response.agents.insert(0, 'start_node_creator')
-    response.agents = response.agents.append('answer_node_creator')
+    response.agents.insert(0, 'start_node_creator')
+    response.agents.append('answer_node_creator')
     
     yaml_metadata = create_yaml_and_metadata("Sistema do usuario", " ")
     
     novoState = DifyState(
-        messages= state["messages"] + AIMessage(response),
+        messages= state["messages"] + [AIMessage(response.agents)],
         architecture_output= state["architecture_output"],
         metadata_dict= yaml_metadata
     )
-    return Command(update=novoState, goto=["node_creator"])
+    return Command(update=novoState)
 
 
 # Agente responsável por criar os nodes do sistema
 def node_creator(state: DifyState) -> Command:
     system_prompt = agents_prompts.NODE_CREATOR
 
-    messages = state["messages"] + [system_prompt]
+    messages = state["messages"] + [SystemMessage(system_prompt)]
     response = node_creator_dify_model.invoke(messages)
     print(response)
     # tool call para adicionar os nós no YAML
@@ -275,10 +283,10 @@ def node_creator(state: DifyState) -> Command:
 def llm_node_creator(state: DifyState) -> Command:
     system_prompt = agents_prompts.LLM_NODE_CREATOR
 
-    messages = state["messages"] + [system_prompt]
-    response = node_creator_dify_model.invoke(messages)
-   
+    messages = state["messages"] + [SystemMessage(system_prompt)]
     print("llm_node_creator executado")
+    response = llm_node_creator_model.invoke(messages)
+   
     print(response)
     return Command(
         update={"messages": [response]}
@@ -287,10 +295,10 @@ def llm_node_creator(state: DifyState) -> Command:
 def start_node_creator(state: DifyState) -> Command:
     system_prompt = agents_prompts.START_NODE_CREATOR
 
-    messages = state["messages"] + [system_prompt]
-    response = node_creator_dify_model.invoke(messages)
-   
+    messages = state["messages"] + [SystemMessage(system_prompt)]
     print("start_node_creator executado")
+    response = start_node_creator_model.invoke(messages)
+   
     print(response)
     return Command(
         update={"messages": [response]}
@@ -299,10 +307,10 @@ def start_node_creator(state: DifyState) -> Command:
 def answer_node_creator(state: DifyState) -> Command:
     system_prompt = agents_prompts.ANSWER_NODE_CREATOR
 
-    messages = state["messages"] + [system_prompt]
-    response = node_creator_dify_model.invoke(messages)
-   
+    messages = state["messages"] + [SystemMessage(system_prompt)]
     print("answer_node_creator executado")
+    response = answer_node_creator_model.invoke(messages)
+   
     print(response)
     return Command(
         update={"messages": [response]}
@@ -311,10 +319,10 @@ def answer_node_creator(state: DifyState) -> Command:
 def logic_node_creator(state: DifyState) -> Command:
     system_prompt = agents_prompts.LOGIC_NODE_CREATOR
 
-    messages = state["messages"] + [system_prompt]
-    response = node_creator_dify_model.invoke(messages)
-   
+    messages = state["messages"] + [SystemMessage(system_prompt)]
     print("logic_node_creator executado")
+    response = logic_node_creator_model.invoke(messages)
+   
     print(response)
     return Command(
         update={"messages": [response]}
@@ -323,10 +331,10 @@ def logic_node_creator(state: DifyState) -> Command:
 def http_node_creator(state: DifyState) -> Command:
     system_prompt = agents_prompts.HTTP_NODE_CREATOR
 
-    messages = state["messages"] + [system_prompt]
-    response = node_creator_dify_model.invoke(messages)
-   
+    messages = state["messages"] + [SystemMessage(system_prompt)]
     print("http_node_creator executado")
+    response = http_node_creator_model.invoke(messages)
+   
     print(response)
     return Command(
         update={"messages": [response]}
@@ -337,7 +345,7 @@ def edge_creator(state: DifyState) -> Command:
     print("edge_creator")
     system_prompt = agents_prompts.EDGE_CREATOR
 
-    messages = state["messages"] + [system_prompt]
+    messages = state["messages"] + [SystemMessage(system_prompt)]
     response = edge_creator_dify_model.invoke(messages)
     print(response)
     # tool call para adicionar os arcos no YAML
