@@ -95,7 +95,7 @@ def main():
                 break
             user_input = Command(resume=human_message)
 
-        printed_architecture = False
+        final_state = None
 
         for update in graph.stream(
             user_input, config=thread_config, stream_mode="updates"
@@ -104,16 +104,15 @@ def main():
                 if isinstance(value, dict) and value.get("messages", []):
                     last_message = value["messages"][-1]
 
-                    if (
-                        value.get("active_agent") == "architecture_agent"
-                        and not printed_architecture
-                    ):
-                        print_architecture(value.get("architecture_output"))
-                        printed_architecture = True
-                        continue
-
                     if not isinstance(last_message, dict) and last_message.type == "ai":
                         print(f"{node_id}: {last_message.content}")
+
+                    final_state = value
+
+        if final_state:
+            architecture_output = final_state.get("architecture_output")
+            if architecture_output:
+                print_architecture(architecture_output)
 
         num_conversation += 1
 
