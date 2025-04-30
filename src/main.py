@@ -64,10 +64,10 @@ def build_graph():
 def print_architecture(last_message):
     """Imprime a arquitetura do sistema multiagente."""
     print("\n=== Arquitetura do Sistema Multiagente ===\n")
-    print("Agentes:")
+    print("Nós:")
 
-    for idx, agent in enumerate(last_message.agents, start=1):
-        print(f"  {idx}. {agent.agent}: {agent.description}")
+    for idx, node in enumerate(last_message.nodes, start=1):
+        print(f"  {idx}. {node.node}: {node.description}")
 
     print("\nInterações:")
     for idx, interaction in enumerate(last_message.interactions, start=1):
@@ -113,7 +113,7 @@ def main():
                         continue
 
                     if not isinstance(last_message, dict) and last_message.type == "ai":
-                        print(f"{node_id}: {last_message.content}")
+                        print(f"\n {node_id}: {last_message.content}")
 
         num_conversation += 1
 
