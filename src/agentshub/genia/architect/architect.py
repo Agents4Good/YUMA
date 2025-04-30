@@ -50,6 +50,7 @@ def architect(state: AgentState) -> Command[Literal["human_node", "dify"]]:
     goto = "human_node"
     if response.route_next:
         goto = "dify"
+        state["messages"].append(AIMessage(content=response.model_dump_json()))
 
     sequence_diagram_generator.invoke(response.model_dump_json())
 
