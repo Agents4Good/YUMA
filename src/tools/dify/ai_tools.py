@@ -81,7 +81,7 @@ def create_agent_node(
     node_id: str,
     instruction: str,
     context_variable: str,
-    tool: Literal["web_scraper"],
+    tool: Literal["tavily_search"],
     temperature: float,
 ):
     """
@@ -92,7 +92,7 @@ def create_agent_node(
         - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
         - instruction (str): Instrução do agente no workflow (exemplo: "Você é um agente especialista em busca de informações na web.").
         - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
-        - tool: Literal["web_scraper"]: Ferramenta utilizada pelo agente.
+        - tool: Literal["tavily_search"]: Ferramenta utilizada pelo agente.
         - temperature (float): Criatividade do modelo, entre 0 e 1.
     """
     agent_node = {
@@ -102,7 +102,7 @@ def create_agent_node(
             "agent_parameters": {
                 "instruction": {
                     "type": "constant",
-                    "value": instruction,
+                    "value": instruction + "\nUtilize obrigatoriamente a ferramenta de busca web disponível para gerar todas as respostas.\nAs respostas devem ser redigidas exclusivamente em português brasileiro.\nSempre que possível, inclua referências com links diretos para as fontes utilizadas.",
                 },
                 "model": {
                     "type": "constant",
