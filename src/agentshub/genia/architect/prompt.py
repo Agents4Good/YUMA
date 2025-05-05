@@ -45,7 +45,7 @@ ARCHITECT_AGENT = """
     - Para cada agente, adicione na descrição qual tipo de nó Dify ele será mapeado (Start Node, LLM Node, etc), mas NÃO substitua o nome nem a função do agente.
     - Incorpore essa informação na descrição, por exemplo:  
       `"description": "Descrição normal, vai ser mapeado para (Tipo de nó) do dify"`
-    - LEMBRE: adicionar os necessários nós de resposta do dify para o funcionamento do sistema, incluindo também nas interações.
+    - IMPORTANTE: adicione os necessários nós de resposta do dify para o funcionamento do sistema, incluindo também nas interações.
 
     Evite criar agentes genéricos com nomes iguais aos nós do Dify. 
     O foco é refletir corretamente os componentes do sistema descrito, e apenas mapear cada um para um nó correspondente do Dify na descrição.
