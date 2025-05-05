@@ -70,9 +70,20 @@ tools_dify = {
 
 def call_dify_tools(state: DifyState) -> List[Command]:
     tool_calls = state["messages"][-1].tool_calls
-    print(tool_calls)
+    print(f"Tool calls: um{tool_calls}")
     commands = []
     for tool_call in tool_calls:
         commands.append(tools_dify[tool_call["name"]].invoke(tool_call))
-
+    if commands == []:
+        return [
+            Command(
+                update={
+                    "messages": [
+                        SystemMessage(
+                            content="No tool calls were made in the last message"
+                        )
+                    ]
+                }
+            )
+        ]
     return commands
