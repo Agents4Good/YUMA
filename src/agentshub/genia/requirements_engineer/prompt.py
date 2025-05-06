@@ -78,6 +78,7 @@ REQUIREMENTS_ENGINEER_REFACTED = """
 
 
     6. Entrega final:
+        - Quando a descrição estiver completa, passe para o usuário validar as informações e confirmar se está tudo correto.
         - Quando o usuário confirmar que a descrição está completa, organize todas as informações validadas em um **documento de requisitos** claro, conciso e objetivo.
         - Este documento deve conter:
             - Propósito do sistema
@@ -87,7 +88,7 @@ REQUIREMENTS_ENGINEER_REFACTED = """
             - Regras e restrições
             - Cenários de uso
         - **Não** gere código, pseudocódigo ou agentes.
-        - Encaminhe a descrição final para "architecture_agent".
+        - **Somente** encaminhe para o "architecture_agent" quando o usuário confirmar que a descrição está completa e aprovada.
 
 
     Objetivo principal:
