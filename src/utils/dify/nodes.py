@@ -73,14 +73,16 @@ def call_dify_tools(state: DifyState) -> List[Command]:
     tool_calls = []
     i = -1
     while True:
-        tool_call = state["messages"][i].tool_calls
+        message = state["messages"][i]
+        tool_call = getattr(message, "tool_calls", [])
         print("==============\ntool_call\n", tool_call)
-        print("============\nmessage\n", state["messages"][i])
+        print("============\nmessage\n", message)
         if tool_call != []:
-            tool_calls.append(tool_call)
+            tool_calls.extend(tool_call)
         else:
             break
         i -= 1
+
     print("===============\ntool_calls")
     print(tool_calls)
     commands = []
