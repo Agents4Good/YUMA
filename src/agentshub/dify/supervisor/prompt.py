@@ -8,8 +8,7 @@ SUPERVISOR_AGENT = """
     - http_node_creator
     
     FORMATO DA RESPOTA:
-    - Responda APENAS com um JSON válido, não adicione perguntas, comentários ou explicações. O JSON deve estar no seguinte formato:
-    
+    - Responda APENAS com um JSON válido, não adicione perguntas, comentários ou explicações. O JSON deve estar no seguinte formato (NÃO ALTERE OS NOMES DAS CHAVES DO JSON):
     ```{
         "agents": [
             "llm_node_creator",
