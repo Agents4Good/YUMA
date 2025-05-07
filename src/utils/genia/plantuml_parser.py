@@ -5,19 +5,19 @@ from plantuml import PlantUML
 
 def json_to_plantuml(data: str) -> str:
     """
-    Converte um JSON de agentes e interações para um diagrama de sequência em PlantUML.
+    Converte um JSON de nodes e interações para um diagrama de sequência em PlantUML.
     """
     data = json.loads(data)
 
     plantuml_code = """
     @startuml
 
-    ' Definição dos agentes
+    ' Definição dos nodes
     """
 
-    agents = {agent["agent"] for agent in data["agents"]}
-    for agent in agents:
-        plantuml_code += f"participant {agent}\n"
+    nodes = {node["node"] for node in data["nodes"]}
+    for node in nodes:
+        plantuml_code += f"participant {node}\n"
 
     plantuml_code += "\n' Definição das interações\n"
 
