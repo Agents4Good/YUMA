@@ -1,6 +1,9 @@
 from langgraph.graph.state import CompiledStateGraph
 import os
 
+from wcwidth import wcswidth
+
+
 HEADERS = {
     "Content-Type": "application/json",
     "Authorization": "Bearer "
@@ -37,3 +40,42 @@ def print_graph(graph: CompiledStateGraph, filename="graph_image.png") -> None:
         if isinstance(node.data, CompiledStateGraph):
             subgraph_filename = f"subgraph_{node_id}.png"
             print_graph(node.data, filename=subgraph_filename)
+
+
+WIDTH = 70  # Largura total da linha
+
+def print_conversation_header(num_conversation):
+    title = f"💬 CONVERSATION TURN {num_conversation}"
+    content_width = WIDTH - 2  # bordas ║║
+
+    title_width = wcswidth(title)
+    total_padding = content_width - title_width
+    left_padding = total_padding // 2
+    right_padding = total_padding - left_padding
+
+    print("╔" + "═" * content_width + "╗")
+    print(f"║{' ' * left_padding}{title}{' ' * right_padding}║")
+    print("╚" + "═" * content_width + "╝")
+    print("\n")
+
+
+def print_node_header(node_id, content):
+    title = f"🤖 {node_id}"
+    
+    print(title)
+    print("━" * WIDTH)
+    print(content)
+    print("\n")
+
+
+def get_human_input():
+    print(f"👤 Usuário{' ' * 38}(Digite 'q' para sair)")
+    print("━" * WIDTH)
+    return input("📝 Digite sua entrada: ")
+
+
+def print_break_line():
+    padding = (WIDTH // 2) - 3
+    print("\n")
+    print(f"{' ' * padding}🔸 🔸 🔸")
+    print("\n")
