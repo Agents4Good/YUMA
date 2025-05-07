@@ -1,5 +1,6 @@
 from .ai_tools import (
-    create_llm_node
+    create_llm_node,
+    create_agent_node
 )
 from .edge_tools import (
     create_edges
@@ -32,6 +33,7 @@ from .web_tools import (
 
 __all__ = [
     "create_llm_node",
+    "create_agent_node",
     "create_edges",
     "create_start_node",
     "create_answer_node",

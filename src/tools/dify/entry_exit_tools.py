@@ -50,7 +50,7 @@ def create_answer_node(
     Parâmetros:
         - title (str): Nome do nó.
         - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
-        - answer_variables (list[str]): Lista de variáveis a serem exibidas para o usuário em ordem de disposição (exemplo: ["llm1.text", "llm2.text"]).
+        - answer_variables (list[str]): Lista de variáveis a serem exibidas para o usuário em ordem de disposição (exemplo: ["llm1.text", "llm2.text"]). Utilize apenas o sufixo ".text".
     """
     answer_node = {
         "id": node_id,

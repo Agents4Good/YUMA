@@ -7,6 +7,7 @@ from pathlib import Path
 from utils.genia import get_generated_files_path
 from tools.dify import (
     create_llm_node,
+    create_agent_node,
     create_answer_node,
     create_start_node,
     create_contains_logic_node,
@@ -52,6 +53,7 @@ def dify_yaml_builder(state: DifyState) -> Command:
 
 tools_dify = {
     "create_llm_node": create_llm_node,
+    "create_agent_node": create_agent_node,
     "create_answer_node": create_answer_node,
     "create_start_node": create_start_node,
     # "create_start_with_logic_node": create_start_with_logic_node,
