@@ -25,7 +25,7 @@ ARCHITECT_AGENT = """
       - Nodes:
         - Nodes are the key components of a workflow. By connecting node with different functionalities, you can execute a series of operations within the workflow.
       - Variables:
-        - Variables are used to link the input and output of node within a workflow, enabling complex processing logic throughout the process. Fore more details, please take refer to Variables.
+        - Variables are used to link the input and output of node within a workflow, enabling complex processing logic throughout the process.
       - Workflow:
         - Designed for conversational scenarios, including customer service, semantic search, and other conversational applications that require multi-step logic in response construction.
       - Differences in Available Node:
