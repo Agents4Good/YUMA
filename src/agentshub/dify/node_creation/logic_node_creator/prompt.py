@@ -5,7 +5,7 @@ LOGIC_NODE_CREATOR = """
  
     1. `create_contains_logic_node(title: str, node_id: str, value: str, context_variable: str)`
     Essa tool é responsável por criar um nó de lógica (if/else) na ferramenta conhecida como Dify.
-    Esse tipo de nó tem como objetivo realizar um desvio no workflow do sistema, a partir de um valor específico de uma variável.
+    Esse tipo de nó tem como objetivo realizar um desvio no workflow do sistema, a partir de um valor específico de uma variável, funcionando como um IF ELSE de qualquer linguagem de programação.
     
     Parâmetros:
         - title (str): Nome do nó.
