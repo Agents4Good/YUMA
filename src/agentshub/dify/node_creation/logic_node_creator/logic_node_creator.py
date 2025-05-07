@@ -12,7 +12,7 @@ def logic_node_creator(state: DifyState) -> Command:
     messages = state["messages"] + [SystemMessage(system_prompt)]
     response = logic_node_creator_model.invoke(messages)
 
-    print("logic_node_creator executado\n", response)
+    print("logic_node_creator executado")
     return Command(
         update={"messages": [response]}
     )
