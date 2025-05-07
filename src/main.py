@@ -6,15 +6,16 @@ from agentshub.genia import (
     human_node,
 )
 
-from agentshub.dify import (
-    supervisor,
-    node_creator,
-    edge_creator
-)
+from agentshub.dify import supervisor, node_creator, edge_creator
 
-from utils.dify import (
-    dify_yaml_builder,
-    call_dify_tools
+from utils.dify import dify_yaml_builder, call_dify_tools
+
+from utils.genia.io_functions import (
+    print_graph,
+    print_conversation_header,
+    print_node_header,
+    print_break_line,
+    get_human_input,
 )
 
 import uuid
@@ -74,47 +75,55 @@ def print_architecture(last_message):
         print(
             f"  {idx}. {interaction.source} -> {interaction.targets}: {interaction.description}"
         )
+    print("\n")
+
+
+def get_initial_user_input(num_conversation):
+    print_conversation_header(num_conversation)
+    human_message = get_human_input()
+    print_break_line()
+    if human_message.lower() == "q":
+        return None
+    return AgentState(messages=[HumanMessage(content=human_message)])
+
+
+def get_user_input():
+    human_message = get_human_input()
+    print_break_line()
+    if human_message.lower() == "q":
+        return None
+    return Command(resume=human_message)
+
+
+def handle_stream(graph, user_input, config):
+    final_state = None
+    for update in graph.stream(user_input, config=config, stream_mode="updates"):
+        for node_id, value in update.items():
+            if isinstance(value, dict) and value.get("messages", []):
+                last_message = value["messages"][-1]
+                if not isinstance(last_message, dict) and last_message.type == "ai":
+                    print_node_header(node_id, last_message.content)
+                final_state = value
+    return final_state
 
 
 def main():
     graph = build_graph()
     print_graph(graph)
+
     thread_config = {"configurable": {"thread_id": uuid.uuid4()}}
     num_conversation = 0
+    user_input = get_initial_user_input(num_conversation)
 
-    human_message = input("Digite sua entrada: ")
-    user_input = AgentState(messages=[HumanMessage(content=human_message)])
-
-    while True:
-        print(f"\n--- Conversation Turn {num_conversation} ---\n")
-
-        if num_conversation > 0:
-            print('Digite "q" para sair')
-            human_message = input("User: ")
-            if human_message.lower() == "q":
-                break
-            user_input = Command(resume=human_message)
-
-        final_state = None
-
-        for update in graph.stream(
-            user_input, config=thread_config, stream_mode="updates"
-        ):
-            for node_id, value in update.items():
-                if isinstance(value, dict) and value.get("messages", []):
-                    last_message = value["messages"][-1]
-
-                    if not isinstance(last_message, dict) and last_message.type == "ai":
-                        print(f"\n {node_id}: {last_message.content}")
-
-                    final_state = value
-
-        if final_state:
-            architecture_output = final_state.get("architecture_output")
-            if architecture_output:
-                print_architecture(architecture_output)
-
+    while user_input != None:
         num_conversation += 1
+        final_state = handle_stream(graph, user_input, config=thread_config)
+        print_conversation_header(num_conversation)
+
+        if final_state and (architecture_output := final_state.get("architecture_output")):
+            print_architecture(architecture_output)
+
+        user_input = get_user_input()
 
 
 if __name__ == "__main__":
