@@ -2,26 +2,26 @@ from pydantic import BaseModel, Field
 from typing import List
 
 
-class Agent(BaseModel):
+class Node(BaseModel):
     """
-    Represents an agent in the multi-agent system.
+    Represents an node in the multi-agent system.
     """
 
-    agent: str = Field(description="The name of the agent using underlines")
-    description: str = Field(description="The description of the agent")
+    node: str = Field(description="The name of the node using underlines")
+    description: str = Field(description="The description of the node")
 
 
 class Interaction(BaseModel):
     """
-    Represents an interaction between agents.
+    Represents an interaction between nodes.
     """
 
-    source: str = Field(description="The name of the source agent using underlines")
+    source: str = Field(description="The name of the source node using underlines")
     targets: str = Field(
-        description="The target agent that the source agent interacts with, using underlines"
+        description="The target node that the source node interacts with, using underlines"
     )
     description: str = Field(
-        description="A short description of what a agent will comunicate the other"
+        description="A short description of what a node will comunicate the other"
     )
 
 
@@ -30,10 +30,10 @@ class ArchitectureOutput(BaseModel):
     Represents the architecture of the multi-agent system.
     """
 
-    agents: List[Agent] = Field(description="List of agents in the multi-agent system")
+    nodes: List[Node] = Field(description="List of nodes in the multi-agent system")
     interactions: List[Interaction] = Field(
-        description="List of interactions between agents, "
-        "where each interaction has a source agent and a target agent"
+        description="List of interactions between nodes, "
+        "where each interaction has a source node and a target node"
     )
     route_next: bool = Field(
         default_factory=lambda: False,
