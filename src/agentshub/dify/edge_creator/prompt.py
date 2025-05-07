@@ -10,5 +10,5 @@ EDGE_CREATOR = """
     - Você **não deve** retornar nenhuma explicação ou texto. **Use apenas chamadas de ferramentas**.
     - Se não for possível criar conexões, retorne uma lista de chamadas vazia.
 
-    IMPORTANTE: TODOS OS NÓS DEVEM SER CONECTADOS, INCLUINDO O NÓ FINAL.
+    IMPORTANTE: TODOS OS NÓS DEVEM SER CONECTADOS, INCLUINDO O NÓ FINAL E INICIAL.
     """

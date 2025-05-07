@@ -12,9 +12,10 @@ SUPERVISOR_AGENT = """
     ```{
         "agents": [
             "llm_node_creator",
-            "llm_node_creator",
             "logic_node_creator",
             "http_node_creator",
         ]
     }```
+    
+    - NÃO REPITA MEMBROS DA EQUIPE NA LISTA.
     """
