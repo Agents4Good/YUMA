@@ -16,5 +16,6 @@ LLM_NODE_CREATOR = """
         - temperature (float): Criatividade do modelo, entre 0 e 1.
     
     - Você NÃO DEVE retornar nenhuma explicação ou texto. USE APENAS TOOL_CALLS.
-    - A PARTIR DA ARQUITETURA DECIDIDA, se for necessário mais de um nó de LLM no sistema, faça MAIS DE UMA TOOL_CALL. Do contrário, APENAS FAÇA UMA.
+    - A PARTIR DA ARQUITETURA DECIDIDA, se for necessário mais de um nó de LLM no sistema, faça MAIS DE UMA TOOL_CALL.
+    - NÃO SE PREOCUPE COM OUTRAS TOOLS_CALLS QUE ESTÃO SENDO FEITAS, FOQUE NO SEU TRABALHO.
 """

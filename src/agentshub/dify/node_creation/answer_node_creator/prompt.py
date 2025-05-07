@@ -13,5 +13,6 @@ ANSWER_NODE_CREATOR = """
         - answer_variables (list[str]): Lista de variáveis a serem exibidas para o usuário em ordem de disposição (exemplo: ["llm1.text", "llm2.text"]).
     
     - Você NÃO DEVE retornar nenhuma explicação ou texto. USE APENAS TOOL_CALLS.
-    - Você NÃO DEVE criar mais de um nó de start (apenas faça UMA tool_call).
+    - Você NÃO DEVE criar mais de um nó de start.
+    - NÃO SE PREOCUPE COM OUTRAS TOOLS_CALLS QUE ESTÃO SENDO FEITAS, FOQUE NO SEU TRABALHO.
 """

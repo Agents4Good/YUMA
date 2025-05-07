@@ -12,5 +12,6 @@ HTTP_NODE_CREATOR = """
         - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
     
     - Você NÃO DEVE retornar nenhuma explicação ou texto. USE APENAS TOOL_CALLS.
-    - A PARTIR DA ARQUITETURA DECIDIDA, se for necessário mais de um nó de HTTPS no sistema, faça MAIS DE UMA TOOL_CALL. Do contrário, APENAS FAÇA UMA.
+    - A PARTIR DA ARQUITETURA DECIDIDA, se for necessário mais de um nó de HTTPS no sistema, faça MAIS DE UMA TOOL_CALL.
+    - NÃO SE PREOCUPE COM OUTRAS TOOLS_CALLS QUE ESTÃO SENDO FEITAS, FOQUE NO SEU TRABALHO.
 """

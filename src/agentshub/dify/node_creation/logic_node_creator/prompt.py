@@ -14,5 +14,6 @@ LOGIC_NODE_CREATOR = """
         - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
     
     - Você NÃO DEVE retornar nenhuma explicação ou texto. USE APENAS TOOL_CALLS.
-    - SE NECESSÁRIO mais de um nó de lógica no sistema, faça MAIS DE UMA TOOL_CALL. Do contrário, APENAS FAÇA UMA.
+    - SE NECESSÁRIO mais de um nó de lógica no sistema, faça MAIS DE UMA TOOL_CALL.
+    - NÃO SE PREOCUPE COM OUTRAS TOOLS_CALLS QUE ESTÃO SENDO FEITAS, FOQUE NO SEU TRABALHO.
 """
