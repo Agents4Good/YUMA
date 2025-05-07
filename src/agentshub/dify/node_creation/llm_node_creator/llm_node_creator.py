@@ -10,10 +10,9 @@ def llm_node_creator(state: DifyState) -> Command:
     system_prompt = LLM_NODE_CREATOR
 
     messages = state["messages"] + [SystemMessage(system_prompt)]
-    print("llm_node_creator executado")
     response = llm_node_creator_model.invoke(messages)
-   
-    print(response)
+
+    print("llm_node_creator executado\n", response)
     return Command(
         update={"messages": [response]}
     )

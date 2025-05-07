@@ -10,11 +10,9 @@ def answer_node_creator(state: DifyState) -> Command:
     system_prompt = ANSWER_NODE_CREATOR
 
     messages = state["messages"] + [SystemMessage(system_prompt)]
-    print("answer_node_creator executado")
     response = answer_node_creator_model.invoke(messages)
-   
-    print(response)
+
+    print("answer_node_creator executado\n", response)
     return Command(
         update={"messages": [response]}
     )
-    

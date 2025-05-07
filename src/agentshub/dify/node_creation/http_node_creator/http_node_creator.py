@@ -10,10 +10,9 @@ def http_node_creator(state: DifyState) -> Command:
     system_prompt = HTTP_NODE_CREATOR
 
     messages = state["messages"] + [SystemMessage(system_prompt)]
-    print("http_node_creator executado")
     response = http_node_creator_model.invoke(messages)
-   
-    print(response)
+
+    print("http_node_creator executado\n", response)
     return Command(
         update={"messages": [response]}
     )
