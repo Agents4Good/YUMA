@@ -5,8 +5,8 @@ NODE_CREATOR = """
 
     Fluxo de execução das ferramentas:
     1. `create_start_node(title: str, node_id: str)` - Cria o nó inicial do workflow responsável por capturar as entradas do usuário.
-    2. `create_llm_node(title: str, node_id: str, role: str, context_variable: str, task: str, temperature: float)` - Cria um nó de agente (LLM) para um workflow multiagente.
-    3. `create_agent_node(title: str, node_id: str, instruction: str, context_variable: str, tool: Literal["tavily_search"], temperature: float)` - Cria um nó de agente ReAct que utiliza tools para um workflow multiagente.
+    2. `create_llm_node(title: str, node_id: str, role: str, context_variable: str, task: str, temperature: float)` - Cria um nó de chamada de LLM sem tools.
+    3. `create_agent_node(title: str, node_id: str, instruction: str, context_variable: str, tool: Literal["tavily_search"], temperature: float)` - Cria um nó de agente ReAct que utiliza tools para pesquisa na web, etc.
     4. `create_answer_node(title: str, node_id: str, answer_variables: List[str])` - Cria o nó final do workflow responsável por exibir os outputs.
     5. `create_contains_logic_node(title: str, node_id: str, value: str, context_variable: str)` - Cria um nó de lógica que verifica se uma variável contém um valor específico.
     6. `create_http_node(title: str, node_id: str)` - Cria um nó capaz de realizar requisições HTTPS.

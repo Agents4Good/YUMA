@@ -22,14 +22,14 @@ def create_llm_node(
     temperature: float,
 ):
     """
-    Cria um nó de agente (LLM) para um workflow multiagente.
+    Cria um nó de chamada de LLM sem tools.
 
     Parâmetros:
         - title (str): Nome do nó.
         - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
-        - role (str): Papel do agente no workflow (exemplo: "Você é um especialista em contar piadas").
+        - role (str): Papel da LLM no workflow (exemplo: "Você é um especialista em contar piadas").
         - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
-        - task (str): O que o agente faz.
+        - task (str): O que a LLM faz.
         - temperature (float): Criatividade do modelo, entre 0 e 1.
     """
     llm_node = {
@@ -85,7 +85,7 @@ def create_agent_node(
     temperature: float,
 ):
     """
-    Cria um nó de agente ReAct que utiliza tools para um workflow multiagente.
+    Cria um nó de agente ReAct que utiliza tools para pesquisa na web, etc.
 
     Parâmetros:
         - title (str): Nome do nó.
