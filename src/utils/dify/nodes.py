@@ -26,7 +26,8 @@ def _write_dify_yaml(state: DifyState):
 
     file = Path(YAML_PATH)
     with open(file, "w") as outfile:
-        yaml.dump(yaml_dify, outfile, default_flow_style=False, allow_unicode=True)
+        yaml.dump(yaml_dify, outfile,
+                  default_flow_style=False, allow_unicode=True)
 
 
 def dify_yaml_builder(state: DifyState) -> Command:
@@ -69,7 +70,18 @@ tools_dify = {
 
 
 def call_dify_tools(state: DifyState) -> List[Command]:
-    tool_calls = state["messages"][-1].tool_calls
+    tool_calls = []
+    i = -1
+    while True:
+        tool_call = state["messages"][i].tool_calls
+        print("==============\ntool_call\n", tool_call)
+        print("============\nmessage\n", state["messages"][i])
+        if tool_call != []:
+            tool_calls.append(tool_call)
+        else:
+            break
+        i -= 1
+    print("===============\ntool_calls")
     print(tool_calls)
     commands = []
     for tool_call in tool_calls:
