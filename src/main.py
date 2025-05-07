@@ -5,7 +5,6 @@ from agentshub.genia import (
     architect,
     human_node,
 )
-
 from agentshub.dify import (
     supervisor,
     start_node_creator,
@@ -33,13 +32,12 @@ from utils.genia.io_functions import print_graph
 
 dify_agents = ["start_node_creator", "llm_node_creator",
                "logic_node_creator", "http_node_creator", "answer_node_creator"]
-# CHECAR GRAFO PARA VER SE ESTÁ CORRETO
 
 
 def supervisor_conditional_edge(state: DifyState):
     print("=============================\nconditional_edge")
     print(state["messages"][-1])
-    agents = state["messages"][-1].split(", ")
+    agents = state["messages"][-1].content.split(", ")
     print(agents)
     print("=============================")
     return agents
@@ -59,10 +57,15 @@ def build_graph():
     subgraph_builder.add_node("http_node_creator", http_node_creator)
     subgraph_builder.add_node("answer_node_creator", answer_node_creator)
 
+    dify_agents_map = {agent: agent for agent in dify_agents}
     subgraph_builder.add_edge(START, "supervisor_agent")
     subgraph_builder.add_conditional_edges(
-        "supervisor_agent", supervisor_conditional_edge)
-    subgraph_builder.add_edge(dify_agents, "tools_node_creator")
+        "supervisor_agent", supervisor_conditional_edge, dify_agents_map)
+    subgraph_builder.add_edge("start_node_creator", "tools_node_creator")
+    subgraph_builder.add_edge("llm_node_creator", "tools_node_creator")
+    subgraph_builder.add_edge("logic_node_creator", "tools_node_creator")
+    subgraph_builder.add_edge("http_node_creator", "tools_node_creator")
+    subgraph_builder.add_edge("answer_node_creator", "tools_node_creator")
     subgraph_builder.add_edge("tools_node_creator", "edge_creator")
     subgraph_builder.add_edge("edge_creator", "tools_edge_creator")
     subgraph_builder.add_edge("tools_edge_creator", "dify_yaml_builder")
@@ -100,6 +103,7 @@ def print_architecture(last_message):
 
 
 def main():
+
     graph = build_graph()
     # print_graph(graph)
     thread_config = {"configurable": {"thread_id": uuid.uuid4()}}
