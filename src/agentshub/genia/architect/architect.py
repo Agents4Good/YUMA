@@ -21,7 +21,8 @@ def architect(state: AgentState) -> Command[Literal["human_node", "dify"]]:
         ]
 
         last_ai_message = next(
-            (msg for msg in reversed(filtered_messages) if isinstance(msg, AIMessage)),
+            (msg for msg in reversed(filtered_messages)
+             if isinstance(msg, AIMessage)),
             None,
         )
 
