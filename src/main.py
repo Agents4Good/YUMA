@@ -38,7 +38,6 @@ dify_agents = ["start_node_creator", "llm_node_creator",
 
 def supervisor_conditional_edge(state: DifyState):
     print("=============================\nconditional_edge")
-    print(state["messages"][-1])
     agents = state["messages"][-1].content.split(", ")
     print(agents)
     print("=============================")
