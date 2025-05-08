@@ -63,6 +63,9 @@ ARCHITECT_AGENT = """
 
     LLM Node  
     - Descrição: Invoca as capacidades de modelos de linguagem para processar informações de entrada fornecidas pelos usuários no "Start" node (linguagem natural, arquivos enviados ou imagens) e fornecer respostas eficazes.
+    
+    Agent Node
+    - Descrição: Possui a mesma função do LLM Node, porém é usado para executar ações específicas, como pesquisa na web ou execução de ferramentas com base em instruções definidas.
 
     Answer Node  
     - Descrição: Pode ser integrado em qualquer ponto para fornecer conteúdo dinamicamente nas respostas do diálogo, suportando tanto texto quanto imagens.

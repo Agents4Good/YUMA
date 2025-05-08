@@ -9,6 +9,8 @@ SUPERVISOR_AGENT = """
     
     - http_node_creator: Nó responsável por realizar requisições HTTPS para APIs conhecidas pelo usuário.
     
+    - agent_node_creator: Nó responsável por representar um agente ReAct que utiliza tools para pesquisa na web, etc. OBSERVAÇÃO: SÓ DEVE SER USADO NO LUGAR DE UM NÓ DE LLM SE FOR NECESSÁRIO O USO DE UMA TOOL.
+
     FORMATO DA RESPOTA:
     - Responda APENAS com um JSON válido, não adicione perguntas, comentários ou explicações. O JSON deve estar no seguinte formato (NÃO ALTERE OS NOMES DAS CHAVES DO JSON):
     ```{

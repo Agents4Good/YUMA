@@ -10,7 +10,7 @@ ANSWER_NODE_CREATOR = """
     Parâmetros:
         - title (str): Nome do nó.
         - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
-        - answer_variables (list[str]): Lista de variáveis a serem exibidas para o usuário em ordem de disposição (exemplo: ["llm1.text", "llm2.text"]).
+        - answer_variables (list[str]): Lista de variáveis a serem exibidas para o usuário em ordem de disposição (exemplo: ["llm1.text", "llm2.text"]). Utilize apenas o sufixo ".text".
     
     - Você NÃO DEVE retornar nenhuma explicação ou texto. USE APENAS TOOL_CALLS.
     - Você NÃO DEVE criar mais de um nó de start.

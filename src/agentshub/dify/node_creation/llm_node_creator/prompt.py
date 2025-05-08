@@ -10,9 +10,9 @@ LLM_NODE_CREATOR = """
     Parâmetros:
         - title (str): Nome do nó.
         - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
-        - role (str): Papel do agente no workflow (exemplo: "Você é um especialista em contar piadas").
-        - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial (entrada do usuário), "<previous_node_id>.text" para receber o contexto de outros nós).
-        - task (str): O que o agente faz.
+        - role (str): Papel da LLM no workflow (exemplo: "Você é um especialista em contar piadas").
+        - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
+        - task (str): O que a LLM faz.
         - temperature (float): Criatividade do modelo, entre 0 e 1.
     
     - Você NÃO DEVE retornar nenhuma explicação ou texto. USE APENAS TOOL_CALLS.

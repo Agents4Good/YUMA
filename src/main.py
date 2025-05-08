@@ -12,6 +12,7 @@ from agentshub.dify import (
     http_node_creator,
     logic_node_creator,
     answer_node_creator,
+    agent_node_creator,
     edge_creator
 )
 
@@ -31,7 +32,8 @@ from utils.genia.io_functions import print_graph
 
 
 dify_agents = ["start_node_creator", "llm_node_creator",
-               "logic_node_creator", "http_node_creator", "answer_node_creator"]
+               "logic_node_creator", "http_node_creator", "agent_node_creator",
+               "answer_node_creator"]
 
 
 def supervisor_conditional_edge(state: DifyState):
@@ -55,6 +57,7 @@ def build_graph():
     subgraph_builder.add_node("llm_node_creator", llm_node_creator)
     subgraph_builder.add_node("logic_node_creator", logic_node_creator)
     subgraph_builder.add_node("http_node_creator", http_node_creator)
+    subgraph_builder.add_node("agent_node_creator", agent_node_creator)
     subgraph_builder.add_node("answer_node_creator", answer_node_creator)
 
     dify_agents_map = {agent: agent for agent in dify_agents}
@@ -65,6 +68,7 @@ def build_graph():
     subgraph_builder.add_edge("llm_node_creator", "tools_node_creator")
     subgraph_builder.add_edge("logic_node_creator", "tools_node_creator")
     subgraph_builder.add_edge("http_node_creator", "tools_node_creator")
+    subgraph_builder.add_edge("agent_node_creator", "tools_node_creator")
     subgraph_builder.add_edge("answer_node_creator", "tools_node_creator")
     subgraph_builder.add_edge("tools_node_creator", "edge_creator")
     subgraph_builder.add_edge("edge_creator", "tools_edge_creator")
