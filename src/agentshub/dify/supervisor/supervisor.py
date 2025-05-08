@@ -2,7 +2,7 @@ from schema.genia import AgentState
 from .prompt import SUPERVISOR_AGENT
 from langgraph.types import Command
 from langchain_core.messages import SystemMessage, AIMessage
-from utils.genia import extract_json
+from utils import extract_json
 from models import structured_model
 from .structured_output import SupervisorOutput
 from schema.dify import DifyState

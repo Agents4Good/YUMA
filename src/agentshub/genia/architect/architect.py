@@ -4,7 +4,7 @@ from langgraph.types import Command
 from typing import Literal
 from langchain_core.messages import SystemMessage, AIMessage
 from models import model, structured_model
-from utils.genia import extract_json
+from utils import extract_json
 from .structured_output import ArchitectureOutput
 from tools.genia.utils import sequence_diagram_generator
 
@@ -30,7 +30,8 @@ def architect(state: AgentState) -> Command[Literal["human_node", "dify"]]:
         print(last_ai_message)
         print("============================================================")
 
-        buffer = [SystemMessage(content=system_prompt).content] + [last_ai_message.content]
+        buffer = [SystemMessage(
+            content=system_prompt).content] + [last_ai_message.content]
 
     print("============================================================")
     print(buffer)
