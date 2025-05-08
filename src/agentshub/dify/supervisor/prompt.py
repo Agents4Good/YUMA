@@ -14,9 +14,13 @@ SUPERVISOR_AGENT = """
     FORMATO DA RESPOTA:
     - Responda APENAS com um JSON NO FORMATO ABAIXO, não adicione perguntas, comentários ou explicações. O JSON deve estar no seguinte formato (NÃO ALTERE OS NOMES DAS CHAVES DO JSON):
     ```{
-        "agents": []
+        "agents": ["llm_node_creator"]
     }```
     
     GUIDELINES:
-    - NÃO REPITA, DE FORMA ALGUMA, MEMBROS DA EQUIPE NA LISTA.
+    - NÃO REPITA, DE FORMA ALGUMA, MEMBROS DA EQUIPE NA LISTA. EXEMPLO DO QUE NÃO PODE SER FEITO:
+    ```{
+        "agents": ["llm_node_creator", "llm_node_creator"]
+    }```
+    
     """
