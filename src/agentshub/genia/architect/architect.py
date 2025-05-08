@@ -26,22 +26,10 @@ def architect(state: AgentState) -> Command[Literal["human_node", "dify"]]:
             None,
         )
 
-        print("============================================================")
-        print(last_ai_message)
-        print("============================================================")
-
         buffer = [SystemMessage(
             content=system_prompt).content] + [last_ai_message.content]
 
-    print("============================================================")
-    print(buffer)
-    print("============================================================")
-
     response = structured_model.invoke(buffer)
-
-    print("============================================================")
-    print(response)
-    print("============================================================")
 
     response = extract_json(response.content, ArchitectureOutput)
 
