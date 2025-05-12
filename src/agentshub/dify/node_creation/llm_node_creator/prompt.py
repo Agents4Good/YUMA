@@ -10,9 +10,9 @@ LLM_NODE_CREATOR = """
     Parâmetros:
         - title (str): Nome do nó.
         - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
-        - role (str): Papel da LLM no workflow (exemplo: "Você é um especialista em contar piadas").
+        - role (str): Instrução descritiva que define o comportamento assumido pela LLM ao processar a entrada. Serve como prompt de sistema, influenciando diretamente a forma e o estilo da resposta gerada. Deve ser escrita na 2ª pessoa, como se estivesse falando diretamente com a LLM. Exemplo: "Você é um consultor financeiro ajudando um cliente a planejar sua aposentadoria".
         - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
-        - task (str): O que a LLM faz.
+        - task (str): Especifica a operação central que a LLM deve executar com base nas variáveis de contexto disponíveis. Essa descrição guia o modelo na execução da tarefa esperada e deve ser objetiva. Exemplos típicos incluem: "Analise o texto recebido e identifique pontos-chave", "Transforme a entrada em uma linguagem formal", "Responda com base nas informações de um nó anterior".
         - temperature (float): Criatividade do modelo, entre 0 e 1.
     
     - NÃO ESCREVA UM TEXTO COM A TOOL. CHAME UMA TOOL_CALL.
