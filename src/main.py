@@ -15,7 +15,8 @@ from utils.genia.io_functions import (
     print_conversation_header,
     print_node_header,
     print_break_line,
-    get_human_input,
+    get_pretty_input,
+    print_architecture,
 )
 
 import uuid
@@ -62,37 +63,21 @@ def build_graph():
     return builder.compile(checkpointer=checkpointer)
 
 
-def print_architecture(last_message):
-    """Imprime a arquitetura do sistema multiagente."""
-    print("\n=== Arquitetura do Sistema Multiagente ===\n")
-    print("Nós:")
+def get_user_input(isInitial, num_conversation=0):
+    if isInitial:
+        print_conversation_header(num_conversation)
 
-    for idx, node in enumerate(last_message.nodes, start=1):
-        print(f"  {idx}. {node.node}: {node.description}")
-
-    print("\nInterações:")
-    for idx, interaction in enumerate(last_message.interactions, start=1):
-        print(
-            f"  {idx}. {interaction.source} -> {interaction.targets}: {interaction.description}"
-        )
-    print("\n")
-
-
-def get_initial_user_input(num_conversation):
-    print_conversation_header(num_conversation)
-    human_message = get_human_input()
+    human_message = get_pretty_input()
     print_break_line()
+
     if human_message.lower() == "q":
         return None
-    return AgentState(messages=[HumanMessage(content=human_message)])
 
-
-def get_user_input():
-    human_message = get_human_input()
-    print_break_line()
-    if human_message.lower() == "q":
-        return None
-    return Command(resume=human_message)
+    return (
+        AgentState(messages=[HumanMessage(content=human_message)])
+        if isInitial
+        else Command(resume=human_message)
+    )
 
 
 def handle_stream(graph, user_input, config):
@@ -113,17 +98,19 @@ def main():
 
     thread_config = {"configurable": {"thread_id": uuid.uuid4()}}
     num_conversation = 0
-    user_input = get_initial_user_input(num_conversation)
+    user_input = get_user_input(True, num_conversation)
 
     while user_input != None:
         num_conversation += 1
         final_state = handle_stream(graph, user_input, config=thread_config)
         print_conversation_header(num_conversation)
 
-        if final_state and (architecture_output := final_state.get("architecture_output")):
+        if final_state and (
+            architecture_output := final_state.get("architecture_output")
+        ):
             print_architecture(architecture_output)
 
-        user_input = get_user_input()
+        user_input = get_user_input(False)
 
 
 if __name__ == "__main__":
