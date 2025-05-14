@@ -10,7 +10,9 @@ from tools.genia.utils import sequence_diagram_generator
 
 
 # Agente responsável por criar a arquitetura do sistema com base nos requisitos
-def architect(state: AgentState) -> Command[Literal["human_node", "dify"]]:
+def architect(state: AgentState,
+            max_retries: int = 3
+            ) -> Command[Literal["human_node", "dify"]]:
     system_prompt = ARCHITECT_AGENT
     buffer = state.get("buffer", [])
     if not buffer:
@@ -29,25 +31,34 @@ def architect(state: AgentState) -> Command[Literal["human_node", "dify"]]:
         buffer = [SystemMessage(
             content=system_prompt).content] + [last_ai_message.content]
 
-    response = structured_model.invoke(buffer)
+    for attempt in range(max_retries):
+        try:
+            response = structured_model.invoke(buffer)
 
-    response = extract_json(response.content, ArchitectureOutput)
+            response = extract_json(response.content, ArchitectureOutput)
 
-    goto = "human_node"
-    if response.route_next:
-        goto = "dify"
-        state["messages"].append(AIMessage(content=response.model_dump_json()))
+            if response is None:
+                continue
 
-    sequence_diagram_generator.invoke(response.model_dump_json())
+            goto = "human_node"
+            if response.route_next:
+                goto = "dify"
+                state["messages"].append(AIMessage(content=response.model_dump_json()))
 
-    buffer.append(AIMessage(content=response.model_dump_json()))
+            sequence_diagram_generator.invoke(response.model_dump_json())
 
-    return Command(
-        update={
-            "messages": state["messages"],
-            "active_agent": "architecture_agent",
-            "architecture_output": response,
-            "buffer": buffer,
-        },
-        goto=goto,
-    )
+            buffer.append(AIMessage(content=response.model_dump_json()))
+
+            return Command(
+                update={
+                    "messages": state["messages"],
+                    "active_agent": "architecture_agent",
+                    "architecture_output": response,
+                    "buffer": buffer,
+                },
+                goto=goto,
+            )
+        
+        except Exception as e:
+            print(f'Falha após várias tentativas. Error: {e}')
+            return Command(update=state, goto="human_node")
