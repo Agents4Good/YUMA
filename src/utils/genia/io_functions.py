@@ -65,8 +65,8 @@ def write_log(title, content):
             content_to_write = content
 
         with open(log_file_path, "a", encoding="utf-8") as log_file:
-            log_file.write("\n============= " + title + " =============")
-            log_file.write("\n" + content_to_write + "\n")
+            log_file.write("============= " + title + " =============")
+            log_file.write("\n\n" + content_to_write + "\n\n\n\n")
 
     finally:
         SEMAPHORE.release()
