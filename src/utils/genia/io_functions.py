@@ -1,6 +1,5 @@
 from langgraph.graph.state import CompiledStateGraph
 from pathlib import Path
-from functools import lru_cache
 import threading
 import json
 import os
@@ -18,13 +17,15 @@ def get_generated_files_path(file_name: str) -> str:
     return os.path.join(dir_path, file_name)
 
 
-@lru_cache
 def get_log_path():
     dir_path = os.path.join(PROJECT_ROOT, "generated_files")
     logs_path = os.path.join(dir_path, "logs")
     os.makedirs(logs_path, exist_ok=True)
     logs_count = sum(1 for f in Path(logs_path).iterdir() if f.is_file())
     return os.path.join(logs_path, f"log_{logs_count}.log")
+
+
+LOG_FILE_PATH = get_log_path()
 
 
 def get_dotenv_path(file=".env") -> str:
@@ -54,8 +55,6 @@ def print_graph(graph: CompiledStateGraph, filename="graph_image.png") -> None:
 
 
 def write_log(title, content):
-    log_file_path = get_log_path()
-    
     SEMAPHORE.acquire()
     try:
         try:
@@ -64,7 +63,7 @@ def write_log(title, content):
         except json.JSONDecodeError:
             content_to_write = content
 
-        with open(log_file_path, "a", encoding="utf-8") as log_file:
+        with open(LOG_FILE_PATH, "a", encoding="utf-8") as log_file:
             log_file.write("============= " + title + " =============")
             log_file.write("\n\n" + content_to_write + "\n\n\n\n")
 
