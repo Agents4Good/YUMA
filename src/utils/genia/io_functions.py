@@ -93,6 +93,7 @@ def print_conversation_header(num_conversation):
 
 
 def print_node_header(node_id, content):
+    write_log(f"Node Response - {node_id}", content)
     title = f"🤖 {node_id}"
 
     print(title)
@@ -108,7 +109,9 @@ def get_pretty_input():
         f"{user_name}{' ' * (WIDTH - (wcswidth(message) + wcswidth(user_name)))}{message}"
     )
     print("━" * WIDTH)
-    return input().strip()
+    user_input = input().strip()
+    write_log("User Input", user_input)
+    return user_input
 
 
 def print_architecture(last_message):

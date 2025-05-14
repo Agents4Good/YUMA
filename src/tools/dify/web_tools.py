@@ -4,6 +4,7 @@ from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.messages import ToolMessage
 from langgraph.types import Command
+from utils.genia import write_log
 
 
 @tool
@@ -33,7 +34,7 @@ def create_http_node(
         }
     }
     
-    print("HTTP NODE")
+    write_log("create_http_node", http_node)
     return Command(
         update={
             "nodes_dicts" : [http_node],

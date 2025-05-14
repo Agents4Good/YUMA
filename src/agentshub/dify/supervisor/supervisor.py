@@ -7,6 +7,7 @@ from models import structured_model
 from .structured_output import SupervisorOutput
 from schema.dify import DifyState
 from tools.dify import create_yaml_metadata
+from utils.genia import write_log
 
 # Tool responsável por delegar a criação dos nodes e egdes do sistema
 
@@ -18,12 +19,10 @@ def supervisor(
 
     messages = state["messages"] + [SystemMessage(system_prompt)]
     response = structured_model.invoke(messages)
-    print(response)
 
     response = extract_json(response.content, SupervisorOutput)
 
-    print("supervisor_agent executado")
-    print(response)
+    write_log("supervisor_agent response", response)
     response.agents.insert(0, 'start_node_creator')
     response.agents.append('answer_node_creator')
 

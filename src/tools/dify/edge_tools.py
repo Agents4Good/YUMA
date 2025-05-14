@@ -4,6 +4,7 @@ from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.messages import ToolMessage
 from langgraph.types import Command
+from utils.genia import write_log
 
 
 @tool
@@ -23,7 +24,7 @@ def create_edges(
     """
     edge = {"id": edge_id, "source": source_id, "target": target_id, "type": "custom"}
 
-    print("CREATE EDGE")
+    write_log("create_edges", edge)
     return Command(
         update={
             "edges_dicts": [edge],

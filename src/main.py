@@ -25,6 +25,7 @@ from utils.genia.io_functions import (
     print_break_line,
     get_pretty_input,
     print_architecture,
+    write_log,
 )
 
 import uuid
@@ -41,10 +42,8 @@ dify_agents = ["start_node_creator", "llm_node_creator",
 
 
 def supervisor_conditional_edge(state: DifyState):
-    print("=============================\nconditional_edge")
     agents = state["messages"][-1].content.split(", ")
-    print(agents)
-    print("=============================")
+    write_log("supervisor_conditional_edge", agents)
     return agents
 
 
