@@ -34,8 +34,6 @@ from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage
 
-from utils.genia.io_functions import print_graph
-
 
 dify_agents = ["start_node_creator", "llm_node_creator",
                "logic_node_creator", "http_node_creator", "agent_node_creator",
@@ -126,7 +124,6 @@ def handle_stream(graph, user_input, config):
 
 
 def main():
-
     graph = build_graph()
     # print_graph(graph)
     thread_config = {"configurable": {"thread_id": uuid.uuid4()}}
