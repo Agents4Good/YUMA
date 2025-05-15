@@ -15,5 +15,5 @@ def build_few_shot(architecture: str, original_prompt: str, examples: List[BaseM
 
     prompt = SystemMessage(prompt_template.format())
     human_message = HumanMessage(
-        f"A partir dos exemplos acima, construa os nós de {node_type} indicados nessa arquitetura:\n {architecture}")
+        f"A partir dos exemplos, construa os nós de {node_type} indicados nessa arquitetura:\n {architecture}")
     return [prompt] + [human_message]
