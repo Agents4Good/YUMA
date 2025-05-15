@@ -9,6 +9,7 @@ from .io_functions import (
     print_architecture,
     get_log_path,
     write_log,
+    write_log_state,
 )
 
 from .plantuml_parser import (
@@ -29,4 +30,5 @@ __all__ = [
     "print_architecture",
     "get_log_path",
     "write_log",
+    "write_log_state",
 ]
