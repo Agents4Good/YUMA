@@ -77,8 +77,6 @@ def call_dify_tools(state: DifyState) -> List[Command]:
     while True:
         message = state["messages"][i]
         tool_call = getattr(message, "tool_calls", [])
-        print("==============\ntool_call\n", tool_call)
-        print("============\ncontent da message\n", message.content)
         if tool_call != []:
             tool_calls.extend(tool_call)
         else:
