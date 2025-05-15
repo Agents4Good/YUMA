@@ -25,6 +25,7 @@ from utils.genia.io_functions import (
     print_break_line,
     get_pretty_input,
     print_architecture,
+    write_log,
 )
 
 import uuid
@@ -34,8 +35,6 @@ from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage
 
-from utils.genia.io_functions import print_graph
-
 
 dify_agents = ["start_node_creator", "llm_node_creator",
                "logic_node_creator", "http_node_creator", "agent_node_creator",
@@ -43,10 +42,8 @@ dify_agents = ["start_node_creator", "llm_node_creator",
 
 
 def supervisor_conditional_edge(state: DifyState):
-    print("=============================\nconditional_edge")
     agents = state["messages"][-1].content.split(", ")
-    print(agents)
-    print("=============================")
+    write_log("supervisor_conditional_edge", agents)
     return agents
 
 
@@ -126,7 +123,6 @@ def handle_stream(graph, user_input, config):
 
 
 def main():
-
     graph = build_graph()
     # print_graph(graph)
     thread_config = {"configurable": {"thread_id": uuid.uuid4()}}

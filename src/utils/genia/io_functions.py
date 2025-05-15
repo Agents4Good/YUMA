@@ -1,21 +1,33 @@
 from langgraph.graph.state import CompiledStateGraph
+from pathlib import Path
+from functools import lru_cache
+import threading
+import json
 import os
 
 from wcwidth import wcswidth
 
-
 HEADERS = {"Content-Type": "application/json", "Authorization": "Bearer "}
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+SEMAPHORE = threading.Semaphore(1)
 
 
 def get_generated_files_path(file_name: str) -> str:
-    PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
     dir_path = os.path.join(PROJECT_ROOT, "generated_files")
     os.makedirs(dir_path, exist_ok=True)
     return os.path.join(dir_path, file_name)
 
 
+@lru_cache
+def get_log_path():
+    dir_path = os.path.join(PROJECT_ROOT, "generated_files")
+    logs_path = os.path.join(dir_path, "logs")
+    os.makedirs(logs_path, exist_ok=True)
+    logs_count = sum(1 for f in Path(logs_path).iterdir() if f.is_file())
+    return os.path.join(logs_path, f"log_{logs_count}.log")
+
+
 def get_dotenv_path(file=".env") -> str:
-    PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
     return os.path.join(PROJECT_ROOT, file)
 
 
@@ -41,6 +53,25 @@ def print_graph(graph: CompiledStateGraph, filename="graph_image.png") -> None:
             print_graph(node.data, filename=subgraph_filename)
 
 
+def write_log(title, content):
+    log_file_path = get_log_path()
+    
+    SEMAPHORE.acquire()
+    try:
+        try:
+            parsed_content = json.loads(content)
+            content_to_write = json.dumps(parsed_content, indent=4, ensure_ascii=False)
+        except json.JSONDecodeError:
+            content_to_write = content
+
+        with open(log_file_path, "a", encoding="utf-8") as log_file:
+            log_file.write("============= " + title + " =============")
+            log_file.write("\n\n" + content_to_write + "\n\n\n\n")
+
+    finally:
+        SEMAPHORE.release()
+
+
 ## Pretty Prints Functions ##
 
 WIDTH = 70
@@ -62,6 +93,7 @@ def print_conversation_header(num_conversation):
 
 
 def print_node_header(node_id, content):
+    write_log(f"Node Response - {node_id}", content)
     title = f"🤖 {node_id}"
 
     print(title)
@@ -77,7 +109,9 @@ def get_pretty_input():
         f"{user_name}{' ' * (WIDTH - (wcswidth(message) + wcswidth(user_name)))}{message}"
     )
     print("━" * WIDTH)
-    return input().strip()
+    user_input = input().strip()
+    write_log("User Input", user_input)
+    return user_input
 
 
 def print_architecture(last_message):
