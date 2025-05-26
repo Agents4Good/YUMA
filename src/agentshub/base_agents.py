@@ -7,13 +7,17 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from utils import content_to_tool
 
 
-def only_tools_agent(model: BaseChatModel, prompt: str, state: DifyState) -> Command:
+def only_tools_agent(model: BaseChatModel, prompt: str, state: DifyState, max_retries : int = 3) -> Command:
     messages = state["messages"] + [SystemMessage(prompt)]
-    response = model.invoke(messages)
+    for attempt in range(max_retries):
+        response = model.invoke(messages)
 
-    if response.content:
-        response = content_to_tool(response)
+        if response.content:
+            response = content_to_tool(response)
 
-    return Command(
-        update={"messages": [response]}
-    )
+        if getattr(response, "tool_calls", None):
+            return Command(
+                update={"messages": [response]}
+            )
+    
+    raise RuntimeError(f"Nenhuma tool_call foi retornada após {max_retries} tentativas.")
