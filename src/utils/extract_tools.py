@@ -2,10 +2,10 @@ from langchain_core.messages import AIMessage
 from langchain_core.messages.base import BaseMessage
 import json
 import re
-
+import uuid
 
 def content_to_tool(message: BaseMessage):
-    pattern = r"<function=(\w+)(\{.*?\})<\/function>"
+    pattern = r"<function=([a-zA-Z_][a-zA-Z0-9_])>\s(\{.?\})(?:\s;)?"
     matches = re.findall(pattern, message.content)
     print(matches)
     result = []
@@ -23,6 +23,7 @@ def content_to_tool(message: BaseMessage):
         result.append({
             'name': func_name,
             'args': args,
+            'id': str(uuid.uuid4()),
             'type': 'tool_call'
         })
     message.tool_calls = result
