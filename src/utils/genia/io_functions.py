@@ -1,8 +1,6 @@
 from langgraph.graph.state import CompiledStateGraph
-from pathlib import Path
-from functools import lru_cache
+from utils.genia.log_functions import write_log
 import threading
-import json
 import os
 
 from wcwidth import wcswidth
@@ -16,15 +14,6 @@ def get_generated_files_path(file_name: str) -> str:
     dir_path = os.path.join(PROJECT_ROOT, "generated_files")
     os.makedirs(dir_path, exist_ok=True)
     return os.path.join(dir_path, file_name)
-
-
-@lru_cache
-def get_log_path():
-    dir_path = os.path.join(PROJECT_ROOT, "generated_files")
-    logs_path = os.path.join(dir_path, "logs")
-    os.makedirs(logs_path, exist_ok=True)
-    logs_count = sum(1 for f in Path(logs_path).iterdir() if f.is_file())
-    return os.path.join(logs_path, f"log_{logs_count}.log")
 
 
 def get_dotenv_path(file=".env") -> str:
@@ -51,25 +40,6 @@ def print_graph(graph: CompiledStateGraph, filename="graph_image.png") -> None:
         if isinstance(node.data, CompiledStateGraph):
             subgraph_filename = f"subgraph_{node_id}.png"
             print_graph(node.data, filename=subgraph_filename)
-
-
-def write_log(title, content):
-    log_file_path = get_log_path()
-    
-    SEMAPHORE.acquire()
-    try:
-        try:
-            parsed_content = json.loads(content)
-            content_to_write = json.dumps(parsed_content, indent=4, ensure_ascii=False)
-        except json.JSONDecodeError:
-            content_to_write = content
-
-        with open(log_file_path, "a", encoding="utf-8") as log_file:
-            log_file.write("============= " + title + " =============")
-            log_file.write("\n\n" + content_to_write + "\n\n\n\n")
-
-    finally:
-        SEMAPHORE.release()
 
 
 ## Pretty Prints Functions ##

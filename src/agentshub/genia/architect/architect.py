@@ -7,6 +7,7 @@ from models import model, structured_model
 from utils import extract_json
 from .structured_output import ArchitectureOutput
 from tools.genia.utils import sequence_diagram_generator
+from utils.genia import write_log_state
 
 
 # Agente responsável por criar a arquitetura do sistema com base nos requisitos
@@ -42,7 +43,7 @@ def architect(state: AgentState) -> Command[Literal["human_node", "dify"]]:
 
     buffer.append(AIMessage(content=response.model_dump_json()))
 
-    return Command(
+    _return = Command(
         update={
             "messages": state["messages"],
             "active_agent": "architecture_agent",
@@ -51,3 +52,5 @@ def architect(state: AgentState) -> Command[Literal["human_node", "dify"]]:
         },
         goto=goto,
     )
+    write_log_state("architect - return", _return)
+    return _return
