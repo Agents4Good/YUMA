@@ -1,23 +1,30 @@
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.messages import HumanMessage
+from agentshub.genia.architect import ArchitectureOutput, Node, Interaction
+
+
+def _architecture_example():
+    nodes = [Node(node="inicio_conversa", description="Recebe a entrada do usuário, tipo de nó: Start Node"),
+             Node(node="gerador_de_piadas", description="Gera piadas para o usuário, tipo de nó: LLM Node"),
+             Node(node="verificador_de_feedback", description="Verifica se o usuário gostou da piada, tipo de nó: If/Else Node"),
+             Node(node="resposta_positiva", description="Envia uma resposta positiva ao usuário, tipo de nó: Answer Node"),
+             Node(node="resposta_negativa", description="Envia uma resposta negativa ao usuário e solicita mais uma piada, tipo de nó: Answer Node")]
+
+    interactions = [Interaction(source="inicio_conversa", target="gerador_de_piadas", description="Envia a entrada do usuário para gerar uma piada"),
+                    Interaction(source="gerador_de_piadas", target="verificador_de_feedback", description="Envia a piada gerada para verificar o feedback do usuário"),
+                    Interaction(source="verificador_de_feedback", target="resposta_positiva", description="Caso o usuário tenha gostado da piada"),
+                    Interaction(source="verificador_de_feedback", target="resposta_negativa", description="Caso o usuário não tenha gostado da piada")]
+
+    return ArchitectureOutput(nodes=nodes, interactions=interactions, route_next=True).model_dump_json()
 
 EXAMPLES = [
-    HumanMessage(name="human_example", content='construa os nós de LLM indicados nessa arquitetura:\n {"nodes":[' +
-                 '{"node":"start_node","description":"Nó inicial que fornece informações essenciais para o sistema, mapeado para (Start Node) do dify"},' +
-                 '{"node":"piada_geradora","description":"Gera piadas completamente aleatórias e improvisadas, sem uma base de conhecimento pré-existente, mapeado para (LLM Node) do dify"},' +
-                 '{"node":"resposta_final","description":"Fornece a piada gerada como resposta final, mapeado para (Answer Node) do dify"}],' +
-                 '"interactions":[' +
-                 '{"source":"start_node","targets":"piada_geradora","description":"Envio de informações iniciais para geração de piada"},' +
-                 '{"source":"piada_geradora","targets":"resposta_final","description":"Envio da piada gerada para resposta final"}],"route_next":true}'),
+    HumanMessage(name="human_example", content='construa os nós de LÓGICA indicados nessa arquitetura:\n ' + _architecture_example()),
     AIMessage(name="desenvolvedor_exemplo",
               content="tools_calls=[" +
-              "{'name': 'create_llm_node', " +
-                   "'args': " +
-                   "{'title': 'Piada Gerador', " +
-              "'node_id': 'piada_gerador', " +
-              "'role': 'Você é um especialista em contar piadas', " +
-              "'context_variable': 'sys.query', " +
-              "'task': 'Gere piadas curtas e simples', " +
-              "'temperature': 0.5}, " +
-                   "'id': '1'}]")
+              "{'name': 'create_contains_logic_node', " +
+               "'args': " +
+                   "{'title': 'Verificador de Feedback', " +
+                    "'value': 'aprovado', " +
+                    "'context_variable': 'sys.query', " +
+                    "'id': '1'}]")
 ]

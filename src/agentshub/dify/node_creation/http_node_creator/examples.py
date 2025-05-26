@@ -1,14 +1,22 @@
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.messages import HumanMessage
+from agentshub.genia.architect import ArchitectureOutput, Node, Interaction
+
+
+def _architecture_example():
+    nodes = [Node(node="start_node", description="Nó de entrada do usuário, vai ser mapeado para (Start Node) do dify"),
+             Node(node="cep_extracao", description="Nó de extração do CEP, vai ser mapeado para (LLM Node) do dify"),
+             Node(node="cep_pesquisa", description="Nó de pesquisa do CEP, vai ser mapeado para (HTTP Request Node) do dify"),
+             Node(node="cep_resposta", description="Nó de resposta final, vai ser mapeado para (Answer Node) do dify")]
+    
+    interactions = [Interaction(source="start_node", target="cep_extracao", description="Recebimento da entrada do usuário e envio para extração do CEP"),
+                    Interaction(source="cep_extracao", target="cep_pesquisa", description="Recebimento do CEP extraído e envio para pesquisa"),
+                    Interaction(source="cep_pesquisa", target="cep_resposta", description="Recebimento do resultado da pesquisa e envio para resposta final")]
+    
+    return ArchitectureOutput(nodes=nodes, interactions=interactions, route_next=True).model_dump_json()
 
 EXAMPLES = [
-    HumanMessage(name="human_example", content='construa os nós de LLM indicados nessa arquitetura:\n {"nodes":[' +
-                 '{"node":"start_node","description":"Nó inicial que fornece informações essenciais para o sistema, mapeado para (Start Node) do dify"},' +
-                 '{"node":"piada_geradora","description":"Gera piadas completamente aleatórias e improvisadas, sem uma base de conhecimento pré-existente, mapeado para (LLM Node) do dify"},' +
-                 '{"node":"resposta_final","description":"Fornece a piada gerada como resposta final, mapeado para (Answer Node) do dify"}],' +
-                 '"interactions":[' +
-                 '{"source":"start_node","targets":"piada_geradora","description":"Envio de informações iniciais para geração de piada"},' +
-                 '{"source":"piada_geradora","targets":"resposta_final","description":"Envio da piada gerada para resposta final"}],"route_next":true}'),
+    HumanMessage(name="human_example", content='construa os nós de HTTP indicados nessa arquitetura:\n ' + _architecture_example()),
     AIMessage(name="desenvolvedor_exemplo",
               content="tools_calls=[" +
               "{'name': 'create_llm_node', " +
