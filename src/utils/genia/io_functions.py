@@ -1,8 +1,6 @@
-from dataclasses import asdict, is_dataclass
 from langgraph.graph.state import CompiledStateGraph
-from pathlib import Path
+from utils.genia.log_functions import write_log
 import threading
-import json
 import os
 
 from wcwidth import wcswidth
@@ -16,21 +14,6 @@ def get_generated_files_path(file_name: str) -> str:
     dir_path = os.path.join(PROJECT_ROOT, "generated_files")
     os.makedirs(dir_path, exist_ok=True)
     return os.path.join(dir_path, file_name)
-
-
-def get_log_path():
-    logs_path = Path(PROJECT_ROOT) / "generated_files" / "logs"
-    logs_path.mkdir(parents=True, exist_ok=True)
-
-    logs_count = sum(1 for f in logs_path.iterdir() if f.is_file())
-    
-    log_file = logs_path / f"log_{logs_count}.log"
-    log_state_file = logs_path / f"log_{logs_count}_state.log"
-    
-    return log_file, log_state_file
-
-
-LOG_FILE_PATH, LOG_STATE_FILE_PATH = get_log_path()
 
 
 def get_dotenv_path(file=".env") -> str:
@@ -57,37 +40,6 @@ def print_graph(graph: CompiledStateGraph, filename="graph_image.png") -> None:
         if isinstance(node.data, CompiledStateGraph):
             subgraph_filename = f"subgraph_{node_id}.png"
             print_graph(node.data, filename=subgraph_filename)
-
-
-def write_log(title, content):
-    SEMAPHORE.acquire()
-    try:
-        if isinstance(content, str):
-            try:
-                parsed_content = json.loads(content)
-                content_to_write = json.dumps(parsed_content, indent=4, ensure_ascii=False)
-            except json.JSONDecodeError:
-                content_to_write = content
-        else:
-            try:
-                content_to_write = json.dumps(content, indent=4, ensure_ascii=False, default=lambda o: o.__dict__)
-            except TypeError:
-                content_to_write = str(content)
-
-        with open(LOG_FILE_PATH, "a", encoding="utf-8") as log_file:
-            log_file.write("============= " + title + " =============")
-            log_file.write("\n\n" + content_to_write + "\n\n\n\n")
-
-    finally:
-        SEMAPHORE.release()
-        
-        
-def write_log_state(title, content):
-    SEMAPHORE.acquire()
-    with open(LOG_STATE_FILE_PATH, "a", encoding="utf-8") as log_file:
-        log_file.write("============= " + title + " =============")
-        log_file.write("\n\n" + str(content) + "\n\n\n\n")
-    SEMAPHORE.release()
 
 
 ## Pretty Prints Functions ##
