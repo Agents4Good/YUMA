@@ -60,9 +60,7 @@ REQUIREMENTS_ENGINEER_REFACTED = """
         Ao receber uma descrição inicial, avalie cuidadosamente o que está faltando e conduza a conversa com perguntas específicas, baseadas nos seguintes temas:
        
         - **Propósito do sistema**: Qual problema ou necessidade será resolvido?
-        - **Usuários finais**: Quem usará o sistema? Quais são suas necessidades?
         - **Funcionalidades**: Que tarefas o sistema deve executar?
-        - **Ambiente operacional**: Onde o sistema será utilizado? Há restrições ambientais?
         - **Requisitos técnicos**: Integrações? Padrões arquiteturais desejados?
         - **Regras e restrições**: Exigências de segurança, desempenho ou conformidade regulatória?
         - **Cenários de uso**: Exemplos concretos de como o sistema será usado no dia a dia.
