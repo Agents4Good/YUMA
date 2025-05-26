@@ -1,5 +1,5 @@
 from schema.genia import AgentState
-from .prompt import ARCHITECT_AGENT
+from .prompt import ARCHITECT_AGENT, ARCHITECT_AGENT_DIFY 
 from langgraph.types import Command
 from typing import Literal
 from langchain_core.messages import SystemMessage, AIMessage
@@ -11,7 +11,7 @@ from tools.genia.utils import sequence_diagram_generator
 
 # Agente responsável por criar a arquitetura do sistema com base nos requisitos
 def architect(state: AgentState) -> Command[Literal["human_node", "dify"]]:
-    system_prompt = ARCHITECT_AGENT
+    system_prompt = ARCHITECT_AGENT_DIFY
     buffer = state.get("buffer", [])
     if not buffer:
         filtered_messages = [
