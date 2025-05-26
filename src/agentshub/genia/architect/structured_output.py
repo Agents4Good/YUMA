@@ -17,7 +17,7 @@ class Interaction(BaseModel):
     """
 
     source: str = Field(description="The name of the source node using underlines")
-    targets: str = Field(
+    target: str = Field(
         description="The target node that the source node interacts with, using underlines"
     )
     description: str = Field(

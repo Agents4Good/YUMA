@@ -101,7 +101,7 @@ def print_architecture(last_message):
     print("\nInterações:")
     for idx, interaction in enumerate(last_message.interactions, start=1):
         print(
-            f"  {idx}. {interaction.source} -> {interaction.targets}: {interaction.description}"
+            f"  {idx}. {interaction.source} -> {interaction.target}: {interaction.description}"
         )
 
 

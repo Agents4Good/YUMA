@@ -51,7 +51,7 @@ ARCHITECT_AGENT = """
         {"node": "The name of the node using underlines", "description": "Another optional description"},
       ],
       "interactions": [
-        {"source": "The name of the source node using underlines", "targets": "The target node that the source node interacts with, using underlines", "description": "A short description of what a node will comunicate the other"}
+        {"source": "The name of the source node using underlines", "target": "The target node that the source node interacts with, using underlines", "description": "A short description of what a node will comunicate the other"}
       ],
       "route_next": "Determines if the graph should proceed to the next node (True) or remain in the current node (False)".
     }```
