@@ -13,13 +13,12 @@ from agentshub.dify import (
     logic_node_creator,
     answer_node_creator,
     agent_node_creator,
-    edge_creator
+    edge_creator,
 )
 
 from utils.dify import dify_yaml_builder, call_dify_tools
 
-from utils.genia.io_functions import (
-    print_graph,
+from utils.genia.print_functions import (
     print_conversation_header,
     print_node_header,
     print_break_line,
@@ -27,6 +26,8 @@ from utils.genia.io_functions import (
     print_architecture,
     write_log,
 )
+
+from utils.genia.io_functions import print_graph
 
 import uuid
 
@@ -36,9 +37,14 @@ from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage
 
 
-dify_agents = ["start_node_creator", "llm_node_creator",
-               "logic_node_creator", "http_node_creator", "agent_node_creator",
-               "answer_node_creator"]
+dify_agents = [
+    "start_node_creator",
+    "llm_node_creator",
+    "logic_node_creator",
+    "http_node_creator",
+    "agent_node_creator",
+    "answer_node_creator",
+]
 
 
 def supervisor_conditional_edge(state: DifyState):
@@ -65,7 +71,8 @@ def build_graph():
     dify_agents_map = {agent: agent for agent in dify_agents}
     subgraph_builder.add_edge(START, "supervisor_agent")
     subgraph_builder.add_conditional_edges(
-        "supervisor_agent", supervisor_conditional_edge, dify_agents_map)
+        "supervisor_agent", supervisor_conditional_edge, dify_agents_map
+    )
     subgraph_builder.add_edge("start_node_creator", "tools_node_creator")
     subgraph_builder.add_edge("llm_node_creator", "tools_node_creator")
     subgraph_builder.add_edge("logic_node_creator", "tools_node_creator")
