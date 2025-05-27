@@ -4,7 +4,7 @@ from langgraph.types import Command
 from langchain_core.messages import SystemMessage
 from typing import List
 from pathlib import Path
-from utils.genia import get_generated_files_path
+from utils.genia import get_generated_files_path, write_log
 from tools.dify import (
     create_llm_node,
     create_agent_node,
@@ -42,7 +42,7 @@ def dify_yaml_builder(state: DifyState) -> Command:
         try:
             dify_import_yaml("dify.yaml", "web")
         except Exception as e:
-            print(e)
+            write_log("dify_yaml_builder - Local Import Error", str(e))
             print("Não foi possível importar o yaml para o app Dify local")
 
     return Command(
@@ -77,16 +77,15 @@ def call_dify_tools(state: DifyState) -> List[Command]:
     while True:
         message = state["messages"][i]
         tool_call = getattr(message, "tool_calls", [])
-        print("==============\ntool_call\n", tool_call)
-        print("============\ncontent da message\n", message.content)
+        write_log("call_dify_tools - get tool_call from message", tool_call)
+        write_log("call_dify_tools - message content", message.content)
         if tool_call != []:
             tool_calls.extend(tool_call)
         else:
             break
         i -= 1
 
-    print("===============\ntool_calls")
-    print(tool_calls)
+    write_log("call_dify_tools - all tool_calls", tool_calls)
     commands = []
     for tool_call in tool_calls:
         commands.append(tools_dify[tool_call["name"]].invoke(tool_call))

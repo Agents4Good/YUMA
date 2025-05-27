@@ -30,7 +30,7 @@ inputs = [
 
     "Prossiga para o arquiteto.\n",
     "Deixe apenas os agentes de gerar perguntas e o de respondê-las.\n",
-    "Prossiga.\n",
+    "Prossiga para a geração\n",
     "q\n"
 ]
 

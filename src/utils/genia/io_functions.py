@@ -1,21 +1,22 @@
 from langgraph.graph.state import CompiledStateGraph
+from utils.genia.log_functions import write_log
+import threading
 import os
 
 from wcwidth import wcswidth
 
-
 HEADERS = {"Content-Type": "application/json", "Authorization": "Bearer "}
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+SEMAPHORE = threading.Semaphore(1)
 
 
 def get_generated_files_path(file_name: str) -> str:
-    PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
     dir_path = os.path.join(PROJECT_ROOT, "generated_files")
     os.makedirs(dir_path, exist_ok=True)
     return os.path.join(dir_path, file_name)
 
 
 def get_dotenv_path(file=".env") -> str:
-    PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
     return os.path.join(PROJECT_ROOT, file)
 
 
@@ -62,6 +63,7 @@ def print_conversation_header(num_conversation):
 
 
 def print_node_header(node_id, content):
+    write_log(f"Node Response - {node_id}", content)
     title = f"🤖 {node_id}"
 
     print(title)
@@ -77,7 +79,9 @@ def get_pretty_input():
         f"{user_name}{' ' * (WIDTH - (wcswidth(message) + wcswidth(user_name)))}{message}"
     )
     print("━" * WIDTH)
-    return input().strip()
+    user_input = input().strip()
+    write_log("User Input", user_input)
+    return user_input
 
 
 def print_architecture(last_message):
