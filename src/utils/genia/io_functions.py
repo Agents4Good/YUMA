@@ -9,19 +9,19 @@ SEMAPHORE = threading.Semaphore(1)
 
 
 def get_generated_files_path(file_name: str) -> str:
+    """Retorna o caminho completo para um arquivo na pasta 'generated_files'."""
     dir_path = os.path.join(PROJECT_ROOT, "generated_files")
     os.makedirs(dir_path, exist_ok=True)
     return os.path.join(dir_path, file_name)
 
 
 def get_dotenv_path(file=".env") -> str:
+    """Retorna o caminho completo para o arquivo .env na raiz do projeto."""
     return os.path.join(PROJECT_ROOT, file)
 
 
 def print_graph(graph: CompiledStateGraph, filename="graph_image.png") -> None:
-    """
-    Renderiza um grafo e seus subgrafos recursivamente.
-    """
+    """Gera e salva uma imagem do sistema em forma de grafo."""
     if not isinstance(graph, CompiledStateGraph):
         raise TypeError(
             "O parâmetro 'graph' deve ser uma instância de CompiledStateGraph"
