@@ -31,7 +31,7 @@ def architect(state: AgentState,
         buffer = [SystemMessage(
             content=system_prompt).content] + [last_ai_message.content]
 
-    for attempt in range(max_retries):
+    for _ in range(max_retries):
         try:
             response = structured_model.invoke(buffer)
 
