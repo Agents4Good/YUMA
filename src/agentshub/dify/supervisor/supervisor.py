@@ -1,4 +1,4 @@
-from schema.genia import AgentState
+from schema.yuma import AgentState
 from .prompt import SUPERVISOR_AGENT
 from langgraph.types import Command
 from langchain_core.messages import SystemMessage, AIMessage
@@ -7,7 +7,7 @@ from models import structured_model
 from .structured_output import SupervisorOutput
 from schema.dify import DifyState
 from tools.dify import create_yaml_metadata
-from utils.genia import write_log, write_log_state
+from utils.yuma import write_log, write_log_state
 
 # Tool responsável por delegar a criação dos nodes e egdes do sistema
 

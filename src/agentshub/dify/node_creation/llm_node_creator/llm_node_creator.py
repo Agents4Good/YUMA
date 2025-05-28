@@ -5,7 +5,7 @@ from models.dify import llm_node_creator_model
 from agentshub import only_tools_agent
 from utils.dify import build_few_shot
 from .examples import EXAMPLES
-from utils.genia import write_log_state
+from utils.yuma import write_log_state
 
 
 def llm_node_creator(state: DifyState) -> Command:

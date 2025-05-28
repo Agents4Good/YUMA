@@ -1,4 +1,4 @@
-from schema.genia import AgentState
+from schema.yuma import AgentState
 from .prompt import ARCHITECT_AGENT, ARCHITECT_AGENT_DIFY 
 from langgraph.types import Command
 from typing import Literal
@@ -6,8 +6,8 @@ from langchain_core.messages import SystemMessage, AIMessage
 from models import model, structured_model
 from utils import extract_json
 from .structured_output import ArchitectureOutput
-from tools.genia.utils import sequence_diagram_generator
-from utils.genia import write_log_state, write_log
+from tools.yuma.utils import sequence_diagram_generator
+from utils.yuma import write_log_state, write_log
 
 
 # Agente responsável por criar a arquitetura do sistema com base nos requisitos

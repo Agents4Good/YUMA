@@ -6,7 +6,7 @@ from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.messages import ToolMessage
 from langgraph.types import Command
-from utils.genia import write_log
+from utils.yuma import write_log
 
 LLAMA = ["claude-3-haiku-20240307", "langgenius/anthropic/anthropic"]
 OPENAI = ["gpt-4", "langgenius/openai/openai"]

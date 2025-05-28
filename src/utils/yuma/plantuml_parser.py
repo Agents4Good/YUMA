@@ -1,7 +1,7 @@
 import json
-from utils.genia.io_functions import get_generated_files_path
+from utils.yuma.io_functions import get_generated_files_path
 from plantuml import PlantUML
-from utils.genia import write_log
+from utils.yuma import write_log
 
 def json_to_plantuml(data: str) -> str:
     """

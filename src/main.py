@@ -1,6 +1,6 @@
-from schema.genia import AgentState
+from schema.yuma import AgentState
 from schema.dify import DifyState
-from agentshub.genia import (
+from agentshub.yuma import (
     requirements_engineer,
     architect,
     human_node,
@@ -18,7 +18,7 @@ from agentshub.dify import (
 
 from utils.dify import dify_yaml_builder, call_dify_tools
 
-from utils.genia.print_functions import (
+from utils.yuma.print_functions import (
     print_conversation_header,
     print_node_header,
     print_break_line,
@@ -27,7 +27,7 @@ from utils.genia.print_functions import (
     write_log,
 )
 
-from utils.genia.io_functions import print_graph
+from utils.yuma.io_functions import print_graph
 
 import uuid
 

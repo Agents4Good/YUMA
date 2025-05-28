@@ -1,4 +1,4 @@
-from utils.genia.log_functions import write_log
+from utils.yuma.log_functions import write_log
 from wcwidth import wcswidth
 
 

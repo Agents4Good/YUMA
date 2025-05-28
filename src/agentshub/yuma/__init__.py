@@ -1,12 +1,12 @@
-from agentshub.genia.architect import (
+from agentshub.yuma.architect import (
     architect
 )
 
-from agentshub.genia.human_node import (
+from agentshub.yuma.human_node import (
     human_node
 )
 
-from agentshub.genia.requirements_engineer import (
+from agentshub.yuma.requirements_engineer import (
     requirements_engineer
 )
 

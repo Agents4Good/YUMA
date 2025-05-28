@@ -1,5 +1,5 @@
 from langchain_core.messages.base import BaseMessage
-from utils.genia import write_log
+from utils.yuma import write_log
 import json
 import re
 import uuid

@@ -3,7 +3,7 @@ from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langgraph.prebuilt import InjectedState
 from langgraph.types import Command
-from utils.genia.plantuml_parser import generate_diagram, json_to_plantuml
+from utils.yuma.plantuml_parser import generate_diagram, json_to_plantuml
 
 
 @tool("sequence_diagram_generator")

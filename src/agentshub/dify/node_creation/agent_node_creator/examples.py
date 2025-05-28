@@ -1,6 +1,6 @@
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.messages import HumanMessage
-from agentshub.genia.architect import ArchitectureOutput, Node, Interaction
+from agentshub.yuma.architect import ArchitectureOutput, Node, Interaction
 
 def _architecture_example():
     nodes = [Node(node="start_node", description="Nó inicial que fornece informações essenciais para o sistema, mapeado para (Start Node) do dify"),

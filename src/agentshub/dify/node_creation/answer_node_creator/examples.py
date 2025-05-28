@@ -1,6 +1,6 @@
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.messages import HumanMessage
-from agentshub.genia.architect import Node, Interaction, ArchitectureOutput
+from agentshub.yuma.architect import Node, Interaction, ArchitectureOutput
 
 
 def _architecture_example():

@@ -4,7 +4,7 @@ from langgraph.types import Command
 from langchain_core.messages import SystemMessage
 from typing import List
 from pathlib import Path
-from utils.genia import get_generated_files_path, write_log
+from utils.yuma import get_generated_files_path, write_log
 from tools.dify import (
     create_llm_node,
     create_agent_node,
