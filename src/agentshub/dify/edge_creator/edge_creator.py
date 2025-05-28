@@ -4,7 +4,7 @@ from .prompt import EDGE_CREATOR
 from models.dify import edge_creator_dify_model
 from agentshub import only_tools_agent
 from langchain_core.messages import SystemMessage
-from utils.genia import write_log_state
+from utils.yuma import write_log_state
 
 
 # Agente responsável por criar as edges do sistema

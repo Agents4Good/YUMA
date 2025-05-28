@@ -3,10 +3,10 @@ from langgraph.types import Command
 from langchain_core.messages import ToolMessage
 from .prompt import REQUIREMENTS_ENGINEER, REQUIREMENTS_ENGINEER_REFACTED
 from typing import Literal
-from schema.genia import AgentState
+from schema.yuma import AgentState
 from models import model
-from tools.genia import make_handoff_tool
-from utils.genia import write_log_state, write_log
+from tools.yuma import make_handoff_tool
+from utils.yuma import write_log_state, write_log
 
 
 requirements_engineer_tool = [make_handoff_tool(agent_name="architecture_agent")]

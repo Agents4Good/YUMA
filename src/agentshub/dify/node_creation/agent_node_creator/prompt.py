@@ -10,7 +10,8 @@ AGENT_NODE_CREATOR = """
     Parâmetros:
         - title (str): Nome do nó.
         - node_id (str): Identificador único baseado no nome (minúsculas, sem caracteres especiais).
-        - instruction (str): Instrução do agente no workflow (exemplo: "Você é um agente especialista em busca de informações na web.").
+        - instruction (str): Prompt que define com precisão o comportamento esperado do modelo de linguagem ao executar o nó do tipo Agente. Essa instrução será enviada diretamente à LLM e deve conter orientações claras sobre o papel que ela deve desempenhar, o tipo de dado que deve buscar ou gerar, e como deve utilizar a ferramenta integrada (por exemplo, tavily_search).
+        A instrução deve ser escrita na segunda pessoa do singular, como se estivesse falando diretamente com o agente ("Você...").Seja específico sobre a tarefa, o foco da busca, o tom da resposta e quaisquer restrições relevantes.
         - context_variable (str): Variável de contexto compartilhada entre nós (exemplo: use "sys.query" para receber o contexto do nó inicial, "<previous_node_id>.text" para receber o contexto de outros nós).
         - tool: Literal["tavily_search"]: Ferramenta utilizada pelo agente.
         - temperature (float): Criatividade do modelo, entre 0 e 1.

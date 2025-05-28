@@ -5,7 +5,7 @@ from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.messages import ToolMessage
 from langgraph.types import Command
 from .utils import create_logic_node
-from utils.genia import write_log
+from utils.yuma import write_log
 
 
 @tool

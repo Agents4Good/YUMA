@@ -1,7 +1,7 @@
 from langchain_core.output_parsers import JsonOutputParser
 import re
 import json
-from utils.genia import write_log
+from utils.yuma import write_log
 
 
 def extract_json(content, response_format):

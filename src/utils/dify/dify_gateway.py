@@ -4,7 +4,7 @@ import requests
 import webbrowser
 import dotenv
 import yaml
-from utils.genia import get_generated_files_path, get_dotenv_path
+from utils.yuma import get_generated_files_path, get_dotenv_path
 
 HEADERS = {"Content-Type": "application/json", "Authorization": "Bearer "}
 

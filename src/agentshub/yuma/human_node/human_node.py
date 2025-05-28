@@ -1,8 +1,8 @@
-from schema.genia import AgentState
+from schema.yuma import AgentState
 from langgraph.types import Command, interrupt
 from langchain_core.messages import HumanMessage
 from typing import Literal
-from utils.genia import write_log_state
+from utils.yuma import write_log_state
 
 
 def human_node(
