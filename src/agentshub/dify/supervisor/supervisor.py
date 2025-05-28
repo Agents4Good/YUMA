@@ -23,8 +23,8 @@ def supervisor(
     response = extract_json(response.content, SupervisorOutput)
 
     write_log("supervisor_agent response", response)
-    response.agents.insert(0, 'start_node_creator')
-    response.agents.append('answer_node_creator')
+    response.agents.insert(0, "start_node_creator")
+    response.agents.append("answer_node_creator")
 
     yaml_metadata = create_yaml_metadata("Sistema do usuario", " ")
 
@@ -32,9 +32,9 @@ def supervisor(
     novoState = DifyState(
         messages=state["messages"] + [AIMessage(supervisor_message)],
         architecture_output=state["architecture_output"],
-        metadata_dict=yaml_metadata
+        metadata_dict=yaml_metadata,
     )
-    
+
     _return = Command(update=novoState)
     write_log_state("supervisor - return", _return)
     return _return

@@ -1,7 +1,7 @@
 import json
 from utils.genia.io_functions import get_generated_files_path
 from plantuml import PlantUML
-
+from utils.genia import write_log
 
 def json_to_plantuml(data: str) -> str:
     """
@@ -23,7 +23,7 @@ def json_to_plantuml(data: str) -> str:
 
     for interaction in data["interactions"]:
         source = interaction["source"]
-        target = interaction["targets"]
+        target = interaction["target"]
         description = interaction["description"]
         plantuml_code += f"{source} -> {target}: {description}\n"
 
@@ -32,7 +32,7 @@ def json_to_plantuml(data: str) -> str:
     return plantuml_code
 
 
-def generate_diagram(plantuml_code):
+def generate_diagram(plantuml_code, max_retries: int = 3):
     """Salva o código PlantUML em um arquivo e gera o diagrama"""
     puml_file = get_generated_files_path("sequence_diagram.puml")
 
@@ -41,4 +41,10 @@ def generate_diagram(plantuml_code):
 
     plantuml_server = PlantUML(url="http://www.plantuml.com/plantuml/img/")
 
-    plantuml_server.processes_file(puml_file)
+    for attempt in range(max_retries):
+        try:
+            plantuml_server.processes_file(puml_file)
+            return
+        except Exception:
+            if attempt == max_retries:
+                write_log("PlantUML", "Falha ao gerar diagrama após várias tentativas.")    
