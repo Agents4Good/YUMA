@@ -9,7 +9,7 @@ from utils import content_to_tool
 
 def only_tools_agent(model: BaseChatModel, prompt: str, state: DifyState, max_retries : int = 3) -> Command:
     messages = state["messages"] + [SystemMessage(prompt)]
-    for attempt in range(max_retries):
+    for _ in range(max_retries):
         response = model.invoke(messages)
 
         if response.content:
