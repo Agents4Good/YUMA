@@ -46,18 +46,11 @@ def write_log(title, content):
         if isinstance(content, str):
             try:
                 parsed_content = json.loads(content)
-                content_to_write = json.dumps(
-                    parsed_content, indent=4, ensure_ascii=False
-                )
+                content_to_write = json.dumps(parsed_content, indent=4, ensure_ascii=False)
             except json.JSONDecodeError:
                 content_to_write = content
         else:
-            try:
-                content_to_write = json.dumps(
-                    content, indent=4, ensure_ascii=False, default=lambda o: o.__dict__
-                )
-            except TypeError:
-                content_to_write = str(content)
+            content_to_write = json.dumps(content, indent=4, ensure_ascii=False, default=lambda o: o.__dict__)
 
         with open(LOG_FILE_PATH, "a", encoding="utf-8") as log_file:
             log_file.write("============= " + title + " =============")
