@@ -1,7 +1,7 @@
 import json
 from utils.genia.io_functions import get_generated_files_path
 from plantuml import PlantUML
-
+from utils.genia import write_log
 
 def json_to_plantuml(data: str) -> str:
     """
@@ -47,4 +47,4 @@ def generate_diagram(plantuml_code, max_retries: int = 3):
             return
         except Exception:
             if attempt == max_retries:
-                print("Falha ao gerar diagrama após várias tentativas.")    
+                write_log("PlantUML", "Falha ao gerar diagrama após várias tentativas.")    
