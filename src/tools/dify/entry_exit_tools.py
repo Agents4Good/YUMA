@@ -4,6 +4,7 @@ from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.messages import ToolMessage
 from langgraph.types import Command
+from utils.genia import write_log
 
 
 @tool
@@ -26,7 +27,7 @@ def create_start_node(
         "data": {"desc": "", "title": title, "type": "start", "variables": []},
     }
     
-    print("START NODE")
+    write_log("create_start_node", start_node)
     return Command(
         update={
             "nodes_dicts" : [start_node],
@@ -64,7 +65,7 @@ def create_answer_node(
         },
     }
     
-    print("ANSWER NODE")
+    write_log("create_answer_node", answer_node)
     return Command(
         update={
             "nodes_dicts" : [answer_node],

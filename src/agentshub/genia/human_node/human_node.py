@@ -2,6 +2,7 @@ from schema.genia import AgentState
 from langgraph.types import Command, interrupt
 from langchain_core.messages import HumanMessage
 from typing import Literal
+from utils.genia import write_log_state
 
 
 def human_node(
@@ -17,7 +18,7 @@ def human_node(
     if buffer:
         buffer.append(message)
 
-    return Command(
+    _return = Command(
         update={
             "messages": state["messages"] + [message],
             "buffer": buffer,
@@ -26,3 +27,5 @@ def human_node(
         },
         goto=active_agent,
     )
+    write_log_state("human_node - return", _return)
+    return _return

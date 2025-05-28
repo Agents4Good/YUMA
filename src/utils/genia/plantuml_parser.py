@@ -23,7 +23,7 @@ def json_to_plantuml(data: str) -> str:
 
     for interaction in data["interactions"]:
         source = interaction["source"]
-        target = interaction["targets"]
+        target = interaction["target"]
         description = interaction["description"]
         plantuml_code += f"{source} -> {target}: {description}\n"
 

@@ -2,7 +2,15 @@ from .architect import (
     architect
 )
 
+from .structured_output import (
+    ArchitectureOutput,
+    Node,
+    Interaction
+)
 
 __all__ = [
-    "architect"
+    "architect",
+    "ArchitectureOutput",
+    "Node",
+    "Interaction"
 ]
