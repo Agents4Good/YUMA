@@ -45,6 +45,6 @@ def generate_diagram(plantuml_code, max_retries: int = 3):
         try:
             plantuml_server.processes_file(puml_file)
             return
-        except Exception as e:
+        except Exception:
             if attempt == max_retries:
                 print("Falha ao gerar diagrama após várias tentativas.")    
