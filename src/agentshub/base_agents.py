@@ -7,13 +7,15 @@ from utils import content_to_tool
 from typing import List
 
 
-def only_tools_agent(model: BaseChatModel, new_messages: List[BaseMessage], state: DifyState) -> Command:
+def only_tools_agent(model: BaseChatModel, new_messages: List[BaseMessage], state: DifyState, max_retries: int = 3) -> Command:
     messages = state["messages"] + new_messages
-    response = model.invoke(messages)
-
-    if response.content:
-        response = content_to_tool(response)
-
-    return Command(
-        update={"messages": [response]}
-    )
+    for _ in range(max_retries):
+        response = model.invoke(messages)
+        if response.content:
+            response = content_to_tool(response)
+        if getattr(response, "tool_calls", None):
+            return Command(
+                update={"messages": [response]}
+            )
+    
+    raise RuntimeError(f"Nenhuma tool_call foi retornada após {max_retries} tentativas.")
