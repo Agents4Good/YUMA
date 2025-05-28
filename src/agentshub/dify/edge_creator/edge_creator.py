@@ -9,8 +9,6 @@ from utils.genia import write_log_state
 
 # Agente responsável por criar as edges do sistema
 def edge_creator(state: DifyState) -> Command:
-    _return = only_tools_agent(
-        edge_creator_dify_model, SystemMessage(content=EDGE_CREATOR), state
-    )
+    _return = only_tools_agent(edge_creator_dify_model, [SystemMessage(content=EDGE_CREATOR)], state)
     write_log_state("edge_creator - return", _return)
     return _return
