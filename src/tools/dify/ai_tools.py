@@ -6,6 +6,7 @@ from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.messages import ToolMessage
 from langgraph.types import Command
+from utils.genia import write_log
 
 LLAMA = ["claude-3-haiku-20240307", "langgenius/anthropic/anthropic"]
 OPENAI = ["gpt-4", "langgenius/openai/openai"]
@@ -62,7 +63,7 @@ def create_llm_node(
             "vision": {"enabled": False},
         },
     }
-    print("LLM NODE")
+    write_log("llm_node", llm_node)
     return Command(
         update={
             "nodes_dicts" : [llm_node],
@@ -130,7 +131,7 @@ def create_agent_node(
             "type": "agent",
         },
     }
-    print("AGENT NODE")
+    write_log("agent_node", agent_node)
     return Command(
         update={
             "nodes_dicts": [agent_node],

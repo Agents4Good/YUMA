@@ -5,6 +5,7 @@ from typing import Literal
 from schema.genia import AgentState
 from models import model
 from tools.genia import make_handoff_tool
+from utils.genia import write_log_state
 
 
 requirements_engineer_tool = [make_handoff_tool(agent_name="architecture_agent")]
@@ -20,4 +21,6 @@ def requirements_engineer(
     )
     response = requirements_engineer_model.invoke(state)
     response["active_agent"] = "requirements_engineer"
-    return Command(update=response, goto="human_node")
+    _return = Command(update=response, goto="human_node")
+    write_log_state("requirements_engineer - return", _return)
+    return _return

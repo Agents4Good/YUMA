@@ -5,6 +5,7 @@ from langchain_core.tools.base import InjectedToolCallId
 from langchain_core.messages import ToolMessage
 from langgraph.types import Command
 from .utils import create_logic_node
+from utils.genia import write_log
 
 
 @tool
@@ -27,7 +28,7 @@ def create_logic_edges(
     """
     logic_edge = {"id": edge_id, "source": source_id, "sourceHandle": source_handle, "target": target_id, "type": "custom"}
     
-    print("CREATE LOGIC EDGE")
+    write_log("create_logic_edges", logic_edge)
     return Command(
         update={
             "edges_dicts" : [logic_edge],
@@ -64,7 +65,7 @@ def create_start_with_logic_node(
         context_variable=context_variable
     )
     
-    print("START WITH NODE")
+    write_log("create_start_with_logic_node", start_with_node)
     return Command(
         update={
             "nodes_dicts" : [start_with_node],
@@ -101,7 +102,7 @@ def create_end_with_logic_node(
         context_variable=context_variable
     )
     
-    print("END WITH NODE")
+    write_log("create_end_with_logic_node", end_with_node)
     return Command(
         update={
             "nodes_dicts" : [end_with_node],
@@ -138,7 +139,7 @@ def create_contains_logic_node(
         context_variable=context_variable
     )
     
-    print("CONTAINS NODE")
+    write_log("create_contains_logic_node", contains_node)
     return Command(
         update={
             "nodes_dicts" : [contains_node],
@@ -175,7 +176,7 @@ def create_not_contains_logic_node(
         context_variable=context_variable
     )
     
-    print("NOT CONTAINS NODE")
+    write_log("create_not_contains_logic_node", not_contains_node)
     return Command(
         update={
             "nodes_dicts" : [not_contains_node],
@@ -212,7 +213,7 @@ def create_is_equals_logic_node(
         context_variable=context_variable
     )
     
-    print("IS EQUALS NODE")
+    write_log("create_is_equals_logic_node", is_equals_node)
     return Command(
         update={
             "nodes_dicts" : [is_equals_node],
@@ -249,7 +250,7 @@ def create_not_equals_logic_node(
         context_variable=context_variable
     )
     
-    print("NOT EQUALS NODE")
+    write_log("create_not_equals_logic_node", not_equals_node)
     return Command(
         update={
             "nodes_dicts" : [not_equals_node],
@@ -284,7 +285,7 @@ def create_is_empty_logic_node(
         context_variable=context_variable
     )
     
-    print("IS EMPTY NODE")
+    write_log("create_is_empty_logic_node", is_empty_node)
     return Command(
         update={
             "nodes_dicts" : [is_empty_node],
@@ -319,7 +320,7 @@ def create_not_empty_logic_node(
         context_variable=context_variable
     )
     
-    print("NOT EMPTY NODE")
+    write_log("create_not_empty_logic_node", not_empty_node)
     return Command(
         update={
             "nodes_dicts" : [not_empty_node],

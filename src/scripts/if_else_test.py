@@ -31,8 +31,7 @@ inputs = [
     "6 - encaminhar para o nó final.\n",
 
     "Prossiga para o arquiteto.\n",
-    "Prossiga\n",
-    "Prossiga.\n",
+    "Prossiga para a geração.\n",
     "q\n"
 ]
 

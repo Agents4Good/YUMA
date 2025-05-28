@@ -32,7 +32,7 @@ inputs = [
     "5 - nenhum.\n",
     
     "Prossiga para o arquiteto.\n",
-    "Prossiga.\n",
+    "Prossiga para a geração.\n",
     "q\n",
 ]
 
