@@ -55,7 +55,7 @@ def print_architecture(last_message):
 
     interactions = "🔄 ────── INTERAÇÕES:\n\n"
     for idx, interaction in enumerate(last_message.interactions, start=1):
-        interactions += f"  {idx}. {interaction.source} ─> {interaction.targets}\n     └─ {interaction.description}"
+        interactions += f"  {idx}. {interaction.source} ─> {interaction.target}\n     └─ {interaction.description}"
         if idx < len(last_message.interactions):
             interactions += "\n\n"
 

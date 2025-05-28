@@ -1,11 +1,9 @@
 from langgraph.graph.state import CompiledStateGraph
-import threading
 import os
 
 
 HEADERS = {"Content-Type": "application/json", "Authorization": "Bearer "}
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
-SEMAPHORE = threading.Semaphore(1)
 
 
 def get_generated_files_path(file_name: str) -> str:
