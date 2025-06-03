@@ -15,7 +15,7 @@ def yaml_analyzer(state: DifyState) -> Command:
     instruction = HumanMessage(content="Aqui está o YAML:\n" + yaml + 
                                "\n\nAqui está a ARQUITETURA ORIGINAL:\n" + state["architecture_output"].model_dump_json())
     
-    messages = state["messages"] + [SystemMessage(system_prompt), instruction]
+    messages = [SystemMessage(system_prompt), instruction]
     
     response = model.invoke(messages)
 
