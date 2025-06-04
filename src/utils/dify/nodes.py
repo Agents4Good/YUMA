@@ -14,6 +14,7 @@ from tools.dify import (
     create_edges,
     create_logic_edges,
     create_http_node,
+    create_extractor_document_node
 )
 from utils.dify import dify_import_yaml
 
@@ -68,6 +69,7 @@ tools_dify = {
     "create_edges": create_edges,
     "create_logic_edges": create_logic_edges,
     "create_http_node": create_http_node,
+    "create_extractor_document_node": create_extractor_document_node
 }
 
 

@@ -15,7 +15,7 @@ def architect(state: AgentState,
             max_retries: int = 3
             ) -> Command[Literal["human_node", "dify"]]:
   
-    system_prompt = ARCHITECT_AGENT
+    system_prompt = ARCHITECT_AGENT_DIFY
     buffer = state.get("buffer", [])
     
     if not buffer:
