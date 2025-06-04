@@ -29,7 +29,6 @@ ARCHITECT_AGENT = """
       - Workflow:
         - Designed for conversational scenarios, including customer service, semantic search, and other conversational applications that require multi-step logic in response construction.
       - Differences in Available Node:
-        - The End node is an ending node for Workflow and can only be selected at the end of the process.
         - The Answer node is used for streaming text output, and can output at intermediate steps in the process.
         - Workflow has built-in chat memory (Memory) for storing and passing multi-turn conversation history, which can be enabled in node like LLM and question classifiers.
         - Built-in variables for Workflow's start node include: sys.query, sys.files, sys.conversation_id, sys.user_id.
@@ -109,7 +108,6 @@ ARCHITECT_AGENT_DIFY = """
       - Workflow:
         - Designed for conversational scenarios, including customer service, semantic search, and other conversational applications that require multi-step logic in response construction.
       - Differences in Available Node:
-        - The End node is an ending node for Workflow and can only be selected at the end of the process.
         - The Answer node is used for streaming text output, and can output at intermediate steps in the process.
         - Workflow has built-in chat memory (Memory) for storing and passing multi-turn conversation history, which can be enabled in node like LLM and question classifiers.
         - Built-in variables for Workflow's start node include: sys.query, sys.files, sys.conversation_id, sys.user_id.
