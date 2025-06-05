@@ -11,6 +11,6 @@ from utils.yuma import write_log_state
 def logic_node_creator(state: DifyState) -> Command:
     archictecure = state["architecture_output"].model_dump_json()
     new_messages = build_few_shot(archictecure, LOGIC_NODE_CREATOR, EXAMPLES, "LÓGICA")
-    _return = only_tools_agent(logic_node_creator_model, new_messages, state)
+    _return = only_tools_agent(logic_node_creator_model, state["messages"] + new_messages)
     write_log_state("logic_node_creator - return", _return)
     return _return
