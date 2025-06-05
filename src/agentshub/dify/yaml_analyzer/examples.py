@@ -345,12 +345,12 @@ EXAMPLES = [
                  content=f'Aqui está o YAML: \n" + {_yaml_example()}' +
                  f'\n\nAqui está a ARQUITETURA ORIGINAL:\n" + {_architecture_example()}'),
     AIMessage(name="revisor_exemple",
-              content='{\n' +
-                  '"missing_components": [\n' +
-                  '    "edge_verifica_relevancia_para_envia_resposta"\n' +
-                  ']\n' +
-                  '"agents": [\n' +
-                  '    "edge_creator"\n' +
-                  ']\n' +
+              content='{ ' +
+                  '"missing_components": [ ' +
+                  '"edge_verifica_relevancia_para_envia_resposta" ' +
+                  '] ' +
+                  '"agents": [ ' +
+                  '"edge_creator" ' +
+                  '] ' +
               '}')
 ]
