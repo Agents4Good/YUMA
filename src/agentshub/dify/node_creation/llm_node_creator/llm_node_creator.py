@@ -14,6 +14,6 @@ def llm_node_creator(state: DifyState) -> Command:
     human_message = _human_message("LLM", archictecure)
     new_messages = build_few_shot(LLM_NODE_CREATOR, EXAMPLES, human_message)
     
-    _return = only_tools_agent(llm_node_creator_model, new_messages, state)
+    _return = only_tools_agent(llm_node_creator_model, state["messages"] + new_messages)
     write_log_state("llm_node_creator - return", _return)
     return _return

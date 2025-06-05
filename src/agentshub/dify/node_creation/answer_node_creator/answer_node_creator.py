@@ -15,6 +15,6 @@ def answer_node_creator(state: DifyState) -> Command:
     human_message = _human_message("ANSWER", archictecure)
     new_messages = build_few_shot(ANSWER_NODE_CREATOR, EXAMPLES, human_message)
     
-    _return = only_tools_agent(answer_node_creator_model, new_messages, state)
+    _return = only_tools_agent(answer_node_creator_model, state["messages"] + new_messages)
     write_log_state("answer_node_creator - return", _return)
     return _return
