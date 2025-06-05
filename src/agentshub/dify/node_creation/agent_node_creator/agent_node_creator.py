@@ -7,7 +7,7 @@ from agentshub import only_tools_agent
 from .examples import EXAMPLES
 from utils.dify import build_few_shot
 from utils.yuma import write_log_state
-from human_message import _human_message
+from ..human_message import _human_message
 
 
 def agent_node_creator(state: DifyState) -> Command:
