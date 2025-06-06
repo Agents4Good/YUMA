@@ -19,13 +19,7 @@ YAML_ANALYZER = """
     - Ausência de EDGES que interligam os NÓS
 
     GUIDELINES:
-    - Coloque o nome dos componentes faltantes EXATAMENTE igual ao da arquitetura original
-    - Se não estiver faltando nada, retorne duas listas vazias
-    
-    FORMATO DA RESPOTA:
-    - Responda APENAS com um JSON NO FORMATO ABAIXO, não adicione perguntas, comentários ou explicações. O JSON deve estar no seguinte formato (NÃO ALTERE OS NOMES DAS CHAVES DO JSON):
-    ```{
-        "missing_components" : ["nome_dos_nós_ou_edges_faltantes"]
-        "agents": ["nome_dos_membros_da_equipe_que_devem_construir_o_que_falta"]
-    }```
-"""
+    - Se não estiver faltando nada, retorne uma LISTA VAZIA
+    - Não precisa comunicar sobre nós ou arestas que estejam A MAIS
+    - Quando não tiver nenhum nó ou edge faltando, responda: "Nenhum nó ou aresta está faltando" e retorne uma lista VAZIA
+    """
