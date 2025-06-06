@@ -330,7 +330,6 @@ def _architecture_example():
     nodes = [Node(node="processa_requisicao", description="Nó inicial que recebe a requisição do usuário e será mapeado para o Start Node do Dify"),
              Node(node="pesquisa_noticias", description="Nó responsável por pesquisar notícias relevantes com base na requisição do usuário, será mapeado para o Agent Node do Dify"),
              Node(node="verifica_relevancia", description="Nó que verifica a relevância das notícias encontradas para a requisição do usuário, será mapeado para o LLM Node do Dify"),
-             Node(node="resposta_positiva", description="Envia uma resposta positiva ao usuário, tipo de nó: Answer Node"),
              Node(node="envia_resposta", description="Nó que envia a resposta final ao usuário com as notícias relevantes, será mapeado para o Answer Node do Dify")]
 
     interactions = [Interaction(source="processa_requisicao", target="pesquisa_noticias", description="Passagem da requisição para pesquisa de notícias"),
@@ -346,9 +345,8 @@ EXAMPLES = [
                  f'\n\nAqui está a ARQUITETURA ORIGINAL:\n" + {_architecture_example()}'),
     AIMessage(name="revisor_exemple",
               content='{ ' +
-                  '"missing_components": [ ' +
-                  '"edge_verifica_relevancia_para_envia_resposta" ' +
-                  '] ' +
+                  '"message": ' +
+                  '"A edge entre verifica_relevancia e envia_resposta está faltando" ' +
                   '"agents": [ ' +
                   '"edge_creator" ' +
                   '] ' +
