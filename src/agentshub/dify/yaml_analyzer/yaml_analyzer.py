@@ -12,7 +12,7 @@ from utils.dify import build_few_shot
 from .examples import EXAMPLES
 
 def _human_message(yaml: str, architecture: str):
-    return HumanMessage(content="Aqui está o YAML:\n" + yaml +
+    return HumanMessage(content="A partir dos exemplos citados, realize a análise para a seguinte situação: Aqui está o YAML:\n" + yaml +
                         "\n\nAqui está a ARQUITETURA ORIGINAL:\n" + architecture)
 
 def yaml_analyzer(state: DifyState) -> Command:
@@ -23,15 +23,19 @@ def yaml_analyzer(state: DifyState) -> Command:
     instruction = _human_message(yaml, architecture)
     
     messages = build_few_shot(YAML_ANALYZER, EXAMPLES, instruction)
-    print("="*15 + "\nYAML_ANALYZER")
-    print(messages)
     
     response = structured_model.invoke(messages)
     response = extract_json(response.content, YamlAnalyzerOutput)
-    content_response = response.model_dump_json()
+    if "Nenhum nó ou aresta" in response.message:
+        response.agents = []
+        
+    write_log("yaml_analyzer response", response.model_dump_json())
     
-    write_log("yaml_analyzer response", content_response)
-    _return = Command(update={"messages": [content_response]})
+    _return = Command(goto="__end__")
+    if response.agents:
+        response_message = HumanMessage(content="Construa os componentes faltantes QUE VOCÊ É ESPECIALIZADO: " + response.message)
+        _return = Command(update={"messages": [response_message], "human_message": response_message}, goto=response.agents)
+
     write_log_state("yaml_analyzer - return", _return)
     
     return _return
