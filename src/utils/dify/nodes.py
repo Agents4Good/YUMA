@@ -26,6 +26,9 @@ def _write_dify_yaml(state: DifyState):
     yaml_dify["workflow"]["graph"]["edges"].extend(state["edges_dicts"])
 
     file = Path(YAML_PATH)
+    if file.exists():
+        file.unlink()
+        
     with open(file, "w") as outfile:
         yaml.dump(yaml_dify, outfile,
                   default_flow_style=False, allow_unicode=True)
