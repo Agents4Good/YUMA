@@ -11,7 +11,8 @@ from ..human_message import _human_message
 
 def llm_node_creator(state: DifyState) -> Command:
     archictecure = state["architecture_output"].model_dump_json()
-    human_message = _human_message("LLM", archictecure)
+    human_message = state.get(
+        "human_message", _human_message("LLM", archictecure))
     new_messages = build_few_shot(LLM_NODE_CREATOR, EXAMPLES, human_message)
     
     _return = only_tools_agent(llm_node_creator_model, state["messages"] + new_messages)

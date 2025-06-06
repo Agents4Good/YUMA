@@ -12,7 +12,9 @@ from ..human_message import _human_message
 
 def agent_node_creator(state: DifyState) -> Command:
     archictecure = state["architecture_output"].model_dump_json()
-    human_message = _human_message("AGENTE", archictecure)
+    human_message = state.get(
+        "human_message", _human_message("AGENTE", archictecure))
+    
     new_messages = build_few_shot(AGENT_NODE_CREATOR, EXAMPLES, human_message)
     
     _return = only_tools_agent(agent_node_creator_model, state["messages"] + new_messages)
