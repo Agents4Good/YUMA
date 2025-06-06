@@ -6,7 +6,7 @@ class YamlAnalyzerOutput(BaseModel):
     """
     Represents the missing components.
     """
-    missing_components: List[str] = Field(description="List of missing components")
+    message: str = Field(description="Explanation of the missing components")
     """
     Represents the Dify's agents that will build the missing components 
     """
