@@ -1,10 +1,12 @@
 from .models import (
-    model,
+    model_sys,
+    model_dify,
     structured_model
 )
 
 
 __all__ = [
-    "model",
+    "model_sys",
+    "model_dify",
     "structured_model"
 ]
