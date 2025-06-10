@@ -29,7 +29,9 @@ from .utils import (
 from .web_tools import (
     create_http_node
 )
-
+from .extractor_document_tools import (
+    create_extractor_document_node
+)
 
 __all__ = [
     "create_llm_node",
@@ -51,4 +53,5 @@ __all__ = [
     "create_not_empty_logic_node",
     "create_not_equals_logic_node",
     "create_is_equals_logic_node",
+    "create_extractor_document_node"
 ]

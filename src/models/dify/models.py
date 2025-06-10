@@ -15,6 +15,7 @@ from tools.dify import (
     create_agent_node,
     create_edges,
     create_logic_edges,
+    create_extractor_document_node,
 )
 
 start_node_creator_model = model.bind_tools(
@@ -43,6 +44,10 @@ logic_node_creator_model = model.bind_tools(
 
 http_node_creator_model = model.bind_tools(
     [create_http_node]
+)
+
+extractor_document_node_creator_model = model.bind_tools(
+    [create_extractor_document_node]
 )
 
 edge_creator_dify_model = model.bind_tools(

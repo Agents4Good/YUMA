@@ -18,11 +18,15 @@ from .agent_node_creator import (
     agent_node_creator
 )
 
+from .extractor_document_node_creator import (
+    extractor_document_node_creator
+)
 __all__ = [
     "answer_node_creator",
     "http_node_creator",
     "llm_node_creator",
     "logic_node_creator",
     "start_node_creator",
-    "agent_node_creator"
+    "agent_node_creator",
+    "extractor_document_node_creator"
 ]
