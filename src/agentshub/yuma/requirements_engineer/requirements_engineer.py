@@ -34,5 +34,7 @@ def requirements_engineer(
 
         except Exception as e:
             if attempt == max_retries - 1:
-                write_log(f'requirements_engineer - Falha após várias tentativas', e)
-                return Command(update=state, goto="human_node")
+                write_log(f"requirements_engineer - Falha após várias tentativas", e)
+                _return = Command(update=state, goto="human_node")
+                write_log_state("requirements_engineer - max retries return", _return)
+                return _return
