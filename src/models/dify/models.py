@@ -1,4 +1,4 @@
-from models import model
+from models import model_dify
 from tools.dify import (
     create_start_node,
     create_llm_node,
@@ -18,19 +18,19 @@ from tools.dify import (
     create_extractor_document_node,
 )
 
-start_node_creator_model = model.bind_tools(
+start_node_creator_model = model_dify.bind_tools(
     [create_start_node]
 )
 
-llm_node_creator_model = model.bind_tools(
+llm_node_creator_model = model_dify.bind_tools(
     [create_llm_node]
 )
 
-answer_node_creator_model = model.bind_tools(
+answer_node_creator_model = model_dify.bind_tools(
     [create_answer_node]
 )
 
-logic_node_creator_model = model.bind_tools(
+logic_node_creator_model = model_dify.bind_tools(
     [create_contains_logic_node,
      create_not_contains_logic_node,
      create_start_with_logic_node,
@@ -42,7 +42,7 @@ logic_node_creator_model = model.bind_tools(
      ]
 )
 
-http_node_creator_model = model.bind_tools(
+http_node_creator_model = model_dify.bind_tools(
     [create_http_node]
 )
 
@@ -57,7 +57,7 @@ edge_creator_dify_model = model.bind_tools(
     ]
 )
 
-agent_node_creator_model = model.bind_tools(
+agent_node_creator_model = model_dify.bind_tools(
     [
         create_agent_node
     ]

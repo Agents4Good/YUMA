@@ -4,7 +4,7 @@ from langchain_core.messages import ToolMessage
 from .prompt import REQUIREMENTS_ENGINEER, REQUIREMENTS_ENGINEER_REFACTED
 from typing import Literal
 from schema.yuma import AgentState
-from models import model
+from models import model_sys
 from tools.yuma import make_handoff_tool
 from utils.yuma import write_log_state, write_log
 
@@ -18,7 +18,7 @@ def requirements_engineer(
     max_retries: int = 3,
 ) -> Command[Literal["human_node", "architecture_agent"]]:
     requirements_engineer_model = create_react_agent(
-        model, tools=requirements_engineer_tool, prompt=REQUIREMENTS_ENGINEER_REFACTED
+        model_sys, tools=requirements_engineer_tool, prompt=REQUIREMENTS_ENGINEER_REFACTED
         )
     for attempt in range(max_retries):
         try:

@@ -3,7 +3,7 @@ from .prompt import ARCHITECT_AGENT, ARCHITECT_AGENT_DIFY
 from langgraph.types import Command
 from typing import Literal
 from langchain_core.messages import SystemMessage, AIMessage
-from models import model, structured_model
+from models import structured_model
 from utils import extract_json
 from .structured_output import ArchitectureOutput
 from tools.yuma.utils import sequence_diagram_generator
