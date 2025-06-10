@@ -154,6 +154,9 @@ ARCHITECT_AGENT_DIFY = """
     If/Else Node  
     - Descrição: Permite dividir o fluxo de trabalho em dois ramos com base em condições if/else.
 
+    Extrator Document Node
+    - Descrição: Nó responsável por extrair informações de documentos, como PDF, DOCX, TXT, etc., permitindo a análise e processamento de dados contidos nesses arquivos.
+    
     INSTRUÇÕES PARA MAPEAMENTO:
     - Mantenha os nomes e funções originais dos nós do sistema descrito.
     - Para cada nó, adicione na descrição qual tipo de nó Dify ele será mapeado (Start Node, LLM Node, etc), mas NÃO substitua o nome nem a função do nó.

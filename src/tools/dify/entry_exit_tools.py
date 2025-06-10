@@ -24,7 +24,18 @@ def create_start_node(
     start_node = {
         "id": node_id,
         "type": "custom",
-        "data": {"desc": "", "title": title, "type": "start", "variables": []},
+        "data": {"desc": "",
+                 "title": title, 
+                 "type": "start", 
+                 "variables":[
+                    {"allowed_file_types":["document"], 
+                        "allowed_file_upload_methods": ["local_file","remote_url"],
+                        "label": "files",
+                        "max_length": 5,
+                        "required": False,
+                        "type": "file-list",
+                        "variable": "files"}]
+                }
     }
     
     write_log("create_start_node", start_node)

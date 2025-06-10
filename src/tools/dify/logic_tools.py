@@ -22,8 +22,8 @@ def create_logic_edges(
     
     Parâmetros:
         - edge_id (str): Identificador único da aresta (minúsculas, sem caracteres especiais).
-        - source_id (str): ID do nó de lógica (exemplo: "start_with_node").
-        - source_handle (Literal["true", "false"]): Para qual saída booleana a aresta deve ser criada.
+        - source_id (str): ID do nó de lógica que está sendo conectado (exemplo: "start_with_node").
+        - source_handle (Literal["true", "false"]): Indica se a aresta é para o caminho "true" ou "false" do nó de lógica.
         - target_id (str): ID do nó de destino da aresta (exemplo: "llm1", "llm2").
     """
     logic_edge = {"id": edge_id, "source": source_id, "sourceHandle": source_handle, "target": target_id, "type": "custom"}

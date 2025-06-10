@@ -13,6 +13,7 @@ YAML_ANALYZER = """
     - agent_node_creator: Criador do Agent Node.
     - answer_node_creator: Criador do Answer Node.
     - edge_creator: Criador das Edges.
+    - extractor_document_node_creator: Criador do Extract Document Node.
     
     SÃO CONSIDERADAS FALHAS:
     - Ausência de NÓS que existem na arquitetura original e não estão no YAML

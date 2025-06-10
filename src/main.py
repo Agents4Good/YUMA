@@ -14,7 +14,8 @@ from agentshub.dify import (
     answer_node_creator,
     agent_node_creator,
     edge_creator,
-    yaml_analyzer
+    yaml_analyzer,
+    extractor_document_node_creator
 )
 
 from utils.dify import dify_yaml_builder, call_dify_tools
@@ -45,6 +46,7 @@ node_creation = [
     "http_node_creator",
     "agent_node_creator",
     "answer_node_creator",
+    "extractor_document_node_creator",
 ]
 
 
@@ -69,6 +71,7 @@ def build_graph():
     subgraph_builder.add_node("agent_node_creator", agent_node_creator)
     subgraph_builder.add_node("answer_node_creator", answer_node_creator)
     subgraph_builder.add_node("yaml_analyzer", yaml_analyzer)
+    subgraph_builder.add_node("extractor_document_node_creator", extractor_document_node_creator)
 
     node_creation_map = {agent: agent for agent in node_creation}
     subgraph_builder.add_edge(START, "supervisor_agent")
@@ -81,6 +84,7 @@ def build_graph():
     subgraph_builder.add_edge("http_node_creator", "tools_node_creator")
     subgraph_builder.add_edge("agent_node_creator", "tools_node_creator")
     subgraph_builder.add_edge("answer_node_creator", "tools_node_creator")
+    subgraph_builder.add_edge("extractor_document_node_creator", "tools_node_creator")
     subgraph_builder.add_edge("tools_node_creator", "edge_creator")
     subgraph_builder.add_edge("edge_creator", "tools_edge_creator")
     subgraph_builder.add_edge("tools_edge_creator", "dify_yaml_builder")

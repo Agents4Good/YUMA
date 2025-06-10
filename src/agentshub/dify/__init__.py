@@ -8,7 +8,8 @@ from agentshub.dify.node_creation import (
     llm_node_creator,
     logic_node_creator,
     start_node_creator,
-    agent_node_creator
+    agent_node_creator,
+    extractor_document_node_creator
 )
 
 from agentshub.dify.supervisor import (
@@ -28,5 +29,6 @@ __all__ = [
     "logic_node_creator",
     "start_node_creator",
     "agent_node_creator",
-    "yaml_analyzer"
+    "yaml_analyzer",
+    "extractor_document_node_creator"
 ]
