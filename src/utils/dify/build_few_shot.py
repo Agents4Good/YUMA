@@ -5,7 +5,7 @@ from typing import List
 from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage
 
 
-def build_few_shot(architecture: str, original_prompt: str, examples: List[BaseMessage], node_type: str) -> str:
+def build_few_shot(original_prompt: str, examples: List[BaseMessage], human_message: HumanMessage = None) -> str:
     prompt_template = ChatPromptTemplate.from_messages(
         [
             ("system", original_prompt + "\nEXEMPLOS\n"),
@@ -14,6 +14,7 @@ def build_few_shot(architecture: str, original_prompt: str, examples: List[BaseM
     )
 
     prompt = SystemMessage(prompt_template.format())
-    human_message = HumanMessage(
-        f"A partir dos exemplos, construa os nós de {node_type} indicados nessa arquitetura:\n {architecture}")
+    if not human_message:
+        return [prompt]
+    
     return [prompt] + [human_message]

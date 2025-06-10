@@ -50,7 +50,7 @@ ARCHITECT_AGENT = """
         {"node": "The name of the node using underlines", "description": "Another optional description"},
       ],
       "interactions": [
-        {"source": "The name of the source node using underlines", "targets": "The target node that the source node interacts with, using underlines", "description": "A short description of what a node will comunicate the other"}
+        {"source": "The name of the source node using underlines", "target": "The target node that the source node interacts with, using underlines", "description": "A short description of what a node will comunicate the other"}
       ],
       "route_next": "Determines if the graph should proceed to the next node (True) or remain in the current node (False)".
     }```
@@ -154,6 +154,9 @@ ARCHITECT_AGENT_DIFY = """
     If/Else Node  
     - Descrição: Permite dividir o fluxo de trabalho em dois ramos com base em condições if/else.
 
+    Extrator Document Node
+    - Descrição: Nó responsável por extrair informações de documentos, como PDF, DOCX, TXT, etc., permitindo a análise e processamento de dados contidos nesses arquivos.
+    
     INSTRUÇÕES PARA MAPEAMENTO:
     - Mantenha os nomes e funções originais dos nós do sistema descrito.
     - Para cada nó, adicione na descrição qual tipo de nó Dify ele será mapeado (Start Node, LLM Node, etc), mas NÃO substitua o nome nem a função do nó.
