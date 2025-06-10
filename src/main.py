@@ -14,6 +14,7 @@ from agentshub.dify import (
     answer_node_creator,
     agent_node_creator,
     edge_creator,
+    yaml_analyzer,
     extractor_document_node_creator
 )
 
@@ -38,7 +39,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage
 
 
-dify_agents = [
+node_creation = [
     "start_node_creator",
     "llm_node_creator",
     "logic_node_creator",
@@ -69,12 +70,13 @@ def build_graph():
     subgraph_builder.add_node("http_node_creator", http_node_creator)
     subgraph_builder.add_node("agent_node_creator", agent_node_creator)
     subgraph_builder.add_node("answer_node_creator", answer_node_creator)
+    subgraph_builder.add_node("yaml_analyzer", yaml_analyzer)
     subgraph_builder.add_node("extractor_document_node_creator", extractor_document_node_creator)
 
-    dify_agents_map = {agent: agent for agent in dify_agents}
+    node_creation_map = {agent: agent for agent in node_creation}
     subgraph_builder.add_edge(START, "supervisor_agent")
     subgraph_builder.add_conditional_edges(
-        "supervisor_agent", supervisor_conditional_edge, dify_agents_map
+        "supervisor_agent", supervisor_conditional_edge, node_creation_map
     )
     subgraph_builder.add_edge("start_node_creator", "tools_node_creator")
     subgraph_builder.add_edge("llm_node_creator", "tools_node_creator")
@@ -86,7 +88,8 @@ def build_graph():
     subgraph_builder.add_edge("tools_node_creator", "edge_creator")
     subgraph_builder.add_edge("edge_creator", "tools_edge_creator")
     subgraph_builder.add_edge("tools_edge_creator", "dify_yaml_builder")
-    subgraph_builder.add_edge("dify_yaml_builder", END)
+    subgraph_builder.add_edge("dify_yaml_builder", "yaml_analyzer")
+    subgraph_builder.add_edge("yaml_analyzer", END)
     subgraph = subgraph_builder.compile()
 
     builder = StateGraph(AgentState)

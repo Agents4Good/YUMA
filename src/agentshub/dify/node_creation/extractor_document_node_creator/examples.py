@@ -21,7 +21,7 @@ def _extractor_example():
 EXAMPLES = [
     HumanMessage(
         name="human_example",
-        content='A partir dos exemplos, construa os nós de extração de documentos indicados nessa arquitetura\n' + _extractor_example()
+        content='A partir dos exemplos, construa os nós de EXTRAÇÃO DE DOCUMENTOS indicados nessa arquitetura\n' + _extractor_example()
     ),
     AIMessage(
         name="desenvolvedor_exemplo",

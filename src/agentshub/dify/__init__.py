@@ -16,6 +16,9 @@ from agentshub.dify.supervisor import (
     supervisor
 )
 
+from agentshub.dify.yaml_analyzer import (
+    yaml_analyzer
+)
 
 __all__ = [
     "edge_creator",
@@ -26,5 +29,6 @@ __all__ = [
     "logic_node_creator",
     "start_node_creator",
     "agent_node_creator",
+    "yaml_analyzer",
     "extractor_document_node_creator"
 ]

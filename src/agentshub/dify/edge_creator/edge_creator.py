@@ -7,10 +7,13 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from utils.yuma import write_log_state
 
 
+def _human_message(node_dicts:str, architecture: str):
+    return HumanMessage(content=f"Aqui está a arquitetura do sistema:\n{architecture}"
+                        + f"\n e os nodes criados:\n{node_dicts}")
+
 # Agente responsável por criar as edges do sistema
 def edge_creator(state: DifyState) -> Command:
-    instruction = HumanMessage(content=f"Aqui está a arquitetura do sistema:\n{state['architecture_output'].model_dump_json()}" 
-                               + f"\n e os nodes criados:\n{state['nodes_dicts']}")
+    instruction = state.get("human_message", _human_message(state["nodes_dicts"], state["architecture_output"]))
 
     message = [SystemMessage(content=EDGE_CREATOR), instruction]
     _return = only_tools_agent(edge_creator_dify_model, message)
