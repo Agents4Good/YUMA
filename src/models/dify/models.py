@@ -46,11 +46,11 @@ http_node_creator_model = model_dify.bind_tools(
     [create_http_node]
 )
 
-extractor_document_node_creator_model = model.bind_tools(
+extractor_document_node_creator_model = model_dify.bind_tools(
     [create_extractor_document_node]
 )
 
-edge_creator_dify_model = model.bind_tools(
+edge_creator_dify_model = model_dify.bind_tools(
     [
         create_edges,
         create_logic_edges
