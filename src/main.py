@@ -148,9 +148,8 @@ def main():
         final_state = handle_stream(graph, user_input, config=thread_config)
         print_conversation_header(num_conversation)
 
-        if final_state and (
-            architecture_output := final_state.get("architecture_output")
-        ):
+        architecture_output = final_state.get("architecture_output") if final_state else None
+        if architecture_output and final_state.get("active_agent") == "architecture_agent":
             print_architecture(architecture_output)
 
         user_input = get_user_input(False)

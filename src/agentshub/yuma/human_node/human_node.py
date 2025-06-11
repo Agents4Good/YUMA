@@ -17,6 +17,12 @@ def human_node(
     buffer = state.get("buffer", [])
     if buffer:
         buffer.append(message)
+    
+    key_phrase = "prossiga para a geração"
+        
+    goto = active_agent
+    if active_agent == "architecture_agent" and message and key_phrase in message.content.lower():
+        goto = "dify"
 
     _return = Command(
         update={
@@ -25,7 +31,7 @@ def human_node(
             "active_agent": active_agent,
             "architecture_output": state.get("architecture_output", None),
         },
-        goto=active_agent,
+        goto=goto,
     )
     write_log_state("human_node - return", _return)
     return _return
