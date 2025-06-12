@@ -1,12 +1,12 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-    name: gerador-de-aplicacoes
-    title: Gerador de Aplicações
-    description: Gerador de aplicações multiagentes.
+    name: yuma
+    title: YUMA
+    description: Your User-guided Multiagent Assistent
     annotations:
         backstage.io/techdocs-ref: dir:.
-        github.com/project-slug: Agents4Good/gerador-de-aplicacoes
+        github.com/project-slug: Agents4Good/yuma
 
 spec:
     type: service
