@@ -14,7 +14,14 @@ from tools.dify import (
     create_edges,
     create_logic_edges,
     create_http_node,
-    create_extractor_document_node
+    create_extractor_document_node,
+    create_start_with_logic_node,
+    create_end_with_logic_node,
+    create_is_equals_logic_node,
+    create_not_contains_logic_node,
+    create_not_equals_logic_node,
+    create_is_empty_logic_node,
+    create_not_empty_logic_node
 )
 from utils.dify import dify_import_yaml
 
@@ -61,14 +68,14 @@ tools_dify = {
     "create_agent_node": create_agent_node,
     "create_answer_node": create_answer_node,
     "create_start_node": create_start_node,
-    # "create_start_with_logic_node": create_start_with_logic_node,
-    # "create_end_with_logic_node": create_end_with_logic_node,
+    "create_start_with_logic_node": create_start_with_logic_node,
+    "create_end_with_logic_node": create_end_with_logic_node,
     "create_contains_logic_node": create_contains_logic_node,
-    # "create_not_contains_logic_node": create_not_contains_logic_node,
-    # "create_is_equals_logic_node": create_is_equals_logic_node,
-    # "create_not_equals_logic_node": create_not_equals_logic_node,
-    # "create_is_empty_logic_node": create_is_empty_logic_node,
-    # "create_not_empty_logic_node": create_not_empty_logic_node,
+    "create_not_contains_logic_node": create_not_contains_logic_node,
+    "create_is_equals_logic_node": create_is_equals_logic_node,
+    "create_not_equals_logic_node": create_not_equals_logic_node,
+    "create_is_empty_logic_node": create_is_empty_logic_node,
+    "create_not_empty_logic_node": create_not_empty_logic_node,
     "create_edges": create_edges,
     "create_logic_edges": create_logic_edges,
     "create_http_node": create_http_node,
