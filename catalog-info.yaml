@@ -3,7 +3,7 @@ kind: Component
 metadata:
     name: yuma
     title: YUMA
-    description: Your User-guided Multiagent Assistent
+    description: Your User-guided Multiagent Assistent é uma aplicação que tem como objetivo gerar sistemas multiagentes
     annotations:
         backstage.io/techdocs-ref: dir:.
         github.com/project-slug: Agents4Good/yuma
