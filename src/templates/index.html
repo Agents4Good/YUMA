@@ -44,5 +44,27 @@
             </div>
         </main>
     </div>
+
+    <div id="keyModal" class="modal">
+        <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Configurar Chave</h2>
+        <form id="keyForm">
+            <label for="modelSelect">Modelo:</label>
+            <select id="modelSelect" name="model">
+            <option value="gpt-4">GPT-4</option>
+            <option value="claude-3">Claude 3</option>
+            <option value="gemini-1">Gemini 1</option>
+            <!-- Adicione mais modelos aqui -->
+            </select>
+    
+            <label for="apiKey">API Key:</label>
+            <input type="password" id="apiKey" name="apiKey" placeholder="Digite sua chave">
+    
+            <button type="submit">Salvar</button>
+        </form>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

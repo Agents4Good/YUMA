@@ -138,3 +138,82 @@ body {
     font-size: 3em;
     color: #666;
 }
+
+/* Modal container */
+.modal {
+    display: none; /* Oculto por padrão */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6); /* Fundo escuro semi-transparente */
+}
+
+/* Conteúdo do modal */
+.modal-content {
+    background-color: #444; /* Escuro para combinar com a sidebar */
+    color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Botão de fechar */
+.close {
+    color: #aaa;
+    align-self: flex-end;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #fff;
+}
+
+/* Labels e inputs no modal */
+.modal-content label {
+    font-size: 0.9em;
+    color: #ccc;
+}
+
+.modal-content select,
+.modal-content input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    background-color: #555;
+    color: #fff;
+}
+
+.modal-content select:focus,
+.modal-content input[type="password"]:focus {
+    outline: none;
+    background-color: #666;
+}
+
+/* Botão salvar */
+.modal-content button {
+    padding: 10px;
+    background-color: #666;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.modal-content button:hover {
+    background-color: #888;
+}
