@@ -171,7 +171,12 @@ cython_debug/
 .pypirc
 
 # etc
-graph_image.png
+.vscode/
 
-diagram.png
-diagram.puml
+# Generated Files
+*.puml
+dify.yaml
+*.png
+
+# PyCharm
+/.idea/
