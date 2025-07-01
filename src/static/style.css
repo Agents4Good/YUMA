@@ -1,7 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@600;700&display=swap');
+
+:root {
+    --blue-dark: #0E1A2B;
+    --blue-medium: #2B6CB0;
+    --purple-glow: #7F56D9;
+    --purple-soft: #B983FF;
+    --text-light: #E2E8F0;
+    --text-muted: #94A3B8;
+    --bg-dark: #121826;
+    --bg-sidebar: #1F2937;
+    --bg-light: #F5F7FA;
+    --yuma-gradient-start: #190397;
+    --yuma-gradient-end: #9876e4;
+    --font-title: 'Poppins', sans-serif;
+    --font-body: 'Inter', sans-serif;
+}
+
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #333;
+    font-family: var(--font-body);
     display: flex;
     min-height: 100vh;
     width: 100vw;
@@ -12,7 +29,7 @@ body {
     display: flex;
     width: 100%;
     height: 100vh;
-    background-color: #333;
+    background-color: var(--bg-dark);
     border-radius: 0;
     box-shadow: none;
     overflow: hidden;
@@ -20,8 +37,7 @@ body {
 
 .sidebar {
     width: 250px;
-    background-color: #333;
-    color: #fff;
+    background-color: var(--bg-dark);
     padding: 20px 0;
     display: flex;
     flex-direction: column;
@@ -32,16 +48,28 @@ body {
 .sidebar .logo {
     display: flex;
     align-items: center;
-    margin-bottom: 40px;
-    font-size: 24px;
-    font-weight: bold;
-    color: #fff;
+    margin-bottom: 30px;
+    padding: 0 20px;
+}
+
+.sidebar .logo span {
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: 1px;
+    background: linear-gradient(to right, var(--yuma-gradient-start), var(--yuma-gradient-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: var(--yuma-gradient-start);
+    line-height: 1;
+    margin: 0;
+    padding: 0;
 }
 
 .sidebar .logo img {
     width: 40px;
     margin-right: 10px;
-    filter: invert(100%);
+    display: block;
 }
 
 .sidebar .main-nav ul {
@@ -58,17 +86,17 @@ body {
     display: flex;
     align-items: center;
     padding: 12px 20px;
-    color: #ccc;
+    color: var(--text-muted);
     text-decoration: none;
     transition: background-color 0.3s ease, color 0.3s ease;
     width: 100%;
     box-sizing: border-box;
-     line-height: 24px;
+    line-height: 24px;
 }
 
 .sidebar .main-nav .nav-item:hover {
-    background-color: #555;
-    color: #fff;
+    background-color: var(--blue-medium);
+    color: var(--bg-light);
 }
 
 .sidebar .main-nav .nav-item .material-icons {
@@ -78,11 +106,11 @@ body {
     width: 24px;
     height: 24px;
     vertical-align: middle;
-    color: #ccc;
+    color: var(--text-muted);
 }
 
 .sidebar .main-nav .nav-item:hover .material-icons {
-    stroke: #fff;
+    color: var(--bg-light);
 }
 
 .content {
@@ -92,15 +120,14 @@ body {
     align-items: center;
     text-align: center;
     padding: 20px;
-    background-color: #fff;
+    background-color: var(--bg-light);
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin: 15px;
 }
 
 .welcome-message {
     padding: 40px;
-    background-color: #fff;
+    background-color: var(--bg-light);
     border-radius: 0;
     box-shadow: none;
     display: flex;
@@ -117,26 +144,32 @@ body {
 }
 
 .welcome-message img {
-    width: 45px;
+    width: 30px;
     margin-right: 8px;
-    margin-bottom: 0;
+    display: block;
 }
 
 .welcome-message h1 {
-    font-size: 1.5em;
-    color: #333;
-    margin-bottom: 10px;
+    font-size: 2em;
+    font-family: var(--font-title);
+    background: linear-gradient(to right, var(--yuma-gradient-start), var(--yuma-gradient-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
 }
 
 .welcome-message p {
-    font-size: 1.7em;
-    color: #666;
+    font-size: 1.2em;
+    color: var(--text-muted);
+    font-family: var(--font-body);
     margin-bottom: 20px;
 }
 
 .welcome-message .arrow {
     font-size: 3em;
-    color: #666;
+    color: var(--text-muted);
 }
 
 /* Modal container */
