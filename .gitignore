@@ -174,9 +174,7 @@ cython_debug/
 .vscode/
 
 # Generated Files
-*.puml
-dify.yaml
-*.png
+generated_files/
 
 # PyCharm
 /.idea/
