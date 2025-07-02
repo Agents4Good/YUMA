@@ -17,6 +17,6 @@ def agent_node_creator(state: DifyState) -> Command:
     
     new_messages = build_few_shot(AGENT_NODE_CREATOR, EXAMPLES, human_message)
     
-    _return = only_tools_agent(agent_node_creator_model, state["messages"] + new_messages)
+    _return = only_tools_agent(agent_node_creator_model(), state["messages"] + new_messages)
     write_log_state("agent_node_creator - return", _return)
     return _return

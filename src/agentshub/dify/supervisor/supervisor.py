@@ -18,7 +18,7 @@ def supervisor(
     system_prompt = SUPERVISOR_AGENT
 
     messages = state["messages"] + [SystemMessage(system_prompt)]
-    response = structured_model.invoke(messages)
+    response = structured_model().invoke(messages)
 
     response = extract_json(response.content, SupervisorOutput)
 

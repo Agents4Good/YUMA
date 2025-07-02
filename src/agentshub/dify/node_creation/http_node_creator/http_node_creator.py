@@ -15,6 +15,6 @@ def http_node_creator(state: DifyState) -> Command:
         "human_message", _human_message("HTTP", archictecure))
     new_messages = build_few_shot(HTTP_NODE_CREATOR, EXAMPLES, human_message)
     
-    _return = only_tools_agent(http_node_creator_model, state["messages"] + new_messages)
+    _return = only_tools_agent(http_node_creator_model(), state["messages"] + new_messages)
     write_log_state("http_node_creator - return", _return)
     return _return

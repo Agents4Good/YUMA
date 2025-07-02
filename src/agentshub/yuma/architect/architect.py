@@ -36,7 +36,7 @@ def architect(state: AgentState,
 
     for _ in range(max_retries):
         try:
-            response = structured_model.invoke(buffer)
+            response = structured_model().invoke(buffer)
 
             response = extract_json(response.content, ArchitectureOutput)
 

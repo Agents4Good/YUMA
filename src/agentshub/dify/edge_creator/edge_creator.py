@@ -16,6 +16,6 @@ def edge_creator(state: DifyState) -> Command:
     instruction = state.get("human_message", _human_message(state["nodes_dicts"], state["architecture_output"]))
 
     message = [SystemMessage(content=EDGE_CREATOR), instruction]
-    _return = only_tools_agent(edge_creator_dify_model, message)
+    _return = only_tools_agent(edge_creator_dify_model(), message)
     write_log_state("edge_creator - return", _return)
     return _return

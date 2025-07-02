@@ -24,7 +24,7 @@ def yaml_analyzer(state: DifyState) -> Command:
     
     messages = build_few_shot(YAML_ANALYZER, EXAMPLES, instruction)
     
-    response = structured_model.invoke(messages)
+    response = structured_model().invoke(messages)
     response = extract_json(response.content, YamlAnalyzerOutput)
     if "Nenhum nó ou aresta" in response.message:
         response.agents = []

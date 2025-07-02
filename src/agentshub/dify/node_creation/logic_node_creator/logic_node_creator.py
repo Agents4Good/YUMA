@@ -15,6 +15,6 @@ def logic_node_creator(state: DifyState) -> Command:
         "human_message", _human_message("LÓGICA", archictecure))
     new_messages = build_few_shot(LOGIC_NODE_CREATOR, EXAMPLES, human_message)
     
-    _return = only_tools_agent(logic_node_creator_model, state["messages"] + new_messages)
+    _return = only_tools_agent(logic_node_creator_model(), state["messages"] + new_messages)
     write_log_state("logic_node_creator - return", _return)
     return _return
