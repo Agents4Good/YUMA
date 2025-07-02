@@ -1,3 +1,7 @@
+import dotenv
+
+dotenv.load_dotenv(override=True)
+
 from schema.yuma import AgentState
 from schema.dify import DifyState
 from agentshub.yuma import (
