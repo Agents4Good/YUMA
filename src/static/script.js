@@ -1,7 +1,12 @@
-// Pega os elementos
 var modal = document.getElementById("keyModal");
 var btn = document.querySelector(".nav-item.key");
 var span = document.querySelector(".close");
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (!KEY_EXISTS) {
+        document.getElementById('keyModal').style.display = 'block';
+    }
+});
 
 btn.onclick = function(e) {
     e.preventDefault();
@@ -18,14 +23,29 @@ window.onclick = function(event) {
     }
 }
 
-document.getElementById("keyForm").onsubmit = function(e) {
+document.getElementById("keyForm").addEventListener('submit', async function(e) {
     e.preventDefault();
-    var selectedModel = document.getElementById("modelSelect").value;
+
     var apiKey = document.getElementById("apiKey").value;
+    var conversationModel = document.getElementById("conversationModelSelect").value;
+    var toolcallingModel = document.getElementById("toolcallingModelSelect").value;
 
-    console.log("Modelo selecionado:", selectedModel);
-    console.log("Chave:", apiKey);
+    try {
+        const response = await fetch('/save_key', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                apiKey: apiKey,
+                conversationModel: conversationModel,
+                toolcallingModel: toolcallingModel
+            })
+        });
 
-    alert("Chave salva com sucesso!");
-    modal.style.display = "none";
-}
+        if (!response.ok) {
+            alert('Erro ao salvar chave!');
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro na requisição!');
+    }
+});

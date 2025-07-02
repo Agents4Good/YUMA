@@ -172,9 +172,8 @@ body {
     color: var(--text-muted);
 }
 
-/* Modal container */
 .modal {
-    display: none; /* Oculto por padrão */
+    display: none;
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -182,12 +181,11 @@ body {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.6); /* Fundo escuro semi-transparente */
+    background-color: rgba(0,0,0,0.6);
 }
 
-/* Conteúdo do modal */
 .modal-content {
-    background-color: #444; /* Escuro para combinar com a sidebar */
+    background-color: var(--bg-sidebar);
     color: #fff;
     margin: 10% auto;
     padding: 20px;
@@ -199,7 +197,6 @@ body {
     gap: 10px;
 }
 
-/* Botão de fechar */
 .close {
     color: #aaa;
     align-self: flex-end;
@@ -211,10 +208,9 @@ body {
     color: #fff;
 }
 
-/* Labels e inputs no modal */
 .modal-content label {
     font-size: 0.9em;
-    color: #ccc;
+    color: var(--text-muted);
 }
 
 .modal-content select,
@@ -235,7 +231,6 @@ body {
     background-color: #666;
 }
 
-/* Botão salvar */
 .modal-content button {
     padding: 10px;
     background-color: #666;
