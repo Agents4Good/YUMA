@@ -1,12 +1,16 @@
 from .models import (
-    model_sys,
-    model_dify,
-    structured_model
+    conversation_model,
+    toolcalling_model,
+    structured_model,
+    CONVERSATION_MODELS,
+    TOOLCALLING_MODELS
 )
 
 
 __all__ = [
-    "model_sys",
-    "model_dify",
-    "structured_model"
+    "conversation_model",
+    "toolcalling_model",
+    "structured_model",
+    "CONVERSATION_MODELS",
+    "TOOLCALLING_MODELS"
 ]

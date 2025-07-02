@@ -1,19 +1,27 @@
 from langchain_openai import ChatOpenAI
-import dotenv
 import os
 
-dotenv.load_dotenv(override=True)
+CONVERSATION_MODELS = {
+    "Llama 3.3 70B Instruct" : "meta-llama/Llama-3.3-70B-Instruct"
+}
 
-model_sys = ChatOpenAI(
-    model=os.getenv("MODEL_ID_CONVERSATION"), base_url=os.getenv("BASE_URL_DEEP_INFRA")
-)
+TOOLCALLING_MODELS = {
+    "Qwen 2.5 72B Instruct" : "Qwen/Qwen2.5-72B-Instruct"
+}
 
-model_dify = ChatOpenAI(
-    model=os.getenv("MODEL_ID_TOOLCALLING"), base_url=os.getenv("BASE_URL_DEEP_INFRA")
-)
+def conversation_model():
+    return ChatOpenAI(
+        model=os.getenv("MODEL_ID_CONVERSATION"), base_url=os.getenv("BASE_URL_DEEP_INFRA")
+    )
 
-structured_model = ChatOpenAI(
-    model=os.getenv("MODEL_ID_CONVERSATION"),
-    base_url=os.getenv("BASE_URL_DEEP_INFRA"),
-    model_kwargs={"response_format": {"type": "json_object"}},
-)
+def toolcalling_model():
+    return ChatOpenAI(
+        model=os.getenv("MODEL_ID_TOOLCALLING"), base_url=os.getenv("BASE_URL_DEEP_INFRA")
+    )
+
+def structured_model():
+    return ChatOpenAI(
+        model=os.getenv("MODEL_ID_CONVERSATION"),
+        base_url=os.getenv("BASE_URL_DEEP_INFRA"),
+        model_kwargs={"response_format": {"type": "json_object"}},
+    )
