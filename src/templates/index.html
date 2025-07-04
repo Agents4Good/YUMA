@@ -64,8 +64,11 @@
             </select>
             <label for="apiKey">API Key:</label>
             <input type="password" id="apiKey" name="apiKey" placeholder="Digite sua chave">
-    
-            <button type="submit">Salvar</button>
+            <small id="apiKeyError" class="error-message"></small>
+            <button type="submit">
+                Salvar
+                <span id="saveLoader"></span>
+            </button>
         </form>
         </div>
     </div>
