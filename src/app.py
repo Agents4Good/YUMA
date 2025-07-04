@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, jsonify
 import dotenv
 import os
 from models import CONVERSATION_MODELS, TOOLCALLING_MODELS
+from utils import validate_key
+
 
 app = Flask(__name__)
 dotenv.load_dotenv(override=True)
@@ -21,14 +23,18 @@ def save_key():
     api_key = data.get('apiKey')
     conversation_model = data.get('conversationModel')
     toolcalling_model = data.get('toolcallingModel')
-
+    
     if not api_key:
         return jsonify({'error': 'API Key é obrigatória'}), 400
+    
+    if not validate_key(api_key):
+        return jsonify({'error': 'API Key está incorreta'}), 400
+
 
     os.environ['OPENAI_API_KEY'] = api_key
     os.environ['MODEL_ID_CONVERSATION'] = conversation_model
     os.environ['MODEL_ID_TOOLCALLING'] = toolcalling_model
-
+    
     return jsonify({'message': 'Chave e modelos salvos com sucesso!'})
 
 if __name__ == '__main__':
