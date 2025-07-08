@@ -1,17 +1,13 @@
 var modal = document.getElementById("keyModal");
-var btn = document.querySelector(".nav-item.key");
+var btn = document.getElementById("open-key-popup");
 var span = document.querySelector(".close");
 
-
-document.addEventListener('DOMContentLoaded', () => {
-    if (!KEY_EXISTS) {
-        document.getElementById('keyModal').style.display = 'block';
-    }
-});
+var toggleKeyVisibilityBtn = document.getElementById("toggle-key-visibility");
+var apiKeyInput = document.getElementById("apiKey");
 
 btn.onclick = function(e) {
     e.preventDefault();
-    modal.style.display = "block";
+    modal.style.display = "flex";
 }
 
 span.onclick = function() {
@@ -23,6 +19,19 @@ window.onclick = function(event) {
         modal.style.display = "none";
     }
 }
+
+if (toggleKeyVisibilityBtn) {
+    toggleKeyVisibilityBtn.addEventListener('click', function() {
+        if (apiKeyInput.type === 'password') {
+            apiKeyInput.type = 'text';
+            toggleKeyVisibilityBtn.textContent = 'visibility';
+        } else {
+            apiKeyInput.type = 'password';
+            toggleKeyVisibilityBtn.textContent = 'visibility_off';
+        }
+    });
+}
+
 
 document.getElementById("keyForm").addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -48,13 +57,11 @@ document.getElementById("keyForm").addEventListener('submit', async function(e) 
 
         if (!response.ok) {
             const data = await response.json();
-            apiKey.style.marginBottom = "2px";
             keyError.textContent = data.error || "Erro ao salvar a chave";
             keyError.style.display = "block";
 
         } else {
             modal.style.display = "none";
-            apiKey.style.marginBottom = "10px";
             keyError.textContent = "";
             keyError.style.display = "none";
         }

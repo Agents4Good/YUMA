@@ -1,20 +1,50 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@600;700&display=swap');
 
 :root {
-    --blue-dark: #0E1A2B;
-    --blue-medium: #2B6CB0;
-    --purple-glow: #7F56D9;
-    --purple-soft: #B983FF;
-    --text-light: #E2E8F0;
-    --text-muted: #94A3B8;
-    --bg-dark: #121826;
-    --bg-sidebar: #1F2937;
-    --bg-light: #F5F7FA;
+    /* --- CORES DA PALETA YUMA --- */
+    --blue-dark: #0E1A2B;      /* Azul escuro: Usado para texto principal, backgrounds escuros */
+    --blue-medium: #2B6CB0;    /* Azul médio: Cor primária para botões, links, destaques */
+    --purple-glow: #7F56D9;    /* Roxo intenso: Usado para estados de hover/focus, elementos interativos */
+    --purple-soft: #B983FF;    /* Roxo suave: Para detalhes ou elementos secundários */
+
+    /* Gradiente YUMA Logo*/
     --yuma-gradient-start: #190397;
     --yuma-gradient-end: #9876e4;
-    --font-title: 'Poppins', sans-serif;
-    --font-body: 'Inter', sans-serif;
-    --error-color: #da1e28;
+
+    /* --- CORES DE TEXTO E FUNDO GERAIS --- */
+    --text-light: #E2E8F0;     /* Texto claro: Ideal para contraste em fundos escuros */
+    --text-muted: #94A3B8;     /* Texto suave/cinza: Para legendas, textos secundários */
+    --bg-dark: #121826;        /* Fundo escuro principal da aplicação */
+    --bg-sidebar: #1F2937;     /* Fundo da barra lateral */
+    --bg-light: #F5F7FA;       /* Fundo claro: Usado para componentes como campos de input, cards */
+
+    /* --- CORES DE FEEDBACK E ESTADOS --- */
+    --error-color: #da1e28;     /* Vermelho: Para mensagens de erro e validação */
+    --feedback-success: #388E3C; /* Verde: Para mensagens de sucesso */
+    --disabled-bg: #E0E0E0;     /* Fundo de elementos desabilitados */
+    --disabled-text: #AAAAAA;   /* Cor do texto em elementos desabilitados */
+
+    /* --- CORES ESPECÍFICAS DO MODAL (POPUP) --- */
+    --modal-overlay: rgba(0, 0, 0, 0.6); /* Fundo escuro semi-transparente da tela ao abrir o modal */
+    --bg-modal: var(--bg-light);        /* Fundo da caixa do modal (branco) */
+    --modal-shadow: rgba(0, 0, 0, 0.2); /* Sombra para dar profundidade ao modal */
+    
+    /* Cores do botão de fechar 'X' do modal */
+    --modal-close-button: #888;     /* Cinza padrão para o 'X' */
+    --modal-close-button-hover: #555; /* Cinza mais escuro no hover do 'X' */
+
+    /* --- CORES PARA ELEMENTOS DE FORMULÁRIO --- */
+    --text-label: #555555;      /* Cinza escuro para o texto dos labels */
+    --border-default: #CCCCCC;  /* Borda padrão de inputs e selects */
+    --border-focus: var(--blue-medium); /* Borda ao focar em inputs/selects (usando cor YUMA) */
+    
+    /* Cores para ícones dentro de campos de input (olho da senha) */
+    --icon-default: #666666;
+    --icon-hover: #333333;
+
+    /* --- FONTES --- */
+    --font-title: 'Poppins', sans-serif; /* Fonte para títulos e cabeçalhos */
+    --font-body: 'Inter', sans-serif;    /* Fonte para o corpo do texto e formulários */
 }
 
 body {
@@ -181,91 +211,209 @@ body {
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.6);
+    background-color: var(--modal-overlay);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .modal-content {
-    background-color: var(--bg-sidebar);
-    color: #fff;
-    margin: 10% auto;
-    padding: 20px;
+    background-color: var(--bg-modal);
+    color: var(--blue-dark);
+    padding: 30px;
     border-radius: 8px;
-    width: 300px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 5px 15px var(--modal-shadow);
+    width: 90%;
+    max-width: 450px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    align-items: center;
+    gap: 15px;
+    position: relative;
+    text-align: center;
+}
+
+.modal-content h2 {
+    font-size: 1.8em;
+    font-family: var(--font-title);
+    color: var(--blue-medium);
+    margin-bottom: 5px;
 }
 
 .close {
-    color: #aaa;
-    align-self: flex-end;
-    font-size: 24px;
+    color: var(--modal-close-button);
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
     cursor: pointer;
+    transition: color 0.3s ease;
+    line-height: 1;
 }
 
-.close:hover {
-    color: #fff;
+.close:hover,
+.close:focus {
+    color: var(--modal-close-button-hover);
+    text-decoration: none;
+}
+
+.modal-content form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
 }
 
 .modal-content label {
     font-size: 0.9em;
-    color: var(--text-muted);
-}
-
-.modal-content select,
-.modal-content input[type="password"] {
+    color: var(--text-label);
+    margin-bottom: 8px;
+    font-weight: bold;
+    text-align: left;
     width: 100%;
-    padding: 8px;
-    border: none;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    box-sizing: border-box;
-    background-color: #555;
-    color: #fff;
 }
 
-.modal-content select:focus,
-.modal-content input[type="password"]:focus {
-    outline: none;
-    background-color: #666;
-}
-
-.modal-content button {
+.modal-content select {
+    width: 100%;
     padding: 10px;
-    background-color: #666;
-    color: #fff;
+    border: 1px solid var(--border-default);
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: var(--bg-light);
+    color: var(--blue-dark);
+    font-family: var(--font-body);
+    font-size: 1em;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23666666" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 20px;
+}
+
+.modal-content select:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    background-color: var(--bg-light);
+}
+
+.modal-content select:disabled {
+    background-color: var(--disabled-bg);
+    cursor: not-allowed;
+    color: var(--disabled-text);
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23AAAAAA" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+}
+
+.input-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.modal-content input[type="password"],
+.modal-content input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    padding-right: 40px;
+    border: 1px solid var(--border-default);
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: var(--bg-light);
+    color: var(--blue-dark);
+    font-family: var(--font-body);
+    font-size: 1em;
+}
+
+.modal-content input[type="password"]:focus,
+.modal-content input[type="text"]:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    background-color: var(--bg-light);
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--icon-default);
+    font-size: 20px;
+    z-index: 2;
+}
+
+.toggle-password:hover {
+    color: var(--icon-hover);
+}
+
+#apiKeyError {
+    color: var(--error-color);
+    font-size: 0.9em;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    text-align: center;
+    width: 100%;
+    display: none;
+}
+
+.modal-content .save-button {
+    padding: 10px 25px;
+    background-color: var(--blue-medium);
+    color: var(--text-light);
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+    font-size: 1em;
     transition: background-color 0.3s ease;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
-.modal-content button:hover {
-    background-color: #888;
-}
-
-.error-message {
-    color: var(--error-color);
-    display: none;
-    font-size: 0.875em;
-    margin-bottom: 10px;
+.modal-content .save-button:hover {
+    background-color: var(--purple-glow);
 }
 
 #saveLoader {
     display: none;
-    width: 10px;
-    height: 10px;
-    border: 2px solid #000;
-    border-top: 2px solid transparent;
+    width: 20px;
+    height: 20px;
+    border: 3px solid var(--text-light);
+    border-top: 3px solid transparent;
     border-radius: 50%;
     animation: spin 0.6s linear infinite;
-    margin-left: 8px;
+    vertical-align: middle;
 }
 
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }

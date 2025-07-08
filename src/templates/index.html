@@ -20,8 +20,7 @@
                         <span class="material-icons">add</span>
                         New
                     </a></li>
-                    <li><a href="#" class="nav-item key">
-                        <span class="material-icons">vpn_key</span>
+                    <li><a href="#" class="nav-item key" id="open-key-popup"> <span class="material-icons">vpn_key</span>
                         Key
                     </a></li>
                     <li><a href="#" class="nav-item saved">
@@ -50,31 +49,37 @@
         <span class="close">&times;</span>
         <h2>Configurar Chave</h2>
         <form id="keyForm">
-            <label for="conversationModelSelect">Modelo de Conversação:</label>
-            <select id="conversationModelSelect" name="conversationModel">
-                {% for name, model_id in conversation_models.items() %}
-                    <option value="{{ model_id }}">{{ name }}</option>
-                {% endfor %}
-            </select>
-            <label for="toolcallingModelSelect">Modelo de ToolCalling:</label>
-            <select id="toolcallingModelSelect" name="toolcallingModel">
-                {% for name, model_id in toolcalling_models.items() %}
-                    <option value="{{ model_id }}">{{ name }}</option>
-                {% endfor %}
-            </select>
-            <label for="apiKey">API Key:</label>
-            <input type="password" id="apiKey" name="apiKey" placeholder="Digite sua chave">
+            <div class="form-group"> <label for="conversationModelSelect">Modelo de Conversação:</label>
+                <select id="conversationModelSelect" name="conversationModel">
+                    {% for name, model_id in conversation_models.items() %}
+                        <option value="{{ model_id }}">{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group"> <label for="toolcallingModelSelect">Modelo de ToolCalling:</label>
+                <select id="toolcallingModelSelect" name="toolcallingModel">
+                    {% for name, model_id in toolcalling_models.items() %}
+                        <option value="{{ model_id }}">{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group"> <label for="apiKey">API Key:</label>
+                <div class="input-container"> <input type="password" id="apiKey" name="apiKey" placeholder="Digite sua chave">
+                    <span class="material-icons toggle-password" id="toggle-key-visibility">visibility_off</span> </div>
+            </div>
+
             <small id="apiKeyError" class="error-message"></small>
-            <button type="submit">
-                Salvar
+            
+            <button type="submit" class="save-button"> Salvar
                 <span id="saveLoader"></span>
             </button>
-        </form>
+            </form>
         </div>
     </div>
     <script>
         const KEY_EXISTS = {{ key_exists | tojson }};
     </script>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="static/script.js"></script>
 </body>
 </html>
