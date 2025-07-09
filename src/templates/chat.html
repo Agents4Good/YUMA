@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YUMA - Chat</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="static/chat.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="static/yuma_logo.svg" alt="YUMA Logo">
+                <span>YUMA</span>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#" class="nav-item new">
+                        <span class="material-icons">add</span>
+                        New
+                    </a></li>
+                    <li><a href="#" class="nav-item key">
+                        <span class="material-icons">vpn_key</span>
+                        Key
+                    </a></li>
+                    <li><a href="#" class="nav-item saved">
+                        <span class="material-icons">bookmark</span>
+                        Saved
+                    </a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <form id="chat_form" class="query__container" method="post">
+                <div class="input-container">
+                    <input type="text" id="user_input" class="query" autocomplete="off" placeholder="Digite sua mensagem aqui"/>
+                    <button class="send" type="submit">
+                        <img src=""/>
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+</body>
+</html>
