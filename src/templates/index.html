@@ -49,24 +49,24 @@
         <span class="close">&times;</span>
         <h2>Configurar Chave</h2>
         <form id="keyForm">
-            <div class="form-group"> <label for="conversationModelSelect">Modelo de Conversação:</label>
-                <select id="conversationModelSelect" name="conversationModel">
-                    {% for name, model_id in conversation_models.items() %}
-                        <option value="{{ model_id }}">{{ name }}</option>
+            <div class="form-group provider"> <label for="providerSelect">Provedor:</label>
+                <select id="providerSelect" name="providerUrl">
+                    {% for provider in providers %}
+                        <option value="{{ loop.index0 }}">{{ provider.provider_name }}</option>
                     {% endfor %}
                 </select>
-            </div>
-            <div class="form-group"> <label for="toolcallingModelSelect">Modelo de ToolCalling:</label>
-                <select id="toolcallingModelSelect" name="toolcallingModel">
-                    {% for name, model_id in toolcalling_models.items() %}
-                        <option value="{{ model_id }}">{{ name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <div class="form-group"> <label for="apiKey">API Key:</label>
-                <div class="input-container"> <input type="password" id="apiKey" name="apiKey" placeholder="Digite sua chave">
-                    <span class="material-icons toggle-password" id="toggle-key-visibility">visibility_off</span> </div>
+
+            <div id="modelsSection">
+                <div class="form-group model"> <label for="conversationModelSelect">Modelo de Conversação:</label>
+                    <select id="conversationModelSelect" name="conversationModel"></select>
+                </div>
+                <div class="form-group model"> <label for="toolcallingModelSelect">Modelo de ToolCalling:</label>
+                    <select id="toolcallingModelSelect" name="toolcallingModel"></select>
+                </div>
+                <div class="form-group"> <label for="apiKey">API Key:</label>
+                    <div class="input-container"> <input type="password" id="apiKey" name="apiKey" placeholder="Digite sua chave">
+                        <span class="material-icons toggle-password" id="toggle-key-visibility">visibility_off</span> </div>
+                </div>
             </div>
 
             <small id="apiKeyError" class="error-message"></small>
@@ -79,7 +79,8 @@
     </div>
     <script>
         const KEY_EXISTS = {{ key_exists | tojson }};
+        const PROVIDERS = {{ providers | tojson }};
     </script>
-    <script src="static/script.js"></script>
+    <script src="static/key_config.js"></script>
 </body>
 </html>

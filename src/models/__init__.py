@@ -2,15 +2,13 @@ from .models import (
     conversation_model,
     toolcalling_model,
     structured_model,
-    CONVERSATION_MODELS,
-    TOOLCALLING_MODELS
 )
 
+from .providers import (PROVIDERS)
 
 __all__ = [
     "conversation_model",
     "toolcalling_model",
     "structured_model",
-    "CONVERSATION_MODELS",
-    "TOOLCALLING_MODELS"
+    PROVIDERS
 ]

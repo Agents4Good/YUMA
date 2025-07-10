@@ -274,6 +274,14 @@ body {
     margin-bottom: 20px;
 }
 
+#modelsSection {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
 .modal-content label {
     font-size: 0.9em;
     color: var(--text-label);

@@ -1,9 +1,16 @@
 var modal = document.getElementById("keyModal");
 var btn = document.getElementById("open-key-popup");
 var span = document.querySelector(".close");
+var providerSelect = document.getElementById("providerSelect")
 
 var toggleKeyVisibilityBtn = document.getElementById("toggle-key-visibility");
-var apiKeyInput = document.getElementById("apiKey");
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (!KEY_EXISTS) {
+        document.getElementById('keyModal').style.display = 'flex';
+    }
+});
 
 btn.onclick = function(e) {
     e.preventDefault();
@@ -21,6 +28,8 @@ window.onclick = function(event) {
 }
 
 if (toggleKeyVisibilityBtn) {
+    var apiKeyInput = document.getElementById("apiKey");
+
     toggleKeyVisibilityBtn.addEventListener('click', function() {
         if (apiKeyInput.type === 'password') {
             apiKeyInput.type = 'text';
@@ -31,6 +40,36 @@ if (toggleKeyVisibilityBtn) {
         }
     });
 }
+
+construct_models_selection = (select, models) => {
+    for (const [name, id] of models) {
+        const option = document.createElement("option");
+        option.value = id;
+        option.textContent = name;
+        select.appendChild(option);
+    }
+}
+
+providerSelect.addEventListener("change", function() {
+    const selectedIndex = this.value;
+    const modelsSection = document.getElementById("modelsSection");
+    const conversationModelsSelect = document.getElementById("conversationModelSelect");
+    const toolcallingModelsSelect = document.getElementById("toolcallingModelSelect");
+
+    if (selectedIndex === "") {
+        modelsSection.style.display = "none";
+        return;
+    }
+
+    const provider = PROVIDERS[selectedIndex];
+
+    conversationModelsSelect.innerHTML = "";
+    construct_models_selection(conversationModelsSelect, Object.entries(provider.conversation_models));
+
+    toolcallingModelsSelect.innerHTML = "";
+    construct_models_selection(toolcallingModelsSelect, Object.entries(provider.toolcalling_models));
+})
+
 
 
 document.getElementById("keyForm").addEventListener('submit', async function(e) {
@@ -58,7 +97,7 @@ document.getElementById("keyForm").addEventListener('submit', async function(e) 
         if (!response.ok) {
             const data = await response.json();
             keyError.textContent = data.error || "Erro ao salvar a chave";
-            keyError.style.display = "block";
+            keyError.style.display = "flex";
 
         } else {
             modal.style.display = "none";
@@ -68,7 +107,7 @@ document.getElementById("keyForm").addEventListener('submit', async function(e) 
 
     } catch (error) {
         console.error('Erro:', error);
-        keyError.style.display = "block";
+        keyError.style.display = "flex";
         keyError.textContent = 'Erro Interno!';
     } finally {
         loader.style.display = "none";

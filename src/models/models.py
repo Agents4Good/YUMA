@@ -1,13 +1,6 @@
 from langchain_openai import ChatOpenAI
 import os
 
-CONVERSATION_MODELS = {
-    "Llama 3.3 70B Instruct" : "meta-llama/Llama-3.3-70B-Instruct"
-}
-
-TOOLCALLING_MODELS = {
-    "Qwen 2.5 72B Instruct" : "Qwen/Qwen2.5-72B-Instruct"
-}
 
 def conversation_model():
     return ChatOpenAI(
