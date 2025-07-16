@@ -28,14 +28,14 @@ def save_key():
     if not api_key:
         return jsonify({'error': 'API Key é obrigatória'}), 400
     
+    os.environ['BASE_URL_DEEP_INFRA'] = provider_url
+    
     if not validate_key(api_key):
         return jsonify({'error': 'API Key está incorreta'}), 400
-
 
     os.environ['OPENAI_API_KEY'] = api_key
     os.environ['MODEL_ID_CONVERSATION'] = conversation_model
     os.environ['MODEL_ID_TOOLCALLING'] = toolcalling_model
-    os.environ['BASE_URL_DEEP_INFRA'] = provider_url
     
     return jsonify({'message': 'Chave e modelos salvos com sucesso!'})
 
