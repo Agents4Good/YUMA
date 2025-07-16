@@ -24,9 +24,4 @@ PROVIDERS = [
             "Qwen 2.5 72B Instruct": "Qwen/Qwen2.5-72B-Instruct"
         }
     ),
-    Provider(
-        "ProviderB", "https://providerB.com",
-        conversation_models={"bert": "id_201", "roberta": "id_202"},
-        toolcalling_models={"tools-bert": "id_203", "tools-roberta": "id_204"}
-    )
 ]
