@@ -1,21 +1,22 @@
 from schema.yuma import AgentState
-from .prompt import ARCHITECT_AGENT, ARCHITECT_AGENT_DIFY 
+from .prompt import ARCHITECT_AGENT, ARCHITECT_AGENT_DIFY, ARCHITECT_AGENT_SINGLE_REFINED
 from langgraph.types import Command
 from typing import Literal
 from langchain_core.messages import SystemMessage, AIMessage
 from models import structured_model
 from utils import extract_json
-from .structured_output import ArchitectureOutput
+from .structured_output import ArchitectureOutput, AgentArchitectureOutput
 from tools.yuma.utils import sequence_diagram_generator
 from utils.yuma import write_log_state, write_log
 
+structured_model = structured_model.with_structured_output(AgentArchitectureOutput)
 
 # Agente responsável por criar a arquitetura do sistema com base nos requisitos
 def architect(state: AgentState,
             max_retries: int = 3
-            ) -> Command[Literal["human_node", "dify"]]:
-  
-    system_prompt = ARCHITECT_AGENT_DIFY
+            ) -> Command[Literal["human_node", "gemini_cli"]]:
+    print("arquiteto")
+    system_prompt = ARCHITECT_AGENT_SINGLE_REFINED
     buffer = state.get("buffer", [])
     
     if not buffer:
@@ -25,11 +26,12 @@ def architect(state: AgentState,
             if isinstance(msg, AIMessage) and msg.content.strip() != ""
         ]
 
-        last_ai_message = next(
-            (msg for msg in reversed(filtered_messages)
-             if isinstance(msg, AIMessage)),
-            None,
-        )
+        ai_messages = [
+            msg for msg in reversed(filtered_messages)
+            if isinstance(msg, AIMessage)
+        ]
+
+        last_ai_message = ai_messages[1] if len(ai_messages) > 1 else None
 
         buffer = [SystemMessage(
             content=system_prompt).content] + [last_ai_message.content]
@@ -37,19 +39,18 @@ def architect(state: AgentState,
     for _ in range(max_retries):
         try:
             response = structured_model.invoke(buffer)
+            #response = extract_json(response.content, ArchitectureOutput)
 
-            response = extract_json(response.content, ArchitectureOutput)
-
-            if response is None:
-                continue
+            #if response is None:
+            #    continue
 
             goto = "human_node"
             if response.route_next:
-                goto = "dify"
-                state["messages"].append(AIMessage(content=response.model_dump_json()))
-
-            sequence_diagram_generator.invoke(response.model_dump_json())
-
+                goto = "gemini_cli"
+            
+            state["messages"].append(AIMessage(content=response.model_dump_json()))
+            
+            #sequence_diagram_generator.invoke(response.model_dump_json())
             buffer.append(AIMessage(content=response.model_dump_json()))
 
             _return = Command(

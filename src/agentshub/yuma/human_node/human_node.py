@@ -9,6 +9,7 @@ def human_node(
     state: AgentState,
 ) -> Command[Literal["requirements_engineer", "architecture_agent"]]:
     """A node for collecting user input."""
+    print("human node")
     user_input = interrupt("Avalie a resposta do agente: ")
     active_agent = state["active_agent"]
 
@@ -22,7 +23,7 @@ def human_node(
         
     goto = active_agent
     if active_agent == "architecture_agent" and message and key_phrase in message.content.lower():
-        goto = "dify"
+        goto = "gemini_cli"
 
     _return = Command(
         update={

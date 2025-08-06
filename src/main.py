@@ -5,6 +5,7 @@ from agentshub.yuma import (
     architect,
     human_node,
 )
+from agentshub.yuma.gemini_cli import gemini_cli
 from agentshub.dify import (
     supervisor,
     start_node_creator,
@@ -57,48 +58,13 @@ def supervisor_conditional_edge(state: DifyState):
 
 
 def build_graph():
-    subgraph_builder = StateGraph(DifyState)
-
-    subgraph_builder.add_node("supervisor_agent", supervisor)
-    subgraph_builder.add_node("edge_creator", edge_creator)
-    subgraph_builder.add_node("tools_node_creator", call_dify_tools)
-    subgraph_builder.add_node("tools_edge_creator", call_dify_tools)
-    subgraph_builder.add_node("dify_yaml_builder", dify_yaml_builder)
-    subgraph_builder.add_node("start_node_creator", start_node_creator)
-    subgraph_builder.add_node("llm_node_creator", llm_node_creator)
-    subgraph_builder.add_node("logic_node_creator", logic_node_creator)
-    subgraph_builder.add_node("http_node_creator", http_node_creator)
-    subgraph_builder.add_node("agent_node_creator", agent_node_creator)
-    subgraph_builder.add_node("answer_node_creator", answer_node_creator)
-    subgraph_builder.add_node("yaml_analyzer", yaml_analyzer)
-    subgraph_builder.add_node("extractor_document_node_creator", extractor_document_node_creator)
-
-    node_creation_map = {agent: agent for agent in node_creation}
-    subgraph_builder.add_edge(START, "supervisor_agent")
-    subgraph_builder.add_conditional_edges(
-        "supervisor_agent", supervisor_conditional_edge, node_creation_map
-    )
-    subgraph_builder.add_edge("start_node_creator", "tools_node_creator")
-    subgraph_builder.add_edge("llm_node_creator", "tools_node_creator")
-    subgraph_builder.add_edge("logic_node_creator", "tools_node_creator")
-    subgraph_builder.add_edge("http_node_creator", "tools_node_creator")
-    subgraph_builder.add_edge("agent_node_creator", "tools_node_creator")
-    subgraph_builder.add_edge("answer_node_creator", "tools_node_creator")
-    subgraph_builder.add_edge("extractor_document_node_creator", "tools_node_creator")
-    subgraph_builder.add_edge("tools_node_creator", "edge_creator")
-    subgraph_builder.add_edge("edge_creator", "tools_edge_creator")
-    subgraph_builder.add_edge("tools_edge_creator", "dify_yaml_builder")
-    subgraph_builder.add_edge("dify_yaml_builder", "yaml_analyzer")
-    subgraph_builder.add_edge("yaml_analyzer", END)
-    subgraph = subgraph_builder.compile()
-
     builder = StateGraph(AgentState)
 
     # Nodes
     builder.add_node("requirements_engineer", requirements_engineer)
     builder.add_node("human_node", human_node)
     builder.add_node("architecture_agent", architect)
-    builder.add_node("dify", subgraph)
+    builder.add_node("gemini_cli", gemini_cli)
 
     # Edges
     builder.add_edge(START, "requirements_engineer")
@@ -144,13 +110,14 @@ def main():
     user_input = get_user_input(True, num_conversation)
 
     while user_input != None:
+        print("main")
         num_conversation += 1
         final_state = handle_stream(graph, user_input, config=thread_config)
         print_conversation_header(num_conversation)
 
         architecture_output = final_state.get("architecture_output") if final_state else None
-        if architecture_output and final_state.get("active_agent") == "architecture_agent":
-            print_architecture(architecture_output)
+        # if architecture_output and final_state.get("active_agent") == "architecture_agent":
+        #     print_architecture(architecture_output)
 
         user_input = get_user_input(False)
 

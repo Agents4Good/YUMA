@@ -44,6 +44,33 @@ def get_pretty_input():
     write_log("User Input", user_input)
     return user_input
 
+def agent_print_architecture(last_message):
+    """Imprime a arquitetura do sistema multiagente de forma formatada."""
+    title_padding = (WIDTH // 4) - 2
+    title = f"{' ' * title_padding}📐 ARQUITETURA DO AGENTE 🔧\n\n"
+    agent = last_message
+
+    print_node_header("architecture_agent", title + agent)
+
+    final_message1 = "MODIFIQUE A ARQUITETURA OU INSIRA:"
+    final_message2 = "'Prossiga para a geração'"
+    final_message3 = "PARA INICIAR A GERAÇÃO DE CÓDIGO"
+
+    paddings1 = _calcule_padding(final_message1)
+    paddings2 = _calcule_padding(final_message2)
+    paddings3 = _calcule_padding(final_message3)
+
+    print("┌" + "─" * (WIDTH - 2) + "┐")
+    print(f"│{' ' * paddings1[0]}{final_message1}{' ' * paddings1[1]}│")
+    print(f"│{' ' * paddings2[0]}{final_message2}{' ' * paddings2[1]}│")
+    print(f"│{' ' * paddings3[0]}{final_message3}{' ' * paddings3[1]}│")
+    print("└" + "─" * (WIDTH - 2) + "┘")
+    print("\n")
+
+    line_padding = (WIDTH // 2) - 3
+    print(f"{' ' * line_padding}🔸 🔸 🔸")
+    print("\n")
+
 
 def print_architecture(last_message):
     """Imprime a arquitetura do sistema multiagente de forma formatada."""
