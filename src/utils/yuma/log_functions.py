@@ -74,7 +74,7 @@ def _to_json_serializable(obj):
         return repr(obj)
 
 
-def write_log_state(title, content: Command):
+def write_log_state(title, content):
     """Escreve o conteúdo do retorno do Command em um arquivo de log com o título especificado."""
     SEMAPHORE.acquire()
     try:

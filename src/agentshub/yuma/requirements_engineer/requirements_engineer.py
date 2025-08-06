@@ -1,36 +1,30 @@
 from langgraph.prebuilt import create_react_agent
 from langgraph.types import Command
-from langchain_core.messages import ToolMessage
-from .prompt import REQUIREMENTS_ENGINEER, REQUIREMENTS_ENGINEER_REFACTED
+from langchain_core.messages import ToolMessage, SystemMessage
+from .prompt import REQUIREMENTS_ENGINEER
 from typing import Literal
 from schema.yuma import AgentState
 from models import model_sys
-from tools.yuma import make_handoff_tool
+from .tools import handoff_to_team
 from utils.yuma import write_log_state, write_log
 
 
-requirements_engineer_tool = [make_handoff_tool(agent_name="architecture_agent")]
+requirements_engineer_tool = [handoff_to_team]
+model_with_tools = model_sys.bind_tools(requirements_engineer_tool)
 
-
-# Agente reponsável por analisar os requisitos do sistema e conversar com o usuário
 def requirements_engineer(
     state: AgentState, 
     max_retries: int = 3,
-) -> Command[Literal["human_node", "architecture_agent"]]:
-    requirements_engineer_model = create_react_agent(
-        model_sys, tools=requirements_engineer_tool, prompt=REQUIREMENTS_ENGINEER_REFACTED
-        )
+):
+    messages = state["messages"] + [SystemMessage(REQUIREMENTS_ENGINEER)]
+    
     for attempt in range(max_retries):
         try:
-            response = requirements_engineer_model.invoke(state)
-            response["active_agent"] = "requirements_engineer"
-            
-            if isinstance(response['messages'][-2],ToolMessage):
-                return Command(update=response,goto='architecture_agent')
-            
-            _return = Command(update=response, goto="human_node")
-            write_log_state("requirements_engineer - return", _return)
-            return _return
+            response = model_with_tools.invoke(messages)
+            state["active_agent"] = "requirements_engineer"
+            write_log_state("requirements_engineer - return", response.content)
+            return {"messages" : [response],
+                    "active_agent": "requirements_engineer"}
 
         except Exception as e:
             if attempt == max_retries - 1:

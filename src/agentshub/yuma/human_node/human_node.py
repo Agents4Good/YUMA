@@ -7,7 +7,7 @@ from utils.yuma import write_log_state
 
 def human_node(
     state: AgentState,
-) -> Command[Literal["requirements_engineer", "architecture_agent"]]:
+) -> Command:
     """A node for collecting user input."""
     user_input = interrupt("Avalie a resposta do agente: ")
     active_agent = state["active_agent"]

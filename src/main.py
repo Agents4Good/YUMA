@@ -17,6 +17,14 @@ from agentshub.dify import (
     yaml_analyzer,
     extractor_document_node_creator
 )
+from agentshub.langgraph import (
+    react_agent_creator,
+    react_agent_creator_tools
+)
+
+from agentshub.yuma.requirements_engineer import (
+    requirements_engineer_tool
+)
 
 from utils.dify import dify_yaml_builder, call_dify_tools
 
@@ -33,11 +41,12 @@ from utils.yuma.io_functions import print_graph
 
 import uuid
 
+from langgraph.prebuilt import ToolNode
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage
-
+from schema.langgraph import LangState
 
 node_creation = [
     "start_node_creator",
@@ -49,6 +58,26 @@ node_creation = [
     "extractor_document_node_creator",
 ]
 
+def requirements_engineer_conditional_edge(state: AgentState):
+    if state["messages"][-1].tool_calls:
+        return "tools"
+
+    return "human_node"
+
+
+def requirements_engineer_tools_conditional_edge(state: AgentState):
+    last_message = state["messages"][-1].content.split("\n\n")[0]
+    goto = ""
+    
+    if "dify" in last_message:
+        goto = "dify"
+    elif "langgraph" in last_message:
+        goto = "langgraph"
+    else:
+        goto = "__end__"
+        
+    return goto
+
 
 def supervisor_conditional_edge(state: DifyState):
     agents = state["messages"][-1].content.split(", ")
@@ -56,9 +85,17 @@ def supervisor_conditional_edge(state: DifyState):
     return agents
 
 
-def build_graph():
+def react_agent_creator_conditional_edge(state: LangState) -> str:
+    if state["messages"][-1].tool_calls:
+        return "tools_react_agent_creator"
+
+    return END
+
+
+def build_dify_graph():
     subgraph_builder = StateGraph(DifyState)
 
+    subgraph_builder.add_node("architecture_agent", architect)
     subgraph_builder.add_node("supervisor_agent", supervisor)
     subgraph_builder.add_node("edge_creator", edge_creator)
     subgraph_builder.add_node("tools_node_creator", call_dify_tools)
@@ -90,19 +127,41 @@ def build_graph():
     subgraph_builder.add_edge("tools_edge_creator", "dify_yaml_builder")
     subgraph_builder.add_edge("dify_yaml_builder", "yaml_analyzer")
     subgraph_builder.add_edge("yaml_analyzer", END)
-    subgraph = subgraph_builder.compile()
+    return subgraph_builder.compile()
 
+
+def build_lang_graph():
+    tool_node = ToolNode(react_agent_creator_tools)
+
+
+    graph_builder = StateGraph(LangState)
+    graph_builder.add_node("react_agent_creator", react_agent_creator)
+    graph_builder.add_node("tools_react_agent_creator", tool_node)
+
+    graph_builder.add_edge(START, "react_agent_creator")
+    graph_builder.add_conditional_edges(
+        "react_agent_creator", react_agent_creator_conditional_edge, ["tools_react_agent_creator", END])
+    graph_builder.add_edge("tools_react_agent_creator", "react_agent_creator")
+
+    return graph_builder.compile()
+
+
+def build_graph():
     builder = StateGraph(AgentState)
 
     # Nodes
     builder.add_node("requirements_engineer", requirements_engineer)
     builder.add_node("human_node", human_node)
-    builder.add_node("architecture_agent", architect)
-    builder.add_node("dify", subgraph)
+    builder.add_node("tools", ToolNode(requirements_engineer_tool))
 
+    builder.add_node("dify", build_dify_graph())
+    builder.add_node("langgraph", build_lang_graph())
+    
     # Edges
-    builder.add_edge(START, "requirements_engineer")
-
+    builder.set_entry_point("requirements_engineer")
+    builder.add_conditional_edges("requirements_engineer", requirements_engineer_conditional_edge)
+    builder.add_conditional_edges("tools", requirements_engineer_tools_conditional_edge)
+    
     checkpointer = MemorySaver()
     return builder.compile(checkpointer=checkpointer)
 
@@ -129,9 +188,8 @@ def handle_stream(graph, user_input, config):
     for update in graph.stream(user_input, config=config, stream_mode="updates"):
         for node_id, value in update.items():
             if isinstance(value, dict) and value.get("messages", []):
-                last_message = value["messages"][-1]
-                if not isinstance(last_message, dict) and last_message.type == "ai":
-                    print_node_header(node_id, last_message.content)
+                if not isinstance(value["messages"][-1], dict) and value["messages"][-1].type == "ai":
+                    print_node_header(node_id, value["messages"][-1].content)
                 final_state = value
     return final_state
 

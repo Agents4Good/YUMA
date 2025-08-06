@@ -1,6 +1,7 @@
 from schema.yuma import AgentState
 from .prompt import ARCHITECT_AGENT, ARCHITECT_AGENT_DIFY 
 from langgraph.types import Command
+from langgraph.graph import MessagesState
 from typing import Literal
 from langchain_core.messages import SystemMessage, AIMessage
 from models import structured_model
@@ -10,10 +11,9 @@ from tools.yuma.utils import sequence_diagram_generator
 from utils.yuma import write_log_state, write_log
 
 
-# Agente responsável por criar a arquitetura do sistema com base nos requisitos
-def architect(state: AgentState,
+def architect(state: MessagesState,
             max_retries: int = 3
-            ) -> Command[Literal["human_node", "dify"]]:
+            ) -> Command:
   
     system_prompt = ARCHITECT_AGENT_DIFY
     buffer = state.get("buffer", [])
