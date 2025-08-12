@@ -4,11 +4,12 @@ import os
 from typing import Dict, Any
 from langchain_core.messages import SystemMessage, AIMessage
 from langgraph.types import Command
+from typing import Literal
 from schema.yuma import AgentState
 from utils.yuma import write_log
 
 
-def gemini_cli(state: AgentState) -> Command:
+def code_generator(state: AgentState) -> Command[Literal["human_node", "code_validator"]]:
     """
     Agente que executa comandos do Gemini CLI baseado na arquitetura gerada.
     """
@@ -37,23 +38,18 @@ def gemini_cli(state: AgentState) -> Command:
         write_log("gemini_cli_agent", f"Comando executado: {gemini_command}")
         write_log("gemini_cli_agent", f"Resultado: {result}")
         
-        return Command(update=state, goto="human_node")
+        return Command(update=state, goto="code_validator")
         
     except Exception as e:
         error_msg = f"Erro ao executar Gemini CLI: {str(e)}"
         write_log("gemini_cli_agent", error_msg)
         state["messages"].append(AIMessage(content=error_msg))
-        return Command(update=state, goto="human_node")
+        return Command(update=state, goto="code_validator")
 
-quero um assistente que possa buscar informações de pessoas na API do github. O usuário deve passar o nome de uma pessoa e o sistema deve buscar os repositorios dessa pessoa. a llm deve ser capaz de explicar sobre o que se trata os seus repositorios
-1. gostaria de um assistente que me de informações sobre repositorios de outras pessoas. 2. o sistema deve ser capaz de ler os repositorios e exibir um apanhado geral sobre o sistema, algo como o que repositorio armazena, as pessoas que contribuiram, etc. 3. nao, apenas com a API do github. 4. nao. 5. o usuario ira passar um nickname e o sistema deve ser capaz de buscar os repositorios e mostrar informações sobre eles
 def create_gemini_command(architecture_json: str) -> list:
-    print(architecture_json)
     architecture_json = json.loads(architecture_json)
     template = ""
-    print(architecture_json['agent_type'])
-    file_path = "src/agentshub/templates/conversational_agent.py" if "conversational" in architecture_json['agent_type'] else "src/agentshub/templates/tool_agent.py"
-    print(file_path)
+    file_path = "src/agentshub/templates/conversational_agent.py" if "simple" in architecture_json['agent_type'].lower() else "src/agentshub/templates/tool_agent.py"
     with open(file_path) as f:
         template = f.read()
     prompt = f"""
@@ -77,10 +73,10 @@ def create_gemini_command(architecture_json: str) -> list:
     3. Configuração do grafo
     4. Função main para execução
     5. Tratamento de entrada/saída do usuário
+    6. Leitura da variável OPENAI_API_KEY do ambiente
 
     Crie os arquivos necessários com o código Python que implementa essa arquitetura usando o framework LangGraph. Não explique nada, não escreva instruções, apenas imprima o código completo a partir da próxima linha.
     """
-    print(prompt)
     
     return ["gemini", "-y", "--prompt", prompt]
 

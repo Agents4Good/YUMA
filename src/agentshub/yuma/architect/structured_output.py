@@ -81,7 +81,7 @@ class AgentArchitectureOutput(BaseModel):
         description=(
             "Specifies the type of agent. It determines whether the agent behaves as a conversational agent "
             "(interacting directly with the user) or as a tool agent (performing background operations)."
-            "if is a conversational agent set it to CONVERSATIONAL"
+            "if is a conversational agent set it to SIMPLE"
             "if is a tool agent set it to TOOL"
         )
     )

@@ -4,8 +4,9 @@ from agentshub.yuma import (
     requirements_engineer,
     architect,
     human_node,
+    code_generator,
+    code_validator
 )
-from agentshub.yuma.gemini_cli import gemini_cli
 from agentshub.dify import (
     supervisor,
     start_node_creator,
@@ -64,7 +65,8 @@ def build_graph():
     builder.add_node("requirements_engineer", requirements_engineer)
     builder.add_node("human_node", human_node)
     builder.add_node("architecture_agent", architect)
-    builder.add_node("gemini_cli", gemini_cli)
+    builder.add_node("code_generator", code_generator)
+    builder.add_node("code_validator", code_validator)
 
     # Edges
     builder.add_edge(START, "requirements_engineer")

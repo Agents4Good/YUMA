@@ -1,5 +1,6 @@
 from utils.yuma.log_functions import write_log
 from wcwidth import wcswidth
+import json
 
 
 WIDTH = 70
@@ -25,10 +26,20 @@ def print_node_header(node_id, content):
     """Realiza o print da resposta de um nó com o ID e o conteúdo."""
     write_log(f"Node Response - {node_id}", content)
     title = f"🤖 {node_id}"
-
+    
     print(title)
     print("━" * WIDTH)
-    print(content)
+    if "architecture_agent" in title:
+        print("Arquitetura do agente:")
+        content = json.loads(content)
+        print(f"- Agent: {content['agent']}")
+        print(f"- Role: {content['agent_role']}")
+        print(f"- Task: {content['agent_task']}")
+        print(f"- Type: {content['agent_type']}")
+        print(f"- Tools: {content['tools'] if content['tools'] else 'None'}")
+        print(f"- Flow: {content['flow']}")
+    else:
+        print(content)
     print("\n")
 
 
@@ -47,10 +58,18 @@ def get_pretty_input():
 def agent_print_architecture(last_message):
     """Imprime a arquitetura do sistema multiagente de forma formatada."""
     title_padding = (WIDTH // 4) - 2
-    title = f"{' ' * title_padding}📐 ARQUITETURA DO AGENTE 🔧\n\n"
-    agent = last_message
+    title = f"{' ' * title_padding}📐 ARQUITETURA DO SISTEMA MULTIAGENTE 🔧\n\n"
+    nodes = "🧶 ────── NÓS:\n\n"
+    for idx, node in enumerate(last_message.nodes, start=1):
+        nodes += f"  {idx}. {node.node}\n     └─ {node.description}\n\n"
 
-    print_node_header("architecture_agent", title + agent)
+    interactions = "🔄 ────── INTERAÇÕES:\n\n"
+    for idx, interaction in enumerate(last_message.interactions, start=1):
+        interactions += f"  {idx}. {interaction.source} ─> {interaction.target}\n     └─ {interaction.description}"
+        if idx < len(last_message.interactions):
+            interactions += "\n\n"
+
+    print_node_header("architecture_agent", title + nodes + interactions)
 
     final_message1 = "MODIFIQUE A ARQUITETURA OU INSIRA:"
     final_message2 = "'Prossiga para a geração'"
@@ -70,7 +89,6 @@ def agent_print_architecture(last_message):
     line_padding = (WIDTH // 2) - 3
     print(f"{' ' * line_padding}🔸 🔸 🔸")
     print("\n")
-
 
 def print_architecture(last_message):
     """Imprime a arquitetura do sistema multiagente de forma formatada."""

@@ -14,8 +14,7 @@ structured_model = structured_model.with_structured_output(AgentArchitectureOutp
 # Agente responsável por criar a arquitetura do sistema com base nos requisitos
 def architect(state: AgentState,
             max_retries: int = 3
-            ) -> Command[Literal["human_node", "gemini_cli"]]:
-    print("arquiteto")
+            ) -> Command[Literal["human_node", "code_generator"]]:
     system_prompt = ARCHITECT_AGENT_SINGLE_REFINED
     buffer = state.get("buffer", [])
     
@@ -46,7 +45,7 @@ def architect(state: AgentState,
 
             goto = "human_node"
             if response.route_next:
-                goto = "gemini_cli"
+                goto = "code_generator"
             
             state["messages"].append(AIMessage(content=response.model_dump_json()))
             
