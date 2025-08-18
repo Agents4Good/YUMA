@@ -3,9 +3,10 @@ from langchain_core.messages import SystemMessage
 from langchain_openai import ChatOpenAI
 from langgraph.graph import MessagesState
 from tools import {tool_name1}, {tools_name2}, {tool_name_n}
-from dotenv import load_dotenv
+import os
+import sys
 
-load_dotenv(override=True)
+api_key = os.getenv("OPENAI_API_KEY")
 
 model = ChatOpenAI(model="gpt-4o")
 

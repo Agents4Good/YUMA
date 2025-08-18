@@ -7,9 +7,10 @@ from langgraph.types import Command
 from typing import Literal
 from schema.yuma import AgentState
 from utils.yuma import write_log
+from typing import Optional
 
 
-def code_generator(state: AgentState) -> Command[Literal["human_node", "code_validator"]]:
+def code_generator(state: AgentState) -> Optional[Command]:
     """
     Agente que executa comandos do Gemini CLI baseado na arquitetura gerada.
     """
@@ -76,10 +77,12 @@ def create_gemini_command(architecture_json: str) -> list:
     6. Leitura da variável OPENAI_API_KEY do ambiente
 
     Crie os arquivos necessários com o código Python que implementa essa arquitetura usando o framework LangGraph. Não explique nada, não escreva instruções, apenas imprima o código completo a partir da próxima linha.
+    Gere os arquivos necessários e salve-os diretamente no diretório de trabalho, 
+    mantendo a mesma estrutura de pastas do template.  
+    Não apenas imprima o código — escreva os arquivos no disco.
     """
     
-    return ["gemini", "-y", "--prompt", prompt]
-
+    return ["gemini", "-y", "--model", "gemini-2.5-flash", "--prompt", prompt]
 
 
 def execute_gemini_command(command: list) -> str:
@@ -88,16 +91,22 @@ def execute_gemini_command(command: list) -> str:
             command,
             capture_output=True,
             text=True,
-            timeout=180,
-            cwd='/tmp/gemini_files'
+            timeout=2000,
+            cwd='/tmp/gemini_files',
+            env=os.environ
         )
         
-        if result.returncode == 0:
-            return result.stdout
-        else:
-            return f"Erro na execução: {' '.join(command)}\n{result.stderr}"
+        output = result.stdout + result.stderr  # concatena stdout e stderr
+        
+        if result.returncode != 0:
+            return f"Erro na execução: {' '.join(command)}\n{output}"
+        
+        # Verifica se a saída contém erro real
+        if "error" in output.lower() or "traceback" in output.lower():
+            return f"Erro interno detectado na execução:\n{output}"
+        print(output)
+        return output
     except subprocess.TimeoutExpired:
         return "Erro: Timeout na execução do comando Gemini CLI"
     except Exception as e:
         return f"Erro inesperado: {str(e)}"
-

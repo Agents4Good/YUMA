@@ -2,9 +2,10 @@ CONVERSATIONAL_AGENT_TEMPLATE = '''
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langgraph.graph import END, START, MessagesState, StateGraph
-from dotenv import load_dotenv
+import os
+import sys
 
-load_dotenv(override=True)
+api_key = os.getenv("OPENAI_API_KEY")
 
 # Inicialização do modelo
 model = ChatOpenAI(model="gpt-4o")
