@@ -50,7 +50,7 @@ def code_generator(state: AgentState) -> Optional[Command]:
 def create_gemini_command(architecture_json: str) -> list:
     architecture_json = json.loads(architecture_json)
     template = ""
-    file_path = "src/agentshub/templates/conversational_agent.py" if "simple" in architecture_json['agent_type'].lower() else "src/agentshub/templates/tool_agent.py"
+    file_path = "src/agentshub/templates/simple_agent.py" if "simple" in architecture_json['agent_type'].lower() else "src/agentshub/templates/tool_agent.py"
     with open(file_path) as f:
         template = f.read()
     prompt = f"""
