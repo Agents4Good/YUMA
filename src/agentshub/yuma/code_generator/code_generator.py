@@ -50,7 +50,14 @@ def code_generator(state: AgentState) -> Optional[Command]:
 def create_gemini_command(architecture_json: str) -> list:
     architecture_json = json.loads(architecture_json)
     template = ""
-    file_path = "src/agentshub/templates/langgraph/simple_agent.py" if "simple" in architecture_json['agent_type'].lower() else "src/agentshub/templates/langgraph/tool_agent.py"
+    framework = architecture_json["framework"].lower
+    if  framework == "langgraph":
+        file_path = "src/agentshub/templates/langgraph/simple_agent.py" if "simple" in architecture_json['agent_type'].lower() else "src/agentshub/templates/langgraph/tool_agent.py"
+    elif framework == "adk":
+        file_path = "src/agentshub/templates/adk/simple_agent.py" if "simple" in architecture_json['agent_type'].lower() else "src/agentshub/templates/adk/tool_agent.py"
+    else:
+        raise KeyError(f"Insira um framework válido, {framework}")
+
     with open(file_path) as f:
         template = f.read()
     prompt = f"""

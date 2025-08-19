@@ -54,6 +54,12 @@ class AgentArchitectureOutput(BaseModel):
     task assignment, available tools, and flow control within the agent graph.
     """
 
+    framework: str = Field(
+        description=(
+            "Name of the framework that must be used for implementation."
+        )
+    )
+
     agent: str = Field(
         description=(
             "Name of the agent. This is a unique identifier used to reference this specific agent node in the system's graph."
