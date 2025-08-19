@@ -14,7 +14,7 @@ model = ChatOpenAI(model="gpt-4o")
 def {agent_name}(state: MessagesState) -> MessagesState:
     prompt = SystemMessage(content={prompt})
     
-    messages = state["messages"] + [prompt]
+    messages = [prompt] + state["messages"]
     response = model.invoke(messages)
     
     return MessagesState(messages=messages + [response])
