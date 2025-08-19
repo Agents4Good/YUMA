@@ -14,7 +14,6 @@ model = LiteLlm(
 root_agent = Agent(
     name="{agent_name}",
     model=model,
-    description="{description}",
     instruction="{prompt}",
 )
 

@@ -15,8 +15,6 @@ O fluxo é:
 
 ### 1. Identificação
 - **Nome do agente:** `<agent_name>`  
-- **Papel:** `<descrição breve da persona que o agente deve assumir>`
-- **Tarefa:** `<descrição breve do que o agente faz>` 
 
 ### 2. Modelo
 - **LLM usado:** `<modelo (ex: gpt-4o)>`  
@@ -25,11 +23,19 @@ O fluxo é:
   - Máx. tokens: `<valor>`  
   - Outras configs: `<se houver>`  
 
-### 3. Prompt
-- **System Prompt:**  
-Prompt do sistema contendo papel e tarefa do agente
+### 3. Definição da persona
+- **Papel:** `<descrição breve da persona que o agente deve assumir>`
+- **Tarefa:** `<descrição breve do que o agente faz>` 
 
-### 4. Ferramentas
+
+### 4. Prompt
+- **Mensagem do Usuário:**  
+Recebe o input inicial do usuário.
+
+- **Resposta do Agente (AIMessage):**  
+Retorna a resposta processada pelo modelo.
+
+### 5. Ferramentas
 Cada ferramenta segue o padrão:  
 
 - **Nome da ferramenta:** `<tool_name>`  
@@ -38,7 +44,7 @@ Cada ferramenta segue o padrão:
 - `<param_name>: <descrição>`  
 - **Retorno esperado:** `<o que a função retorna>`  
 
-### 5. Fluxo
+### 6. Fluxo
 1. Usuário envia um input.  
 2. Agente avalia se resolve diretamente ou se precisa de uma ferramenta.  
 3. Se houver chamada de ferramenta:  
@@ -48,27 +54,8 @@ Cada ferramenta segue o padrão:
 4. Se não houver ferramenta necessária:  
  - Resposta final é retornada ao usuário.  
 
-### 6. Execução
+### 7. Execução
 - **Entrada esperada:** `<tipo de input>`  
 - **Saída gerada:** `<tipo de output>`  
 - **Modo de execução:**  
 - Interativo (terminal ou UI).  
-- Script direto (`execute_graph`).  
-
----
-
-## Exemplo de Ferramenta
-
-```python
-@tool
-def search_weather(city: str) -> str:
-  """
-  Consulta previsão do tempo para uma cidade.
-
-  Args:
-      city (str): Nome da cidade.
-
-  Returns:
-      str: Previsão do tempo atual.
-  """
-  # código de integração com API externa
