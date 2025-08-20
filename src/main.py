@@ -88,8 +88,8 @@ def build_graph():
     subgraph_builder.add_edge("tools_node_creator", "edge_creator")
     subgraph_builder.add_edge("edge_creator", "tools_edge_creator")
     subgraph_builder.add_edge("tools_edge_creator", "dify_yaml_builder")
-    subgraph_builder.add_edge("dify_yaml_builder", "yaml_analyzer")
-    subgraph_builder.add_edge("yaml_analyzer", END)
+    #subgraph_builder.add_edge("dify_yaml_builder", "yaml_analyzer")
+    subgraph_builder.add_edge("dify_yaml_builder", END)
     subgraph = subgraph_builder.compile()
 
     builder = StateGraph(AgentState)

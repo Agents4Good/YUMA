@@ -8,19 +8,39 @@ from .structured_output import SupervisorOutput
 from schema.dify import DifyState
 from tools.dify import create_yaml_metadata
 from utils.yuma import write_log, write_log_state
-
+import os
+from langchain_openai import ChatOpenAI
 # Tool responsável por delegar a criação dos nodes e egdes do sistema
 
+supervisor_model = ChatOpenAI(
+    model=os.getenv("MODEL_ID_CONVERSATION"),
+    base_url=os.getenv("BASE_URL_DEEP_INFRA"),
+).with_structured_output(SupervisorOutput)
 
 def supervisor(
     state: AgentState,
 ) -> Command:
     system_prompt = SUPERVISOR_AGENT
 
-    messages = state["messages"] + [SystemMessage(system_prompt)]
-    response = structured_model.invoke(messages)
+    filtered_messages = [
+            msg
+            for msg in state["messages"]
+            if isinstance(msg, AIMessage) and msg.content.strip() != ""
+        ]
 
-    response = extract_json(response.content, SupervisorOutput)
+    last_ai_message = next(
+            (msg for msg in reversed(filtered_messages)
+             if isinstance(msg, AIMessage)),
+            None,
+        )
+    messages = [SystemMessage(
+            content=system_prompt).content] + [last_ai_message.content]
+    #messages = state["messages"] + [SystemMessage(system_prompt)]
+    print("estado recebido:")
+    print(messages)
+    response = supervisor_model.invoke(messages)
+
+    print(response)
 
     write_log("supervisor_agent response", response)
     response.agents.insert(0, "start_node_creator")

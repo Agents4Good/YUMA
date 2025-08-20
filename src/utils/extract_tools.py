@@ -5,7 +5,7 @@ import re
 import uuid
 
 def content_to_tool(message: BaseMessage):
-    pattern = r"<function=([a-zA-Z_][a-zA-Z0-9_])>\s(\{.?\})(?:\s;)?"
+    pattern = r"<function=([a-zA-Z_][a-zA-Z0-9_]*)>\s*(\{[\s\S]*?\})(?:\s*;)?"
     matches = re.findall(pattern, message.content)
     write_log("content_to_tool matches", matches)
     
