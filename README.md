@@ -1,17 +1,6 @@
-<h1 align="center">Gerador de Aplicações</h1>
+<h1 align="center">Your User-guided Multi-agent System</h1>
 
-> Gerador de aplicações multiagentes.
-
----
-## 🏛️ Arquitetura
-
-O sistema é baseado em uma arquitetura multi-agente, onde diferentes agentes desempenham papéis específicos. Abaixo está uma visão geral:
-
-| **Agente**       | **Descrição**                              |
-|-------------------|--------------------------------------------|
-| Agente X         | Realiza a tarefa A dentro do sistema.      |
-| Agente Y         | Foca na comunicação entre os módulos.      |
-| Agente Z         | Monitora o desempenho geral do sistema.    |
+> Gerador de aplicações multiagentes na plataforma Dify.
 
 ---
 ## 🚀 Instalação  
@@ -20,8 +9,8 @@ Passo a passo de como instalar e executar o sistema.
 
 ### **1️⃣ Clonar o repositório**  
 ```sh
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio
+git clone https://github.com/Agents4Good/YUMA.git
+cd YUMA
 ```
 
 ### **2️⃣ Criar e ativar o ambiente virtual**  
@@ -37,18 +26,13 @@ pip install -r requirements.txt
 ```
 
 ### **4️⃣ Configurar variáveis de ambiente**  
-Crie um arquivo `.env` na raiz do projeto e adicione:  
-```
-OPENAI_API_KEY=sua-chave-aqui
-```
+Crie um arquivo `.env` na raiz do projeto com uma cópia do arquivo `.env.example` e preencha as informações
+
+> Atualmente, o YUMA apenas funciona com os modelos do deepinfra
 
 ---
-## 👩🏻‍💻 Uso
-Visuzalize o exemplo de uso na [Documentação da API.](./docs/README.md).
-
----
-## 🤝 Contribuição
-Guia para colaboradores, pull requests...
+## 👩🏻‍💻 Documentação
+Visuzalize a descrição completa do sistema e exemplos de uso na [Documentação da API.](./docs/README.md).
 
 ---
 ## 📜 Licença
