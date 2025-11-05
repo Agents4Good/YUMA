@@ -3,6 +3,11 @@ from .extractor_document_node_creator import (
 )
 
 
+from .tools import (
+    create_extractor_document_node
+)
+
+
 __all__ = [
     "extractor_document_node_creator"
 ]

@@ -33,11 +33,11 @@ def create_http_node(
             "type": "http-request"
         }
     }
-    
+
     write_log("create_http_node", http_node)
     return Command(
         update={
-            "nodes_dicts" : [http_node],
+            "nodes_dicts": [http_node],
             "messages": [
                 ToolMessage(
                     "Successfully added the HTTP node", tool_call_id=tool_call_id

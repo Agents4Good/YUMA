@@ -3,6 +3,12 @@ from .llm_node_creator import (
 )
 
 
+from .tools import (
+    create_llm_node
+)
+
+
 __all__ = [
-    "llm_node_creator"
+    "llm_node_creator",
+    "create_llm_node"
 ]

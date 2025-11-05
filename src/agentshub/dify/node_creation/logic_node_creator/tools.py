@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated
 
 from langchain_core.tools import tool
 from langchain_core.tools.base import InjectedToolCallId
@@ -6,38 +6,6 @@ from langchain_core.messages import ToolMessage
 from langgraph.types import Command
 from .utils import create_logic_node
 from utils.yuma import write_log
-
-
-@tool
-def create_logic_edges(
-    tool_call_id: Annotated[str, InjectedToolCallId], 
-    edge_id: str,
-    source_id: str,
-    source_handle: Literal["true", "false"],
-    target_id: str
-):
-    """
-    Cria uma aresta entre um nó de lógica e outro nó qualquer do workflow.
-    Há duas saídas do mesmo nó de lógica, uma para "true" e outra para "false".
-    
-    Parâmetros:
-        - edge_id (str): Identificador único da aresta (minúsculas, sem caracteres especiais).
-        - source_id (str): ID do nó de lógica que está sendo conectado (exemplo: "start_with_node").
-        - source_handle (Literal["true", "false"]): Indica se a aresta é para o caminho "true" ou "false" do nó de lógica.
-        - target_id (str): ID do nó de destino da aresta (exemplo: "llm1", "llm2").
-    """
-    logic_edge = {"id": edge_id, "source": source_id, "sourceHandle": source_handle, "target": target_id, "type": "custom"}
-    
-    write_log("create_logic_edges", logic_edge)
-    return Command(
-        update={
-            "edges_dicts" : [logic_edge],
-            "messages": [
-                ToolMessage(
-                    f"Successfully added logic edge between {source_id} and {target_id}", tool_call_id=tool_call_id
-                )]
-        }
-    ) 
 
 
 @tool
@@ -64,19 +32,19 @@ def create_start_with_logic_node(
         comparison_operator="start with",
         context_variable=context_variable
     )
-    
+
     write_log("create_start_with_logic_node", start_with_node)
     return Command(
         update={
-            "nodes_dicts" : [start_with_node],
+            "nodes_dicts": [start_with_node],
             "messages": [
                 ToolMessage(
                     "Successfully added start with node", tool_call_id=tool_call_id
                 )]
         }
     )
-    
-    
+
+
 @tool
 def create_end_with_logic_node(
     tool_call_id: Annotated[str, InjectedToolCallId],
@@ -101,19 +69,19 @@ def create_end_with_logic_node(
         comparison_operator="end with",
         context_variable=context_variable
     )
-    
+
     write_log("create_end_with_logic_node", end_with_node)
     return Command(
         update={
-            "nodes_dicts" : [end_with_node],
+            "nodes_dicts": [end_with_node],
             "messages": [
                 ToolMessage(
                     "Successfully added end with node", tool_call_id=tool_call_id
                 )]
         }
     )
-    
-    
+
+
 @tool
 def create_contains_logic_node(
     tool_call_id: Annotated[str, InjectedToolCallId],
@@ -138,11 +106,11 @@ def create_contains_logic_node(
         comparison_operator="contains",
         context_variable=context_variable
     )
-    
+
     write_log("create_contains_logic_node", contains_node)
     return Command(
         update={
-            "nodes_dicts" : [contains_node],
+            "nodes_dicts": [contains_node],
             "messages": [
                 ToolMessage(
                     "Successfully added contains node", tool_call_id=tool_call_id
@@ -150,7 +118,7 @@ def create_contains_logic_node(
         }
     )
 
-    
+
 @tool
 def create_not_contains_logic_node(
     tool_call_id: Annotated[str, InjectedToolCallId],
@@ -175,11 +143,11 @@ def create_not_contains_logic_node(
         comparison_operator="not contains",
         context_variable=context_variable
     )
-    
+
     write_log("create_not_contains_logic_node", not_contains_node)
     return Command(
         update={
-            "nodes_dicts" : [not_contains_node],
+            "nodes_dicts": [not_contains_node],
             "messages": [
                 ToolMessage(
                     "Successfully added not contains node", tool_call_id=tool_call_id
@@ -187,7 +155,7 @@ def create_not_contains_logic_node(
         }
     )
 
-    
+
 @tool
 def create_is_equals_logic_node(
     tool_call_id: Annotated[str, InjectedToolCallId],
@@ -212,11 +180,11 @@ def create_is_equals_logic_node(
         comparison_operator="is",
         context_variable=context_variable
     )
-    
+
     write_log("create_is_equals_logic_node", is_equals_node)
     return Command(
         update={
-            "nodes_dicts" : [is_equals_node],
+            "nodes_dicts": [is_equals_node],
             "messages": [
                 ToolMessage(
                     "Successfully added is equals node", tool_call_id=tool_call_id
@@ -224,7 +192,7 @@ def create_is_equals_logic_node(
         }
     )
 
-    
+
 @tool
 def create_not_equals_logic_node(
     tool_call_id: Annotated[str, InjectedToolCallId],
@@ -249,11 +217,11 @@ def create_not_equals_logic_node(
         comparison_operator="is not",
         context_variable=context_variable
     )
-    
+
     write_log("create_not_equals_logic_node", not_equals_node)
     return Command(
         update={
-            "nodes_dicts" : [not_equals_node],
+            "nodes_dicts": [not_equals_node],
             "messages": [
                 ToolMessage(
                     "Successfully added not equals node", tool_call_id=tool_call_id
@@ -261,7 +229,7 @@ def create_not_equals_logic_node(
         }
     )
 
-    
+
 @tool
 def create_is_empty_logic_node(
     tool_call_id: Annotated[str, InjectedToolCallId],
@@ -284,11 +252,11 @@ def create_is_empty_logic_node(
         comparison_operator="empty",
         context_variable=context_variable
     )
-    
+
     write_log("create_is_empty_logic_node", is_empty_node)
     return Command(
         update={
-            "nodes_dicts" : [is_empty_node],
+            "nodes_dicts": [is_empty_node],
             "messages": [
                 ToolMessage(
                     "Successfully added is empty node", tool_call_id=tool_call_id
@@ -296,7 +264,7 @@ def create_is_empty_logic_node(
         }
     )
 
-    
+
 @tool
 def create_not_empty_logic_node(
     tool_call_id: Annotated[str, InjectedToolCallId],
@@ -319,11 +287,11 @@ def create_not_empty_logic_node(
         comparison_operator="not empty",
         context_variable=context_variable
     )
-    
+
     write_log("create_not_empty_logic_node", not_empty_node)
     return Command(
         update={
-            "nodes_dicts" : [not_empty_node],
+            "nodes_dicts": [not_empty_node],
             "messages": [
                 ToolMessage(
                     "Successfully added not empty node", tool_call_id=tool_call_id

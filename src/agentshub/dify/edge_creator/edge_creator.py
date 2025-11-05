@@ -1,11 +1,19 @@
 from schema.dify import DifyState
 from langgraph.types import Command
 from .prompt import EDGE_CREATOR
-from models.dify import edge_creator_dify_model
+from models import model_dify
 from agentshub import only_tools_agent
 from langchain_core.messages import SystemMessage, HumanMessage
 from utils.yuma import write_log_state
+from .tools import create_edges, create_logic_edges
 
+
+edge_creator_dify_model = model_dify.bind_tools(
+    [
+        create_edges,
+        create_logic_edges
+    ]
+)
 
 def _human_message(node_dicts:str, architecture: str):
     return HumanMessage(content=f"Aqui está a arquitetura do sistema:\n{architecture}"

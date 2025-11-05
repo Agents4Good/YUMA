@@ -180,3 +180,6 @@ dify.yaml
 
 # PyCharm
 /.idea/
+
+# Arquivos Gerados pelo sistema
+/generated_files/

@@ -18,7 +18,9 @@ from agentshub.dify import (
     extractor_document_node_creator
 )
 
-from utils.dify import dify_yaml_builder, call_dify_tools
+from utils.dify import dify_yaml_builder
+
+from agentshub.dify import call_dify_tools
 
 from utils.yuma.print_functions import (
     print_conversation_header,

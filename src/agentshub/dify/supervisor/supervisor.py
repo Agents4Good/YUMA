@@ -6,10 +6,8 @@ from utils import extract_json
 from models import structured_model
 from .structured_output import SupervisorOutput
 from schema.dify import DifyState
-from tools.dify import create_yaml_metadata
 from utils.yuma import write_log, write_log_state
-
-# Tool responsável por delegar a criação dos nodes e egdes do sistema
+from .tools import create_yaml_metadata
 
 
 def supervisor(

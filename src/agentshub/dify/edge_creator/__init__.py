@@ -3,6 +3,14 @@ from .edge_creator import (
 )
 
 
+from .tools import (
+    create_edges,
+    create_logic_edges
+)
+
+
 __all__ = [
-    "edge_creator"
+    "edge_creator",
+    "create_edges",
+    "create_logic_edges"
 ]
