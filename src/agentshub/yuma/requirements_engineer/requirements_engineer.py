@@ -1,7 +1,7 @@
 from langgraph.prebuilt import create_react_agent
 from langgraph.types import Command
 from langchain_core.messages import ToolMessage
-from .prompt import REQUIREMENTS_ENGINEER, REQUIREMENTS_ENGINEER_REFACTED
+from .prompt import REQUIREMENTS_ENGINEER
 from typing import Literal
 from schema.yuma import AgentState
 from models import model_sys
@@ -18,7 +18,7 @@ def requirements_engineer(
     max_retries: int = 3,
 ) -> Command[Literal["human_node", "architecture_agent"]]:
     requirements_engineer_model = create_react_agent(
-        model_sys, tools=requirements_engineer_tool, prompt=REQUIREMENTS_ENGINEER_REFACTED
+        model_sys, tools=requirements_engineer_tool, prompt=REQUIREMENTS_ENGINEER
         )
     for attempt in range(max_retries):
         try:

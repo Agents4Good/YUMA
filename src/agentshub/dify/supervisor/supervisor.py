@@ -3,12 +3,14 @@ from .prompt import SUPERVISOR_AGENT
 from langgraph.types import Command
 from langchain_core.messages import SystemMessage, AIMessage
 from utils import extract_json
-from models import structured_model
+from models import model_sys
 from .structured_output import SupervisorOutput
 from schema.dify import DifyState
 from utils.yuma import write_log, write_log_state
 from .tools import create_yaml_metadata
 
+
+structured_model = model_sys.with_structured_output(SupervisorOutput)
 
 def supervisor(
     state: AgentState,
@@ -17,8 +19,6 @@ def supervisor(
 
     messages = state["messages"] + [SystemMessage(system_prompt)]
     response = structured_model.invoke(messages)
-
-    response = extract_json(response.content, SupervisorOutput)
 
     write_log("supervisor_agent response", response)
     response.agents.insert(0, "start_node_creator")

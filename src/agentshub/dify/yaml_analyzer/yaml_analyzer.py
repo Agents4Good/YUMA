@@ -1,6 +1,6 @@
 from langgraph.types import Command
 from langchain_core.messages import SystemMessage, HumanMessage
-from models import structured_model
+from models import model_sys
 from utils.yuma import write_log, write_log_state
 from .prompt import YAML_ANALYZER
 from schema.dify import DifyState
@@ -10,6 +10,9 @@ from .structured_output import YamlAnalyzerOutput
 from utils import extract_json
 from utils.dify import build_few_shot
 from .examples import EXAMPLES
+
+
+structured_model = model_sys.with_structured_output(YamlAnalyzerOutput)
 
 def _human_message(yaml: str, architecture: str):
     return HumanMessage(content="A partir dos exemplos citados, realize a análise para a seguinte situação: Aqui está o YAML:\n" + yaml +
@@ -25,7 +28,6 @@ def yaml_analyzer(state: DifyState) -> Command:
     messages = build_few_shot(YAML_ANALYZER, EXAMPLES, instruction)
     
     response = structured_model.invoke(messages)
-    response = extract_json(response.content, YamlAnalyzerOutput)
     if "Nenhum nó ou aresta" in response.message:
         response.agents = []
         
