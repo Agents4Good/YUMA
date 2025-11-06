@@ -29,6 +29,9 @@ from utils.yuma.print_functions import (
     get_pretty_input,
     print_architecture,
     write_log,
+    welcome_message,
+    display_actions_plan,
+    end_message,
 )
 
 from utils.yuma.io_functions import print_graph
@@ -39,6 +42,8 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage
+from langchain_community.callbacks.openai_info import OpenAICallbackHandler
+import time
 
 
 node_creation = [
@@ -109,9 +114,7 @@ def build_graph():
     return builder.compile(checkpointer=checkpointer)
 
 
-def get_user_input(isInitial, num_conversation=0):
-    if isInitial:
-        print_conversation_header(num_conversation)
+def get_user_input(isInitial):
 
     human_message = get_pretty_input()
     print_break_line()
@@ -133,28 +136,58 @@ def handle_stream(graph, user_input, config):
             if isinstance(value, dict) and value.get("messages", []):
                 last_message = value["messages"][-1]
                 if not isinstance(last_message, dict) and last_message.type == "ai":
-                    print_node_header(node_id, last_message.content)
+                    agente_name = value['agente_name'] if value['agente_name'] else "Agente"
+                    if agente_name == "Arquiteto do Sistema":
+                        final_message = print_architecture(last_message)
+                        print_node_header(node_id, agente_name, final_message)
+                    else:
+                        print_node_header(node_id, agente_name, last_message.content)
                 final_state = value
     return final_state
 
 
 def main():
-    graph = build_graph()
-    # print_graph(graph)
-    thread_config = {"configurable": {"thread_id": uuid.uuid4()}}
-    num_conversation = 0
-    user_input = get_user_input(True, num_conversation)
+    start = time.time()
+    callback_handler = None
+    try:
+        graph = build_graph()
+        callback_handler = OpenAICallbackHandler()
+        # print_graph(graph)
+        thread_config = {
+            "configurable": {"thread_id": uuid.uuid4()},
+            "callbacks": [callback_handler],
+        }
 
-    while user_input != None:
-        num_conversation += 1
-        final_state = handle_stream(graph, user_input, config=thread_config)
-        print_conversation_header(num_conversation)
+        welcome_message()
+        num_conversation = 0
+        user_input = get_user_input(True)
 
-        architecture_output = final_state.get("architecture_output") if final_state else None
-        if architecture_output and final_state.get("active_agent") == "architecture_agent":
-            print_architecture(architecture_output)
+        if user_input:
+            should_proceed = display_actions_plan()
+            while should_proceed:
+                if not user_input:
+                    break
+                num_conversation += 1
+                handle_stream(graph, user_input, config=thread_config)
+                user_input = get_user_input(False)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        end = time.time()
+        total_time = end - start
+        total_cost_yuma = callback_handler.total_cost if callback_handler else 0
+        total_tokens_yuma = callback_handler.total_tokens if callback_handler else 0
+        end_message(total_time, total_tokens_yuma, total_cost_yuma)
 
-        user_input = get_user_input(False)
+        while user_input != None:
+            num_conversation += 1
+            final_state = handle_stream(graph, user_input, config=thread_config)
+
+            architecture_output = final_state.get("architecture_output") if final_state else None
+            if architecture_output and final_state.get("active_agent") == "architecture_agent":
+                print_architecture(architecture_output)
+
+            user_input = get_user_input(False)
 
 
 if __name__ == "__main__":

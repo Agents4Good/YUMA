@@ -24,12 +24,13 @@ def requirements_engineer(
         try:
             response = requirements_engineer_model.invoke(state)
             response["active_agent"] = "requirements_engineer"
-            
+            response["agente_name"] = "Engenheiro de Requisitos"
             if isinstance(response['messages'][-2],ToolMessage):
                 return Command(update=response,goto='architecture_agent')
             
             _return = Command(update=response, goto="human_node")
             write_log_state("requirements_engineer - return", _return)
+            
             return _return
 
         except Exception as e:

@@ -8,6 +8,9 @@ class AgentState(MessagesState):
     active_agent: str = Field(
         description="This field should be used to store the active agent in the graph."
     )
+    agente_name: str = Field(
+        description="This field should be used to store the name of the agent in the graph."
+    )
     architecture_output: Optional[Dict] = Field(
         default=None, description="Stores the architecture output JSON."
     )
