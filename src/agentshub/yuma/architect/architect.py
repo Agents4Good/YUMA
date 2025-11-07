@@ -20,7 +20,6 @@ def architect(state: AgentState,
     for _ in range(max_retries):
         try:
             response = structured_model.invoke([SystemMessage(content=system_prompt)] + state.get("messages"))
-            response
             if response is None:
                 continue
 

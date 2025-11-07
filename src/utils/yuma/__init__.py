@@ -11,9 +11,7 @@ from .log_functions import (
 )
 
 from .print_functions import (
-    print_conversation_header,
     print_node_header,
-    print_break_line,
     get_pretty_input,
     print_architecture,
 )
@@ -29,9 +27,7 @@ __all__ = [
     "print_graph",
     "json_to_plantuml",
     "generate_diagram",
-    "print_conversation_header",
     "print_node_header",
-    "print_break_line",
     "get_pretty_input",
     "print_architecture",
     "get_log_path",

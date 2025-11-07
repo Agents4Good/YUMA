@@ -1,12 +1,15 @@
-from utils.yuma.log_functions import write_log
+import questionary
+import json
 from wcwidth import wcswidth
 from rich.console import Console
 from rich.panel import Panel
-from rich.prompt import Prompt
-import questionary
-import sys
+from rich.text import Text
+from rich.rule import Rule
+from rich.table import Table
+from rich.align import Align
 from prompt_toolkit import prompt
 from prompt_toolkit.key_binding import KeyBindings
+from utils.yuma.log_functions import write_log
 
 
 console = Console()
@@ -24,22 +27,6 @@ def _(event):
     O 'Enter' sozinho funcionará para submeter.
     """
     event.app.current_buffer.insert_text('\n')
-
-
-def print_conversation_header(num_conversation):
-    """Realiza o print do cabeçalho da conversa com o número do turno."""
-    title = f"💬 CONVERSATION TURN {num_conversation}"
-    content_width = WIDTH - 2
-
-    title_width = wcswidth(title)
-    total_padding = content_width - title_width
-    left_padding = total_padding // 2
-    right_padding = total_padding - left_padding
-
-    print("╔" + "═" * content_width + "╗")
-    print(f"║{' ' * left_padding}{title}{' ' * right_padding}║")
-    print("╚" + "═" * content_width + "╝")
-    print("\n")
 
 
 def print_node_header(node_id: str, agente_name: str, message: str):
@@ -113,29 +100,14 @@ def display_actions_plan():
 
 def end_message(runtime, total_tokens_yuma, total_cost_yuma):
     """Realiza o print da mensagem de boas-vindas."""
-    console.print(
-        Panel.fit(
-            f"""[bold cyan]✻ Obrigado por usar o Yuma CLI![/bold cyan]\n
-⏳ Tempo de Execução: {runtime}s.\n
-🪙 Tokens gastos (YUMA): {total_tokens_yuma} \n
-💵 Custo total (YUMA): ${total_cost_yuma}\n
-            """,
-            border_style="cyan",
-        )
+    text = (
+        "[bold cyan]✻ Obrigado por usar o Yuma CLI![/bold cyan]\n\n"
+        f"⏳ Tempo de Execução: {runtime:.2f}s.\n"
+        f"🧮 Tokens gastos (YUMA): {total_tokens_yuma:.2f}\n"
+        f"💵 Custo total (YUMA): ${total_cost_yuma:.2f}"
     )
 
-
-# def get_pretty_input():
-#     """Solicita a entrada do usuário de forma formatada."""
-#     user_name = "👤 Usuário"
-#     message = "📝 Digite sua entrada ('q' para sair)"
-#     print(
-#         f"{user_name}{' ' * (WIDTH - (wcswidth(message) + wcswidth(user_name)))}{message}"
-#     )
-#     print("━" * WIDTH)
-#     user_input = input().strip()
-#     write_log("User Input", user_input)
-#     return user_input
+    console.print(Panel.fit(text, border_style="cyan"))
 
 
 def get_pretty_input():
@@ -166,54 +138,50 @@ def get_pretty_input():
 
 
 def print_architecture(last_message):
-    """Imprime a arquitetura do sistema multiagente de forma formatada."""
-    title_padding = (WIDTH // 4) - 2
-    message = f"{' ' * title_padding}📐 ARQUITETURA DO SISTEMA MULTIAGENTE 🔧\n\n"
-    message += "🧶 ────── NÓS:\n\n"
-    for idx, node in enumerate(last_message.nodes, start=1):
-        message += f"  {idx}. {node.node}\n     └─ {node.description}\n\n"
+    """Imprime a arquitetura do sistema multiagente de forma formatada com Rich."""
+    last_message = json.loads(last_message)
+    
+    # CABEÇALHO
+    header_panel = Panel.fit(
+        "[bold cyan]📐 ARQUITETURA DO SISTEMA MULTIAGENTE 🔧[/bold cyan]",
+        border_style="cyan",
+        padding=(1, 4),
+    )
 
-    message += "🔄 ────── INTERAÇÕES:\n\n"
-    for idx, interaction in enumerate(last_message.interactions, start=1):
-        message += f"  {idx}. {interaction.source} ─> {interaction.target}\n     └─ {interaction.description}"
-        if idx < len(last_message.interactions):
-            message += "\n\n"
+    console.print(Align.center(header_panel))
 
+    # NÓS
+    console.print(Rule("[bold yellow]🧶 NÓS[/bold yellow]", style="yellow"))
+    for idx, node in enumerate(last_message["nodes"], start=1):
+        console.print(
+            f"[bold]{idx}.[/bold] [green]{node['node']}[/green]\n"
+            f"   [dim]└─ {node['description']}[/dim]\n"
+        )
 
-    final_message1 = "MODIFIQUE A ARQUITETURA OU INSIRA:"
-    final_message2 = "'Prossiga para a geração'"
-    final_message3 = "PARA INICIAR A GERAÇÃO DE CÓDIGO"
+    # INTERAÇÕES
+    console.print(
+        Rule("[bold magenta]🔄 INTERAÇÕES[/bold magenta]", style="magenta"))
+    for idx, interaction in enumerate(last_message["interactions"], start=1):
+        console.print(
+            f"[bold]{idx}.[/bold] [cyan]{interaction['source']}[/cyan] → [cyan]{interaction['target']}[/cyan]\n"
+            f"   [dim]└─ {interaction['description']}[/dim]\n"
+        )
 
-    paddings1 = _calcule_padding(final_message1)
-    paddings2 = _calcule_padding(final_message2)
-    paddings3 = _calcule_padding(final_message3)
+    # PAINEL FINAL
+    instruction_text = Text()
+    instruction_text.append(
+        "MODIFIQUE A ARQUITETURA OU INSIRA:\n", style="bold white")
+    instruction_text.append("'Prossiga para a geração'\n", style="bold green")
+    instruction_text.append(
+        "PARA INICIAR A GERAÇÃO DE CÓDIGO", style="bold white")
 
-    message += "┌" + "─" * (WIDTH - 2) + "┐"
-    message += f"│{' ' * paddings1[0]}{final_message1}{' ' * paddings1[1]}│"
-    message += f"│{' ' * paddings2[0]}{final_message2}{' ' * paddings2[1]}│"
-    message += f"│{' ' * paddings3[0]}{final_message3}{' ' * paddings3[1]}│"
-    message += "└" + "─" * (WIDTH - 2) + "┘"
-    message += "\n"
+    console.print(
+        Panel(
+            Align.center(instruction_text),
+            border_style="bright_black",
+            padding=(1, 4),
+        )
+    )
 
-    line_padding = (WIDTH // 2) - 3
-    message += f"{' ' * line_padding}🔸 🔸 🔸"
-    message += "\n"
-
-    return message
-
-
-def _calcule_padding(content):
-    content_width = WIDTH - 2
-    final_message_width = wcswidth(content)
-    total_padding = content_width - final_message_width
-    left_padding = total_padding // 2
-    right_padding = total_padding - left_padding
-    return left_padding, right_padding
-
-
-def print_break_line():
-    """Imprime uma linha de quebra de forma formatada."""
-    padding = (WIDTH // 2) - 3
-    print("\n")
-    print(f"{' ' * padding}🔸 🔸 🔸")
-    print("\n")
+    # SEPARADOR
+    console.print(Align.center("[dim]🔸 🔸 🔸[/dim]\n"))

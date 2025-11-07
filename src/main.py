@@ -1,3 +1,13 @@
+import time
+import sys
+import uuid
+
+from langgraph.graph import StateGraph, START, END
+from langgraph.types import Command
+from langgraph.checkpoint.memory import MemorySaver
+from langchain_core.messages import HumanMessage
+from langchain_community.callbacks.openai_info import OpenAICallbackHandler
+
 from schema.yuma import AgentState
 from schema.dify import DifyState
 from agentshub.yuma import (
@@ -23,9 +33,7 @@ from utils.dify import dify_yaml_builder
 from agentshub.dify import call_dify_tools
 
 from utils.yuma.print_functions import (
-    print_conversation_header,
     print_node_header,
-    print_break_line,
     get_pretty_input,
     print_architecture,
     write_log,
@@ -34,16 +42,6 @@ from utils.yuma.print_functions import (
     end_message,
 )
 
-from utils.yuma.io_functions import print_graph
-
-import uuid
-
-from langgraph.graph import StateGraph, START, END
-from langgraph.types import Command
-from langgraph.checkpoint.memory import MemorySaver
-from langchain_core.messages import HumanMessage
-from langchain_community.callbacks.openai_info import OpenAICallbackHandler
-import time
 
 
 node_creation = [
@@ -117,7 +115,6 @@ def build_graph():
 def get_user_input(isInitial):
 
     human_message = get_pretty_input()
-    print_break_line()
 
     if human_message.lower() == "q":
         return None
@@ -138,7 +135,7 @@ def handle_stream(graph, user_input, config):
                 if not isinstance(last_message, dict) and last_message.type == "ai":
                     agente_name = value['agente_name'] if value['agente_name'] else "Agente"
                     if agente_name == "Arquiteto do Sistema":
-                        final_message = print_architecture(last_message)
+                        final_message = print_architecture(last_message.content)
                         print_node_header(node_id, agente_name, final_message)
                     else:
                         print_node_header(node_id, agente_name, last_message.content)
@@ -171,23 +168,16 @@ def main():
                 handle_stream(graph, user_input, config=thread_config)
                 user_input = get_user_input(False)
     except KeyboardInterrupt:
-        pass
+        sys.stdout.write("\r")
+        sys.stdout.flush()
     finally:
         end = time.time()
         total_time = end - start
         total_cost_yuma = callback_handler.total_cost if callback_handler else 0
         total_tokens_yuma = callback_handler.total_tokens if callback_handler else 0
         end_message(total_time, total_tokens_yuma, total_cost_yuma)
+        sys.exit(0)
 
-        while user_input != None:
-            num_conversation += 1
-            final_state = handle_stream(graph, user_input, config=thread_config)
-
-            architecture_output = final_state.get("architecture_output") if final_state else None
-            if architecture_output and final_state.get("active_agent") == "architecture_agent":
-                print_architecture(architecture_output)
-
-            user_input = get_user_input(False)
 
 
 if __name__ == "__main__":
