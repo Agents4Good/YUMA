@@ -7,7 +7,7 @@ from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage
 from langchain_community.callbacks.openai_info import OpenAICallbackHandler
-
+from langgraph.prebuilt import ToolNode
 from schema.yuma import AgentState
 from schema.dify import DifyState
 from agentshub.yuma import (
@@ -27,6 +27,8 @@ from agentshub.dify import (
     yaml_analyzer,
     extractor_document_node_creator
 )
+
+from agentshub.yuma.requirements_engineer import engineer_tools
 
 from utils.dify import dify_yaml_builder
 
@@ -101,13 +103,14 @@ def build_graph():
 
     # Nodes
     builder.add_node("requirements_engineer", requirements_engineer)
+    builder.add_node("engineer_tools", ToolNode(engineer_tools))
     builder.add_node("human_node", human_node)
     builder.add_node("architecture_agent", architect)
     builder.add_node("dify", subgraph)
 
     # Edges
     builder.add_edge(START, "requirements_engineer")
-
+    builder.add_edge("engineer_tools", "architecture_agent")
     checkpointer = MemorySaver()
     return builder.compile(checkpointer=checkpointer)
 
@@ -120,7 +123,8 @@ def get_user_input(isInitial):
         return None
 
     return (
-        AgentState(messages=[HumanMessage(content=human_message)])
+        AgentState(messages=[], human_inputs=[
+                   HumanMessage(content=human_message)])
         if isInitial
         else Command(resume=human_message)
     )

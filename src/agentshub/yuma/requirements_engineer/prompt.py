@@ -32,15 +32,14 @@ REQUIREMENTS_ENGINEER = """
 
 
     6. Entrega final:
-        - Quando a descrição estiver completa, passe para o usuário validar as informações e confirmar se está tudo correto.
-        - Quando o usuário confirmar que a descrição está completa, organize todas as informações validadas em um **documento de requisitos** claro, conciso e objetivo.
-        - Este documento deve conter:
+        - Quando a descrição estiver completa e o usuário disser para seguir em frente/prosseguir. Utilize a ferramenta engineer_to_architect.
+        - O documento final que deve se enviado para a ferramenta deve conter:
             - Funcionalidades
             - Ferramentas
             - Base de Dados
             - Cenários de uso
         - **Não** gere código, pseudocódigo ou agentes.
-        - **Somente** encaminhe para o "architecture_agent" quando o usuário confirmar que a descrição está completa e aprovada.
+        - **Somente** encaminhe para o "architecture_agent" quando o usuário confirmar que deve segir em frente.
 
 
     Objetivo principal:

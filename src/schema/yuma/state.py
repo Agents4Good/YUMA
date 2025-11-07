@@ -2,7 +2,7 @@ from langgraph.graph import MessagesState
 from pydantic import Field
 from typing import List, Dict, Optional
 from langchain_core.messages.base import BaseMessage
-
+from langchain_core.messages import HumanMessage
 
 class AgentState(MessagesState):
     active_agent: str = Field(
@@ -15,3 +15,5 @@ class AgentState(MessagesState):
         default=None, description="Stores the architecture output JSON."
     )
     buffer: List[BaseMessage] = Field(description="the messages of the active agent.")
+    human_inputs: List[HumanMessage] = Field(description="the messages said by the human")
+    specification: str = Field(description="specification of the system")

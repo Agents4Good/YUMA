@@ -1,9 +1,9 @@
 from .utils import (
     sequence_diagram_generator,
-    make_handoff_tool
+    handoff_to_agent
 )
 
 __all__ = [
     "sequence_diagram_generator",
-    "make_handoff_tool"
+    "handoff_to_agent"
 ]

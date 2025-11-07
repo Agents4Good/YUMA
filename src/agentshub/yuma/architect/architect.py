@@ -15,11 +15,12 @@ structured_model = model_sys.with_structured_output(ArchitectureOutput)
 def architect(state: AgentState,
             max_retries: int = 3
             ) -> Command[Literal["human_node", "dify"]]:
-  
     system_prompt = ARCHITECT_AGENT
     for _ in range(max_retries):
         try:
-            response = structured_model.invoke([SystemMessage(content=system_prompt)] + state.get("messages"))
+            messages = state.get(
+                "messages") + [SystemMessage(content=system_prompt)] + state.get("human_inputs")
+            response = structured_model.invoke(messages)
             if response is None:
                 continue
 
